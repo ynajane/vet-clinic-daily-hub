@@ -211,7 +211,7 @@ function Dash({ db, setDb, me, go, say, navigation, onNavigationHandled }) {
                       )}
                       {a.status === "Completed" && a.admissionStatus!=="Admitted" && (
                         <button className={`btn sm ${isPaid ? "ghost" : "gold"}`} onClick={() => setBillingAppt(a)} title="Create the invoice and settle the bill">
-                          {isPaid ? "View receipt" : "Bill and check out"}
+                          {isPaid ? "View invoice" : "Bill and check out"}
                         </button>
                       )}
                     </div>
@@ -347,7 +347,7 @@ export const assistant = {
     { k: "home", l: "Front Desk", i: "bell", dash: 1, sub: "Visit approvals, pet registrations, arrivals and clinic operations." },
     { k: 'admissions', l: 'Admitted Pets', i: 'hospital', Page: AdmissionsPage, sub: 'Follow veterinarian care plans, record measured observations and share owner updates.' },
     { k: "prices", l: "Services & Prices", i: "file", Page: props => <Prices {...props} staff />, sub: "Browse clinic services, products, offers and current prices." },
-    { k: "sales", l: "Daily Sales & Billing", i: "receipt", Page: DailySalesPage, sub: "Daily collections register, cashier receipts, and sales breakdown." },
+    { k: "sales", l: "Daily Sales & Billing", i: "receipt", Page: DailySalesPage, sub: "Daily collections register, paid invoices, and sales breakdown." },
     { k: "pet-requests", l: "Online Pet Requests", i: "paw", Page: PetRequestsPage, sub: "Review and approve online pet registrations with automated vaccination cards." },
     { k: "cal", l: "Appointments & Calendar", i: "calendar", Page: ClinicCalendar, sub: "Unified calendar schedules, slot booking, and appointments management." },
     { k: "clients-patients", l: "Clients & Patients Masterlist", i: "users", Page: ClientsAndPatientsPage, sub: "Unified masterlist of pet owners, animal patient profiles, and official vaccination cards." },

@@ -170,7 +170,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
             aria-pressed={tab === "patients"} onClick={() => setTab("patients")}
             style={{
               padding: "7px 16px",
-              fontSize: "13px",
+              fontSize: "calc(13px * var(--fs, 1))",
               fontWeight: 700,
               borderRadius: "8px",
               border: "none",
@@ -191,7 +191,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
             aria-pressed={tab === "owners"} onClick={() => setTab("owners")}
             style={{
               padding: "7px 16px",
-              fontSize: "13px",
+              fontSize: "calc(13px * var(--fs, 1))",
               fontWeight: 700,
               borderRadius: "8px",
               border: "none",
@@ -214,7 +214,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
           {canCheckIn && <button
             className="btn gold"
             onClick={() => setShowWalkIn(true)}
-            style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 700, padding: "8px 16px", fontSize: "13.5px" }}
+            style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 700, padding: "8px 16px", fontSize: "calc(13.5px * var(--fs, 1))" }}
           >
             <Plus size={16} /> Register walk-in
           </button>}
@@ -241,18 +241,18 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
             placeholder={tab === "patients" ? "Search patient, owner name, phone, card #..." : "Search client name, phone, address, pet name..."}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{ width: "100%", padding: "8px 12px 8px 36px", fontSize: "13px", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+            style={{ width: "100%", padding: "8px 12px 8px 36px", fontSize: "calc(13px * var(--fs, 1))", borderRadius: "8px", border: "1px solid #cbd5e1" }}
           />
         </div>
 
         {tab === "patients" && (
           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-            <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12.5px", margin: 0, fontWeight: 600, color: "#475569" }}>
+            <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "calc(12.5px * var(--fs, 1))", margin: 0, fontWeight: 600, color: "#475569" }}>
               <Filter size={14} />
               <select
                 aria-label="Species" value={speciesFilter}
                 onChange={e => setSpeciesFilter(e.target.value)}
-                style={{ padding: "6px 10px", fontSize: "12.5px", borderRadius: "6px", border: "1px solid #cbd5e1" }}
+                style={{ padding: "6px 10px", fontSize: "calc(12.5px * var(--fs, 1))", borderRadius: "6px", border: "1px solid #cbd5e1" }}
               >
                 <option value="all">All Species</option>
                 <option value="Canine">Dogs (Canine)</option>
@@ -268,7 +268,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
             <select
               aria-label="Vaccination status" value={vaccFilter}
               onChange={e => setVaccFilter(e.target.value)}
-              style={{ padding: "6px 10px", fontSize: "12.5px", borderRadius: "6px", border: "1px solid #cbd5e1" }}
+              style={{ padding: "6px 10px", fontSize: "calc(12.5px * var(--fs, 1))", borderRadius: "6px", border: "1px solid #cbd5e1" }}
             >
               <option value="all">All Vaccine Statuses</option>
               <option value="ok">On track</option>
@@ -283,17 +283,17 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
       {tab === "patients" ? (
         <section className="card" style={{ padding: "0", overflow: "hidden" }}>
           <div style={{ padding: "12px 18px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "12.5px", color: "#475569" }}>
+            <span style={{ fontSize: "calc(12.5px * var(--fs, 1))", color: "#475569" }}>
               <b>Tip:</b> Click any row to open the pet&rsquo;s official <b>Digital Vaccination Card</b>, review shots, or print access slips.
             </span>
-            <span style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--navy)" }}>
+            <span style={{ fontSize: "calc(12.5px * var(--fs, 1))", fontWeight: 700, color: "var(--navy)" }}>
               {filteredPets.length} patient(s) found
             </span>
           </div>
 
           {filteredPets.length ? (
             <div style={{ overflowX: "auto" }}>
-              <PaginatedTable label="Patients" resetKey={[tab,search,speciesFilter,vaccFilter,ownerFilter]} style={{ width: "100%", fontSize: "13px", borderCollapse: "collapse" }}>
+              <PaginatedTable label="Patients" resetKey={[tab,search,speciesFilter,vaccFilter,ownerFilter]} style={{ width: "100%", fontSize: "calc(13px * var(--fs, 1))", borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ textAlign: "left", background: "#f8fafc", color: "#475569", borderBottom: "2px solid #e2e8f0" }}>
                     <th style={{ padding: "12px 14px" }}>Patient Profile</th>
@@ -327,11 +327,11 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                         {/* Patient info */}
                         <td data-label="Patient Profile" style={{ padding: "12px 14px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "#e0f2fe", color: "#0369a1", display: "grid", placeItems: "center", fontSize: "18px" }}>
+                            <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "#e0f2fe", color: "#0369a1", display: "grid", placeItems: "center", fontSize: "calc(18px * var(--fs, 1))" }}>
                               <I e={ICON[p.species] || "paw"} size={18} />
                             </div>
                             <div>
-                              <b style={{ color: "var(--navy)", fontSize: "14px", textDecoration: "underline" }}>
+                              <b style={{ color: "var(--navy)", fontSize: "calc(14px * var(--fs, 1))", textDecoration: "underline" }}>
                                 {p.name}
                               </b>
                               {todayApptByPet[p.id] && (
@@ -339,7 +339,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                                   {isArrivable(todayApptByPet[p.id]) ? `Appointment ${todayApptByPet[p.id].time}` : todayApptByPet[p.id].status}
                                 </span>
                               )}
-                              <div style={{ fontSize: "12px", color: "#64748b" }}>
+                              <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
                                 {formatSpeciesLabel(p.species)} &bull; {p.breed || "Mixed"} {age ? `\u2022 ${age}` : ""}
                               </div>
                             </div>
@@ -349,8 +349,8 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                         {/* Owner info */}
                         <td data-label="Registered Owner & Contact" style={{ padding: "12px 14px" }}>
                           <button type="button" className="household-owner-trigger" disabled={!o.id} onClick={e => { e.stopPropagation(); setHouseholdId(o.id); }} aria-label={`View owner ${o.name || "not recorded"} and pets`}>{o.name || "Owner not recorded"}</button>
-                          <div style={{ fontSize: "12px", color: "#64748b", display: "flex", alignItems: "center", gap: "6px" }}>
-                            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}><Phone size={12} /> {o.phone || "No phone"}</span>
+                          <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b", display: "flex", alignItems: "center", gap: "6px" }}>
+                            <span className="nowrap" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}><Phone size={12} /> {o.phone || "No phone"}</span>
                             {o.address && <span>&bull; {o.address}</span>}
                           </div>
                         </td>
@@ -366,7 +366,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                             border: "1px solid #a7f3d0",
                             padding: "3px 8px",
                             borderRadius: "6px",
-                            fontSize: "11.5px",
+                            fontSize: "calc(11.5px * var(--fs, 1))",
                             fontFamily: "monospace",
                             fontWeight: 700
                           }}>
@@ -380,7 +380,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                             display: "inline-block",
                             padding: "3px 8px",
                             borderRadius: "6px",
-                            fontSize: "11.5px",
+                            fontSize: "calc(11.5px * var(--fs, 1))",
                             fontWeight: 700,
                             background: vs.bg,
                             color: vs.color,
@@ -389,7 +389,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                             {vs.label}
                           </span>
                           {vs.next && (
-                            <small style={{ display: "block", color: "#64748b", marginTop: "2px", fontSize: "11px" }}>
+                            <small style={{ display: "block", color: "#64748b", marginTop: "2px", fontSize: "calc(11px * var(--fs, 1))" }}>
                               Next: {vs.next.vaccine} ({vs.next.nextDue})
                             </small>
                           )}
@@ -417,7 +417,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                               }}
                               style={{
                                 padding: "4px 8px",
-                                fontSize: "11.5px",
+                                fontSize: "calc(11.5px * var(--fs, 1))",
                                 color: "#1e3a8a",
                                 border: "1px solid #cbd5e1",
                                 fontWeight: 600,
@@ -433,7 +433,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                               onClick={() => setCardPetId(p.id)}
                               style={{
                                 padding: "4px 8px",
-                                fontSize: "11.5px",
+                                fontSize: "calc(11.5px * var(--fs, 1))",
                                 color: "var(--navy)",
                                 border: "1px solid #bfdbfe",
                                 background: "#eff6ff",
@@ -462,17 +462,17 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
         /* Household / Client-First View */
         <section className="card" style={{ padding: "0", overflow: "hidden" }}>
           <div style={{ padding: "12px 18px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "12.5px", color: "#475569" }}>
+            <span style={{ fontSize: "calc(12.5px * var(--fs, 1))", color: "#475569" }}>
               Registered pet owners, client accounts, contact details, and their registered animals.
             </span>
-            <span style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--navy)" }}>
+            <span style={{ fontSize: "calc(12.5px * var(--fs, 1))", fontWeight: 700, color: "var(--navy)" }}>
               {filteredOwners.length} client(s) found
             </span>
           </div>
 
           {filteredOwners.length ? (
             <div style={{ overflowX: "auto" }}>
-              <PaginatedTable label="Households" resetKey={[tab,search]} style={{ width: "100%", fontSize: "13px", borderCollapse: "collapse" }}>
+              <PaginatedTable label="Households" resetKey={[tab,search]} style={{ width: "100%", fontSize: "calc(13px * var(--fs, 1))", borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ textAlign: "left", background: "#f8fafc", color: "#475569", borderBottom: "2px solid #e2e8f0" }}>
                     <th style={{ padding: "12px 14px" }}>Client Name &amp; Contact</th>
@@ -489,8 +489,8 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                       <tr key={o.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                         <td data-label="Client Name & Contact" style={{ padding: "12px 14px" }}>
                           <button type="button" className="household-owner-trigger" onClick={() => setHouseholdId(o.id)} aria-label={`View household for ${o.name}`}>{o.name}</button><small className="household-pet-count">{ownerPets.length} registered {ownerPets.length === 1 ? "pet" : "pets"}</small>
-                          <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px", display: "flex", alignItems: "center", gap: "8px" }}>
-                            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}><Phone size={12} /> {o.phone || "No phone"}</span> &bull; <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}><Mail size={12} /> {o.email || "No email"}</span>
+                          <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b", marginTop: "2px", display: "flex", alignItems: "center", gap: "8px" }}>
+                            <span className="nowrap" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}><Phone size={12} /> {o.phone || "No phone"}</span> &bull; <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}><Mail size={12} /> {o.email || "No email"}</span>
                           </div>
                         </td>
 
@@ -508,7 +508,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                                   onClick={() => setCardPetId(p.id)}
                                   style={{
                                     padding: "3px 8px",
-                                    fontSize: "12px",
+                                    fontSize: "calc(12px * var(--fs, 1))",
                                     borderRadius: "6px",
                                     border: "1px solid #bfdbfe",
                                     background: "#eff6ff",
@@ -528,7 +528,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                               {ownerPets.length > 3 && <button type="button" className="household-owner-trigger" onClick={() => setHouseholdId(o.id)}>View all {ownerPets.length} pets</button>}
                             </div>
                           ) : (
-                            <span style={{ color: "#94a3b8", fontSize: "12px" }}>No registered pets</span>
+                            <span style={{ color: "#94a3b8", fontSize: "calc(12px * var(--fs, 1))" }}>No registered pets</span>
                           )}
                         </td>
 
@@ -543,7 +543,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                               onClick={() => setAddPetForOwner(o)}
                               style={{
                                 padding: "4px 10px",
-                                fontSize: "11.5px",
+                                fontSize: "calc(11.5px * var(--fs, 1))",
                                 fontWeight: 700,
                                 borderRadius: "6px",
                                 display: "inline-flex",
@@ -563,7 +563,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
                               }}
                               style={{
                                 padding: "4px 10px",
-                                fontSize: "11.5px",
+                                fontSize: "calc(11.5px * var(--fs, 1))",
                                 fontWeight: 600,
                                 color: "#1e3a8a",
                                 border: "1px solid #cbd5e1",

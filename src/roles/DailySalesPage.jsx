@@ -103,9 +103,10 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
             <input
               type="date"
               value={selDate}
+              min="2020-01-01" max={TODAY}
               aria-label="Report date"
               onChange={e => setSelDate(e.target.value)}
-              style={{ border: "none", background: "transparent", fontWeight: 700, fontSize: "14px", color: "var(--navy)", outline: "none", cursor: "pointer" }}
+              style={{ border: "none", background: "transparent", fontWeight: 700, fontSize: "calc(14px * var(--fs, 1))", color: "var(--navy)", outline: "none", cursor: "pointer" }}
             />
           </div>
 
@@ -124,7 +125,7 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
               type="button"
               className="btn sm gold"
               onClick={() => setSelDate(TODAY)}
-              style={{ padding: "5px 12px", fontSize: "12px", fontWeight: 700 }}
+              style={{ padding: "5px 12px", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 700 }}
             >
               Today
             </button>
@@ -170,15 +171,15 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
         {/* Gross Sales */}
         <div style={{ background: "linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)", color: "#fff", padding: "18px 20px", borderRadius: "14px", boxShadow: "0 4px 12px rgba(30, 58, 138, 0.15)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-            <span style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#93c5fd" }}>
+            <span style={{ fontSize: "calc(12px * var(--fs, 1))", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#93c5fd" }}>
               Total Collections ({isToday ? "Today" : selDate})
             </span>
             <DollarSign size={20} color="#60a5fa" />
           </div>
-          <div style={{ fontSize: "28px", fontWeight: 800 }}>
+          <div style={{ fontSize: "calc(28px * var(--fs, 1))", fontWeight: 800 }}>
             {money(totalRevenue)}
           </div>
-          <div style={{ fontSize: "12px", color: "#bfdbfe", marginTop: "4px" }}>
+          <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#bfdbfe", marginTop: "4px" }}>
             {paidAppts.length} settled transaction{paidAppts.length === 1 ? "" : "s"}
           </div>
         </div>
@@ -186,31 +187,31 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
         {/* Cash Breakdown */}
         <div style={{ background: "#ffffff", padding: "18px 20px", borderRadius: "14px", border: "1px solid #e2e8f0" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-            <span style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase", color: "#64748b" }}>
+            <span style={{ fontSize: "calc(12px * var(--fs, 1))", fontWeight: 700, textTransform: "uppercase", color: "#64748b" }}>
               Cash Received
             </span>
             <Coins size={18} color="#166534" />
           </div>
-          <div style={{ fontSize: "24px", fontWeight: 800, color: "#166534" }}>
+          <div style={{ fontSize: "calc(24px * var(--fs, 1))", fontWeight: 800, color: "#166534" }}>
             {money(cashTotal)}
           </div>
-          <div style={{ fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
-            {paidAppts.filter(a => paymentMethod(a.paymentMethod) === "cash").length} cash receipt(s)
+          <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b", marginTop: "4px" }}>
+            {paidAppts.filter(a => paymentMethod(a.paymentMethod) === "cash").length} cash invoice(s)
           </div>
         </div>
 
         {/* Digital / Online Payments (GCash & Card) */}
         <div style={{ background: "#ffffff", padding: "18px 20px", borderRadius: "14px", border: "1px solid #e2e8f0" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-            <span style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase", color: "#64748b" }}>
+            <span style={{ fontSize: "calc(12px * var(--fs, 1))", fontWeight: 700, textTransform: "uppercase", color: "#64748b" }}>
               Digital (GCash / Card / Maya)
             </span>
             <CreditCard size={18} color="#0284c7" />
           </div>
-          <div style={{ fontSize: "24px", fontWeight: 800, color: "#0369a1" }}>
+          <div style={{ fontSize: "calc(24px * var(--fs, 1))", fontWeight: 800, color: "#0369a1" }}>
             {money(digitalTotal.some(v => v === null) ? null : Math.round(digitalTotal.reduce((sum,v) => sum + v * 100,0)) / 100)}
           </div>
-          <div style={{ fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
+          <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b", marginTop: "4px" }}>
             GCash: {money(gcashTotal)} &bull; Card: {money(cardTotal)} &bull; Maya: {money(mayaTotal)}
           </div>
         </div>
@@ -218,15 +219,15 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
         {/* Pending Unbilled */}
         <div style={{ background: unbilledCompleted.length > 0 ? "#fffbeb" : "#f8fafc", padding: "18px 20px", borderRadius: "14px", border: unbilledCompleted.length > 0 ? "1.5px solid #fde047" : "1px solid #e2e8f0" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-            <span style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase", color: unbilledCompleted.length > 0 ? "#854d0e" : "#64748b" }}>
+            <span style={{ fontSize: "calc(12px * var(--fs, 1))", fontWeight: 700, textTransform: "uppercase", color: unbilledCompleted.length > 0 ? "#854d0e" : "#64748b" }}>
               Ready for Checkout
             </span>
             <Clock size={18} color={unbilledCompleted.length > 0 ? "#d97706" : "#94a3b8"} />
           </div>
-          <div style={{ fontSize: "24px", fontWeight: 800, color: unbilledCompleted.length > 0 ? "#b45309" : "#64748b" }}>
+          <div style={{ fontSize: "calc(24px * var(--fs, 1))", fontWeight: 800, color: unbilledCompleted.length > 0 ? "#b45309" : "#64748b" }}>
             {unbilledCompleted.length}
           </div>
-          <div style={{ fontSize: "12px", color: unbilledCompleted.length > 0 ? "#854d0e" : "#64748b", marginTop: "4px" }}>
+          <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: unbilledCompleted.length > 0 ? "#854d0e" : "#64748b", marginTop: "4px" }}>
             {unbilledCompleted.length > 0 ? `${money(pending.draftTotal)} saved draft charges · ${pending.awaitingInvoice} awaiting invoice` : "No pending checkouts"}
           </div>
         </div>
@@ -242,7 +243,7 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
       <section className="card" style={{ padding: "0", overflow: "hidden" }}>
         <div style={{ padding: "14px 20px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", flex: "1 1 320px" }}>
-            <h3 style={{ margin: 0, fontSize: "16px", color: "var(--navy)" }}>
+            <h3 style={{ margin: 0, fontSize: "calc(16px * var(--fs, 1))", color: "var(--navy)" }}>
               Payment ledger &bull; {showUndated ? "Payment date not recorded" : selDate}
             </h3>
 
@@ -251,7 +252,7 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
               value={methodFilter}
               aria-label="Payment method filter"
               onChange={e => setMethodFilter(e.target.value)}
-              style={{ width: "auto", minWidth: "200px", padding: "5px 10px", fontSize: "12px", borderRadius: "6px", border: "1px solid #cbd5e1" }}
+              style={{ width: "auto", minWidth: "200px", padding: "5px 10px", fontSize: "calc(12px * var(--fs, 1))", borderRadius: "6px", border: "1px solid #cbd5e1" }}
             >
               <option value="all">All Payment Methods</option>
               <option value="cash">Cash</option>
@@ -270,14 +271,14 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
               placeholder="Search owner, pet or reference"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{ width: "100%", padding: "6px 10px 6px 32px", fontSize: "12.5px", borderRadius: "6px", border: "1px solid #cbd5e1" }}
+              style={{ width: "100%", padding: "6px 10px 6px 32px", fontSize: "calc(12.5px * var(--fs, 1))", borderRadius: "6px", border: "1px solid #cbd5e1" }}
             />
           </div>
         </div>
 
         {filteredPaid.length ? (
           <div style={{ overflowX: "auto" }}>
-            <PaginatedTable label="Payment ledger" resetKey={[selDate,showUndated,methodFilter,search]} style={{ width: "100%", fontSize: "13px", borderCollapse: "collapse" }}>
+            <PaginatedTable label="Payment ledger" resetKey={[selDate,showUndated,methodFilter,search]} style={{ width: "100%", fontSize: "calc(13px * var(--fs, 1))", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ textAlign: "left", background: "#f8fafc", color: "#475569", borderBottom: "2px solid #e2e8f0" }}>
                   <th style={{ padding: "12px 16px" }}>Payment time &bull; Visit reference</th>
@@ -301,12 +302,12 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
                       style={{ borderBottom: "1px solid #f1f5f9", cursor: "pointer", transition: "background 0.15s ease" }}
                       onMouseEnter={e => (e.currentTarget.style.background = "#f0f9ff")}
                       onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                      title="Click to view full official receipt and print invoice"
+                      title="Click to view the paid invoice and print it"
                     >
                       {/* Time and OR */}
                       <td data-label="Payment time • Visit reference" style={{ padding: "12px 16px", whiteSpace: "nowrap" }}>
                         <b style={{ color: "var(--navy)" }}>{paymentTime(a.paidAt)}</b>
-                        <small style={{ display: "block", color: "#64748b", fontFamily: "monospace", fontSize: "11px" }}>
+                        <small style={{ display: "block", color: "#64748b", fontFamily: "monospace", fontSize: "calc(11px * var(--fs, 1))" }}>
                           {a.id}
                         </small>
                       </td>
@@ -316,7 +317,7 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
                         <div style={{ fontWeight: 700, color: "var(--navy)" }}>
                           {pet.name || "Patient"}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#64748b" }}>
+                        <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
                           Owner: {owner.name || a.ownerName || "Walk-in Client"}
                         </div>
                       </td>
@@ -338,7 +339,7 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
                         <span style={{
                           padding: "3px 8px",
                           borderRadius: "6px",
-                          fontSize: "11.5px",
+                          fontSize: "calc(11.5px * var(--fs, 1))",
                           fontWeight: 700,
                           background: (a.paymentMethod || "").toLowerCase().includes("cash") ? "#ecfdf5" : "#eff6ff",
                           color: (a.paymentMethod || "").toLowerCase().includes("cash") ? "#047857" : "#0369a1",
@@ -350,7 +351,7 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
 
                       {/* Amount */}
                       <td data-label="Amount Collected" style={{ padding: "12px 16px", textAlign: "right", whiteSpace: "nowrap" }}>
-                        <b style={{ fontSize: "14.5px", color: "#0f172a" }}>
+                        <b style={{ fontSize: "calc(14.5px * var(--fs, 1))", color: "#0f172a" }}>
                           {money(ownerBill(a).amount)}
                         </b>
                       </td>
@@ -364,9 +365,9 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
                             e.stopPropagation();
                             setReceiptAppt(a);
                           }}
-                          style={{ padding: "4px 8px", fontSize: "11.5px", fontWeight: 600, color: "var(--navy)", border: "1px solid #cbd5e1" }}
+                          style={{ padding: "4px 8px", fontSize: "calc(11.5px * var(--fs, 1))", fontWeight: 600, color: "var(--navy)", border: "1px solid #cbd5e1" }}
                         >
-                          View Receipt
+                          View Invoice
                         </button>
                       </td>
                     </tr>
@@ -382,7 +383,7 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
         )}
       </section>
 
-      {/* Full Official Receipt / Checkout Modal */}
+      {/* Paid invoice / checkout dialog */}
       {receiptAppt && (
         <BillingModal
           appt={receiptAppt}

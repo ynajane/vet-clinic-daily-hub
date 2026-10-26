@@ -15,7 +15,8 @@ const poolUrl = connectionString && !isLocal ? connectionString.replace(/([?&])s
 export const pool = new Pool({
   connectionString: poolUrl || 'postgres://postgres:postgres@localhost:5432/pawcare',
   ssl: isLocal ? false : { rejectUnauthorized: false },
-  max: 20,
+  // Each serverless instance keeps a few connections; many instances x 20 would exhaust the database.
+  max: process.env.VERCEL ? 5 : 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 10000,
 });

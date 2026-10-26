@@ -70,7 +70,7 @@ export default function HandoffModal({ appt, db, me, setDb, onClose }) {
       <div className="sf-field">
         <label htmlFor="handoff-note">Handoff instructions *</label>
         <textarea {...validation.field('note')} id="handoff-note" rows={4} maxLength={3000} value={note} disabled={saving||stale} onChange={e=>{setNote(e.target.value);setError('');}} placeholder="Enter findings, symptoms, current vital signs, and next examination steps..."/>
-        <div style={{display:'flex',justifyContent:'space-between',fontSize:11.5,color:'#64748b',marginTop:2}}>
+        <div style={{display:'flex',justifyContent:'space-between',fontSize:"calc(11.5px * var(--fs, 1))",color:'#64748b',marginTop:2}}>
           <span>Saved intake and clinical notes are forwarded with this patient</span>
           <span>{note.length} / 3000</span>
         </div>

@@ -8,6 +8,7 @@
 */
 
 import { PUBLIC } from './domains.js';
+import { birthdayError, clinicToday } from './ageRules.js';
 import { countryInfo, checkMobile } from './geo.js';
 export { PUBLIC };
 
@@ -62,17 +63,8 @@ export function validate(b) {
   const e = {}, s = (k) => String(b[k] ?? '').trim();
   for (const k of ['first_name', 'last_name']) if (!/^(?=.*\p{L})[\p{L}\p{M}'’ -]{2,50}$/u.test(s(k))) e[k] = '2-50 letters, spaces, hyphens or apostrophes only.';
   if (s('middle_initial') && !/^[\p{L}]\.?$/u.test(s('middle_initial'))) e.middle_initial = 'Use one letter, optionally followed by a period (A or A.).';
-  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s('birthday'));
-  if (!m) e.birthday = 'Use MM/DD/YYYY.';
-  else {
-    const [, mo, d, y] = m.map(Number), dt = new Date(Date.UTC(y, mo - 1, d));
-    if (dt.getUTCMonth() !== mo - 1 || dt.getUTCDate() !== d || y < 1900) e.birthday = 'Enter a real calendar date.';
-    else {
-      const t = new Date();
-      if (dt > new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate()))) e.birthday = 'Birthday cannot be in the future.';
-      else if (dt > new Date(Date.UTC(t.getUTCFullYear() - 13, t.getUTCMonth(), t.getUTCDate()))) e.birthday = 'You must be at least 13 years old.';
-    }
-  }
+  const bd = birthdayError(s("birthday"), clinicToday());
+  if (bd) e.birthday = bd;
   const p = String(b.password ?? '');
   if (!pwOk(p)) e.password = '12+ characters with upper, lower, number and special character.';
   if (p !== String(b.confirm_password ?? '')) e.confirm_password = 'Passwords do not match.';

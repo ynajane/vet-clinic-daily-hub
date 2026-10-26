@@ -4,8 +4,8 @@
 .w .wc>*{max-width:none;box-sizing:border-box;margin-left:0;margin-right:0;padding-left:var(--wx);padding-right:var(--wx)}
 
 /* Landing page buttons: same height, same text size, wrap nicely, stack on phones. */
-.w .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 22px;font-size:14px;font-weight:700;line-height:1.2;text-decoration:none;white-space:nowrap}
-.w .btn.sm{min-height:36px;padding:6px 16px;font-size:13px}
+.w .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 22px;font-size:calc(14px*var(--fs,1));font-weight:700;line-height:1.2;text-decoration:none;white-space:nowrap}
+.w .btn.sm{min-height:36px;padding:6px 16px;font-size:calc(13px*var(--fs,1))}
 .w .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 
 /* header: logo | links | Log in + Sign up */

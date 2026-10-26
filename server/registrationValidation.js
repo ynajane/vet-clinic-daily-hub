@@ -2,6 +2,7 @@ import { Country } from 'country-state-city';
 import { countryInfo, checkMobile, checkEmail, checkAddress } from './geo.js';
 import { clinicClock, validDate } from './scheduling.js';
 import { validatePasswordComplexity } from './security.js';
+import { birthdayError, toIsoDate } from '../src/ageRules.js';
 
 // Accept the public form's names and its historical camelCase API aliases.
 export async function validateOwnerRegistration(body = {}) {
@@ -10,8 +11,7 @@ export async function validateOwnerRegistration(body = {}) {
   const lastName = text(body.last_name ?? body.lastName);
   const middleInitial = text(body.middle_initial ?? body.middleInitial).replace(/\.$/, '').toUpperCase();
   let birthday = text(body.birthday);
-  const usDate = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(birthday);
-  if (usDate) birthday = `${usDate[3]}-${usDate[1]}-${usDate[2]}`;
+  birthday = toIsoDate(birthday);
   const address = body.address && typeof body.address === 'object' ? body.address : {};
   const houseStreet = text(body.house_street ?? address.houseStreet ?? (typeof body.address === 'string' ? body.address : ''));
   const countryValue = text(body.country ?? address.country);
@@ -25,8 +25,8 @@ export async function validateOwnerRegistration(body = {}) {
   }
   if ((body.middle_initial != null && typeof body.middle_initial !== 'string') || (body.middleInitial != null && typeof body.middleInitial !== 'string') || (middleInitial && !/^\p{L}$/u.test(middleInitial))) errors.middle_initial = 'Use one middle initial.';
   const today = clinicClock().date;
-  const age = Number(today.slice(0,4)) - Number(birthday.slice(0,4)) - (today.slice(5) < birthday.slice(5) ? 1 : 0);
-  if (!validDate(birthday) || birthday < '1900-01-01' || birthday > today || age < 13) errors.birthday = 'Enter a real birthday from 1900 onwards; you must be at least 13.';
+  const birthdayProblem = birthdayError(birthday, today);
+  if (birthdayProblem) errors.birthday = birthdayProblem;
   const passwordError = validatePasswordComplexity(typeof body.password === 'string' ? body.password : '');
   if (passwordError) errors.password = passwordError;
   if (typeof body.confirm_password !== 'string' || body.confirm_password !== body.password) errors.confirm_password = 'Passwords do not match.';

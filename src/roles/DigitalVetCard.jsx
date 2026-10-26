@@ -116,8 +116,8 @@ export default function DigitalVetCard({petId,refreshKey,portrait,appointments,o
      <div className="vet-card-history-body">
    <form {...validation.formProps} className="vet-card-filters" onSubmit={e=>e.preventDefault()}>
     <label>History type<select {...validation.field('kind')} value={filters.kind} onChange={e=>edit('kind',e.target.value)}><option value="">All records</option><option value="vaccination">Vaccinations</option><option value="deworming">Deworming</option><option value="weight">Visit weights</option></select>{validation.feedback('kind')}</label>
-    <label>From date<input type="date" {...validation.field('from')} value={filters.from} onChange={e=>edit('from',e.target.value)}/>{validation.feedback('from')}</label>
-    <label>To date<input type="date" {...validation.field('to')} value={filters.to} onChange={e=>edit('to',e.target.value)}/>{validation.feedback('to')}</label>
+    <label>From date<input type="date" min="2000-01-01" max={filters.to || today()} {...validation.field('from')} value={filters.from} onChange={e=>edit('from',e.target.value)}/>{validation.feedback('from')}</label>
+    <label>To date<input type="date" min={filters.from || '2000-01-01'} max={today()} {...validation.field('to')} value={filters.to} onChange={e=>edit('to',e.target.value)}/>{validation.feedback('to')}</label>
     <label>Search history<input type="search" {...validation.field('query')} value={filters.query} onChange={e=>edit('query',e.target.value)}/>{validation.feedback('query')}</label>
    </form>
    {!Object.values(timelineFilterErrors(filters)).some(Boolean) && <VetCardTimeline history={history} document={document} filters={filters}/>}

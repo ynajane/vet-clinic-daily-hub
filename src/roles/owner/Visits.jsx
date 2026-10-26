@@ -81,7 +81,7 @@ export function OwnerVisits({ db, me, go }) {
 
         <dl style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12, margin: 0 }}>
           {[["Visit type", VISIT_TYPES[kindOf(open)]], ["Care status", open.careStatus || "Routine care"], ["Veterinarian", vetName(open.vetId)], ["Diagnosis", open.diagnosis], ["Treatment", open.treatment || "—"], ["Full prescription & home-care instructions", open.prescription || (open.prescriptionItems?.length ? "See prescribed products and directions above." : "No prescription recorded")], open.notes ? ["Notes", open.notes] : null].filter(Boolean).map(([k, x]) =>
-            <div key={k}><dt style={{ fontSize: 12.5, fontWeight: 700, color: "var(--mu)" }}>{k}</dt><dd style={{ margin: "2px 0 0", ...wrap }}>{x}</dd></div>)}
+            <div key={k}><dt style={{ fontSize: "calc(12.5px * var(--fs, 1))", fontWeight: 700, color: "var(--mu)" }}>{k}</dt><dd style={{ margin: "2px 0 0", ...wrap }}>{x}</dd></div>)}
         </dl>
         {billedVisit && <OwnerBillDetails appointment={billedVisit} />}
       </div>

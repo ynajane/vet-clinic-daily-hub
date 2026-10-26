@@ -9,7 +9,7 @@ const BENEFITS = [
   ["calendar", "Plan visits around your day", "Check available appointment times and request a visit for your pet. See its confirmation and upcoming schedule in your account."],
   ["syringe", "Keep vaccine dates in sight", "View your pet’s recorded vaccinations and the next booster date approved by the clinic, so you can plan ahead."],
   ["file", "Know what happened at each visit", "Find saved consultation notes, prescriptions, and follow-up instructions together when you need to look back."],
-  ["receipt", "See your bills clearly", "Review saved charges, payment status, and receipts for your pet’s visits without keeping track of loose papers."],
+  ["receipt", "See your bills clearly", "Review saved charges, payment status, and paid invoices for your pet’s visits without keeping track of loose papers."],
 ];
 const WHY = [
   ["paw", "All your pets, together", "Keep a separate profile for each pet and switch between their records in one account."],

@@ -47,7 +47,7 @@ export default function PetCardModal({ petId, appt, db, setDb, me, onClose, onBo
             <h3 style={{ margin: 0, color: "var(--navy)", fontSize: "1.25rem" }}>
               {p.name}&rsquo;s Vaccination Card
             </h3>
-            <span style={{ background: "#dcfce7", color: "#166534", fontSize: "11px", fontWeight: 700, padding: "2px 8px", borderRadius: "99px" }}>
+            <span style={{ background: "#dcfce7", color: "#166534", fontSize: "calc(11px * var(--fs, 1))", fontWeight: 700, padding: "2px 8px", borderRadius: "99px" }}>
               Patient record
             </span>
           </div>
@@ -80,21 +80,21 @@ export default function PetCardModal({ petId, appt, db, setDb, me, onClose, onBo
           }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                <span style={{ fontSize: "13.5px", fontWeight: 700, color: "var(--navy)", display: "flex", alignItems: "center", gap: "4px" }}>
+                <span style={{ fontSize: "calc(13.5px * var(--fs, 1))", fontWeight: 700, color: "var(--navy)", display: "flex", alignItems: "center", gap: "4px" }}>
                   <Calendar size={15} /> Visit: {activeAppt.date} at {activeAppt.time}
                 </span>
                 <Badge v={activeAppt.status} />
                 {activeAppt.billingStatus === "Paid" ? (
-                  <span style={{ background: "#dcfce7", color: "#166534", fontSize: "11.5px", fontWeight: 700, padding: "2px 8px", borderRadius: "6px" }}>
+                  <span style={{ background: "#dcfce7", color: "#166534", fontSize: "calc(11.5px * var(--fs, 1))", fontWeight: 700, padding: "2px 8px", borderRadius: "6px" }}>
                     Paid · {bill.amount===null?'Amount not recorded':money(bill.amount)}
                   </span>
                 ) : activeAppt.status === "Completed" ? (
-                  <span style={{ background: "#fef3c7", color: "#92400e", fontSize: "11.5px", fontWeight: 700, padding: "2px 8px", borderRadius: "6px" }}>
+                  <span style={{ background: "#fef3c7", color: "#92400e", fontSize: "calc(11.5px * var(--fs, 1))", fontWeight: 700, padding: "2px 8px", borderRadius: "6px" }}>
                     {bill.status}{bill.amount!==null?` · Draft ${money(bill.amount)}`:''}
                   </span>
                 ) : null}
               </div>
-              <div style={{ fontSize: "12.5px", color: "#475569", marginTop: "3px" }}>
+              <div style={{ fontSize: "calc(12.5px * var(--fs, 1))", color: "#475569", marginTop: "3px" }}>
                 <b>Reason:</b> {activeAppt.reason || "General Consultation"} &bull; <b>Veterinarian:</b> {(db.vets || []).find(v => v.id === activeAppt.vetId)?.name || "Veterinarian not recorded"}
               </div>
               <VisitNextStep visit={activeAppt}/>
@@ -165,7 +165,7 @@ export default function PetCardModal({ petId, appt, db, setDb, me, onClose, onBo
                   )}
 
                   {activeAppt.status === "Scheduled" && ["assistant","vet"].includes(me?.role) && (
-                    <span role="status" style={{fontSize:"12px",color:"#92400e"}}>
+                    <span role="status" style={{fontSize:"calc(12px * var(--fs, 1))",color:"#92400e"}}>
                       Check-in is only available on {activeAppt.date}. Use Manage appointment in the calendar to reschedule first.
                     </span>
                   )}
@@ -175,7 +175,7 @@ export default function PetCardModal({ petId, appt, db, setDb, me, onClose, onBo
                 </>
               )}
 
-              {/* Bill / Pay: strictly ONLY when appointment is Completed, or if Paid show Receipt */}
+              {/* Bill / Pay: strictly ONLY when appointment is Completed, or if Paid show Invoice */}
               {onBill && activeAppt.status === "Completed" && (activeAppt.billingStatus === "Paid" || me?.role === "assistant" && activeAppt.admissionStatus!=='Admitted') && (
                 <button
                   type="button"
@@ -185,10 +185,10 @@ export default function PetCardModal({ petId, appt, db, setDb, me, onClose, onBo
                     onBill && onBill(activeAppt);
                   }}
                   style={{ fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "6px" }}
-                  title={bill.paid?'View the saved payment receipt':'Review saved invoice items and record payment'}
+                  title={bill.paid?'View the paid invoice':'Review saved invoice items and record payment'}
                 >
                   <Receipt size={15} />
-                  <span>{activeAppt.billingStatus === "Paid" ? "View Paid Receipt" : "Settle Bill / Checkout"}</span>
+                  <span>{activeAppt.billingStatus === "Paid" ? "View Paid Invoice" : "Settle Bill / Checkout"}</span>
                 </button>
               )}
             </div>
@@ -209,7 +209,7 @@ export default function PetCardModal({ petId, appt, db, setDb, me, onClose, onBo
             flexWrap: "wrap",
             gap: "10px"
           }}>
-            <span style={{ fontSize: "12.5px", color: "#64748b" }}>
+            <span style={{ fontSize: "calc(12.5px * var(--fs, 1))", color: "#64748b" }}>
               Patient has no active appointment on record today.
             </span>
             <div className="staff-pet-controls" style={{ display: "flex", gap: "8px" }}>

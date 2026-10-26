@@ -228,7 +228,7 @@ window.checkNextWorkflowFixes=async()=>{
   assert(text.includes(label),`Patient record must show ${label}`);
   assert(!text.includes('₱600'),'Patient record must not turn booking defaults into charges');
   if(!hasDraft)assert(!text.includes('Draft ₱'),'Patient record must not invent a draft amount');
-  if(checkout!==null)assert(!!button(scenario.billingStatus==='Paid'?'View Paid Receipt':'Settle Bill / Checkout')===checkout,'Checkout action must honor saved payment and admission hold');
+  if(checkout!==null)assert(!!button(scenario.billingStatus==='Paid'?'View Paid Invoice':'Settle Bill / Checkout')===checkout,'Checkout action must honor saved payment and admission hold');
   assert(panel.scrollWidth<=panel.clientWidth+2,'Patient clinical record must fit narrow screens');
  }
  window.patientScenario={};window.patientDefaultVisit=true;window.showWorkflow('patient-record');await tick();button('Clinical history').click();await tick();

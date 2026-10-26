@@ -2,6 +2,7 @@ import {useUnsavedChanges} from '../components/useUnsavedChanges.jsx';
 import { useState, useEffect, useRef } from "react";
 import { User, KeyRound, LogOut, ChevronDown } from "lucide-react";
 import { ROLES } from "../lib.jsx";
+import TextSize from "../components/TextSize.jsx";
 import { accountProfile } from "../accountProfile.js";
 import { Avatar, Modal } from "./owner/ui.jsx";
 import { ProfileBody, PasswordBody } from "./owner/Profile.jsx";
@@ -52,6 +53,8 @@ export default function StaffHeader({ db, setDb, me, say, onLogout }) {
           <div className="sf-who"><b>{me.name}</b><small>{account.email || me.username}</small></div>
           <button type="button" role="menuitem" onClick={() => to("profile")}><User size={16} />My profile</button>
           <button type="button" role="menuitem" onClick={() => to("password")}><KeyRound size={16} />Change password</button>
+          <hr />
+          <TextSize />
           <hr />
           <button type="button" role="menuitem" className="sf-out" onClick={() => { setOpen(false); onLogout && onLogout(); }}><LogOut size={16} />Log out</button>
         </div>

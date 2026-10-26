@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useId } from "react";
 import AuthShell, { AuthBrand } from "./AuthShell.jsx";
 import { tc, TCF, pn, pwOk, emOk } from "../validate.js";
 import { api } from "../api.js";
+import { birthdayError, clinicToday, latestBirthdayFor, EARLIEST_BIRTHDAY } from "../ageRules.js";
 import "./auth.css";
 import "./brand.css";
 
@@ -121,7 +122,7 @@ const FIELDS = [
   ["first_name", "First name"],
   ["last_name", "Last name"],
   ["middle_initial", "Middle initial (optional)"],
-  ["birthday", "Birthday (MM/DD/YYYY)"],
+  ["birthday", "Date of birth (18 or older)"],
   ["house_street", "House & street"],
   ["country", "Country"],
   ["state", "Province / State"],
@@ -173,17 +174,8 @@ export default function Register({ onDone, onBack, go, limited }) {
         return pn(v);
       case "middle_initial":
         return !v || /^[\p{L}]\.?$/u.test(v) ? "" : "Use one letter, optionally followed by a period (A or A.).";
-      case "birthday": {
-        const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(v);
-        if (!m) return "Use MM/DD/YYYY.";
-        const [, mo, d, y] = m.map(Number), dt = new Date(Date.UTC(y, mo - 1, d));
-        if (dt.getUTCMonth() !== mo - 1 || dt.getUTCDate() !== d || y < 1900) return "Enter a real calendar date.";
-        const t = new Date();
-        if (dt > new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate()))) return "Birthday cannot be in the future.";
-        return dt > new Date(Date.UTC(t.getUTCFullYear() - 13, t.getUTCMonth(), t.getUTCDate()))
-          ? "You must be at least 13 years old."
-          : "";
-      }
+      case "birthday":
+        return birthdayError(v, clinicToday());
       case "house_street":
         return /^[\p{L}0-9 .,#'’/\-]{3,255}$/u.test(v) ? "" : "Enter a valid house number and street.";
       case "country":
@@ -314,11 +306,6 @@ export default function Register({ onDone, onBack, go, limited }) {
       on = false;
     };
   }, [isPH, cp, f.state, f.city]); // eslint-disable-line
-
-  const maskBd = (v) => {
-    const d = v.replace(/\D/g, "").slice(0, 8);
-    return d.length > 4 ? d.slice(0, 2) + "/" + d.slice(2, 4) + "/" + d.slice(4) : d.length > 2 ? d.slice(0, 2) + "/" + d.slice(2) : d;
-  };
 
   const mark = (n, v) => {
     setT((t) => ({ ...t, [n]: true }));
@@ -615,14 +602,13 @@ export default function Register({ onDone, onBack, go, limited }) {
           <label>
             {l}{n !== "middle_initial" && <i> *</i>}
             <input
-              type={n === "email" ? "email" : "text"}
+              type={n === "email" ? "email" : n === "birthday" ? "date" : "text"}
+              min={n === "birthday" ? EARLIEST_BIRTHDAY : undefined}
+              max={n === "birthday" ? latestBirthdayFor(clinicToday()) : undefined}
               autoComplete={({ first_name: "given-name", last_name: "family-name", middle_initial: "additional-name", house_street: "street-address", email: "email", zip_code: "postal-code" })[n] || "off"}
               value={f[n]}
               className={cls(n) + (TCF.includes(n) ? " tc" : "")}
-              placeholder={n === "birthday" ? "MM/DD/YYYY" : ""}
-              maxLength={n === "birthday" ? 10 : undefined}
-              inputMode={n === "birthday" ? "numeric" : undefined}
-              onChange={(ev) => upd(n, n === "birthday" ? maskBd(ev.target.value) : ev.target.value)}
+              onChange={(ev) => upd(n, ev.target.value)}
               onBlur={() => blurCheck(n)}
             />
           </label>

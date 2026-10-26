@@ -109,7 +109,7 @@ export default function CatalogPage() {
       <dl className="rep-summary" aria-label="Price list summary" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 8, margin: 0}}>
         {[['Active items', active.length], ['Retired', items.length - active.length], ['Services', active.filter(i => i.kind === 'service').length], ['Products', active.filter(i => i.kind === 'product').length],
           ['Added by admin', items.filter(i => !i.builtIn).length], ['Average price', active.length ? peso(active.reduce((s, i) => s + i.price, 0) / active.length) : '—']].map(([label, value]) =>
-          <div key={label} style={{border: '1px solid #e2e8f0', borderRadius: 10, padding: '8px 12px', background: '#f8fafc'}}><dt style={{fontSize: 11.5, color: '#64748b', fontWeight: 700}}>{label}</dt><dd style={{margin: '2px 0 0', fontSize: 16, fontWeight: 800}}>{value}</dd></div>)}
+          <div key={label} style={{border: '1px solid #e2e8f0', borderRadius: 10, padding: '8px 12px', background: '#f8fafc'}}><dt style={{fontSize: "calc(11.5px * var(--fs, 1))", color: '#64748b', fontWeight: 700}}>{label}</dt><dd style={{margin: '2px 0 0', fontSize: "calc(16px * var(--fs, 1))", fontWeight: 800}}>{value}</dd></div>)}
       </dl>
     </section>
     <section className="card">

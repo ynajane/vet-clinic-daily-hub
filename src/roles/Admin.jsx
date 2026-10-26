@@ -45,9 +45,9 @@ function Bars({ title, data }) {
       <h3 style={{ margin: "0 0 12px" }}>{title}</h3>
       {Object.entries(data).map(([k, n]) => (
         <div className="bar2" key={k} style={{ display: "grid", gridTemplateColumns: "minmax(0,130px) minmax(0,1fr) 30px", gap: "10px", alignItems: "center", margin: "8px 0" }}>
-          <span style={{ fontSize: "13px", fontWeight: "600", color: "#334155" }}>{k}</span>
+          <span style={{ fontSize: "calc(13px * var(--fs, 1))", fontWeight: "600", color: "#334155" }}>{k}</span>
           <i style={{ display: "block", height: "12px", background: "var(--butter, #f5c542)", borderRadius: "99px", width: `${(n / max) * 100}%` }} />
-          <b style={{ fontSize: "13px", textAlign: "right" }}>{n}</b>
+          <b style={{ fontSize: "calc(13px * var(--fs, 1))", textAlign: "right" }}>{n}</b>
         </div>
       ))}
     </section>
@@ -181,10 +181,10 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
       <div className="modal" aria-labelledby="staff-invite-title" style={{ width: "min(540px, 100%)", borderRadius: "18px", padding: "26px", overflowWrap: "anywhere" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
           <div>
-            <h3 id="staff-invite-title" style={{ margin: "0 0 4px", fontSize: "19px", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
+            <h3 id="staff-invite-title" style={{ margin: "0 0 4px", fontSize: "calc(19px * var(--fs, 1))", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
               Invite Staff Member
             </h3>
-            <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
+            <p style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#64748b" }}>
               Invite staff to set their password and verify their mobile number
             </p>
           </div>
@@ -198,16 +198,16 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
             <div style={{ width: "52px", height: "52px", borderRadius: "50%", background: "#dcfce7", color: "#16a34a", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
               <Check size={28} strokeWidth={2.5} />
             </div>
-            <h4 style={{ margin: "0 0 8px", fontSize: "17px", color: "#14532d", fontWeight: 700 }}>
+            <h4 style={{ margin: "0 0 8px", fontSize: "calc(17px * var(--fs, 1))", color: "#14532d", fontWeight: 700 }}>
               Invitation Created
             </h4>
-            <p style={{ margin: "0 0 18px", color: "#475569", fontSize: "13px", lineHeight: 1.5 }}>
+            <p style={{ margin: "0 0 18px", color: "#475569", fontSize: "calc(13px * var(--fs, 1))", lineHeight: 1.5 }}>
               {success.delivery === "accepted" ? <>The email provider accepted the invitation for <b>{f.email}</b>.</> : <>Email delivery is unconfirmed. Use the secure activation link below and check the configured email service.</>}<br />
               The activation link lets staff set their password and verify their phone number by SMS.
             </p>
 
             <div style={{ background: "#f8fafc", padding: "12px 14px", borderRadius: "10px", border: "1px solid #e2e8f0", marginBottom: "20px", textAlign: "left" }}>
-              <span style={{ fontSize: "11px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>
+              <span style={{ fontSize: "calc(11px * var(--fs, 1))", fontWeight: 600, color: "#64748b", textTransform: "uppercase", display: "block", marginBottom: "4px" }}>
                 Direct Activation Link
               </span>
               <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
@@ -215,7 +215,7 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
                   type="text"
                   readOnly
                   value={success.inviteLink}
-                  style={{ flex: 1, minWidth: 0, fontSize: "12px", padding: "8px 10px", background: "#ffffff", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                  style={{ flex: 1, minWidth: 0, fontSize: "calc(12px * var(--fs, 1))", padding: "8px 10px", background: "#ffffff", borderRadius: "8px", border: "1px solid #cbd5e1" }}
                 />
                 <button
                   type="button"
@@ -239,7 +239,7 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
             {review.card}
             <fieldset disabled={loading} style={{border: 0, padding: 0, margin: 0, minWidth: 0}}>
             {err && (
-              <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "10px", padding: "10px 14px", fontSize: "13px", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+              <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "10px", padding: "10px 14px", fontSize: "calc(13px * var(--fs, 1))", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
                 <AlertCircle size={16} style={{ flexShrink: 0 }} />
                 <span>{err}</span>
               </div>
@@ -252,7 +252,7 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
                 <option value="vet">Veterinarian (Clinical Queue &amp; EMR)</option>
                 <option value="admin">Clinic Administrator (Full access)</option>
               </select>
-              {f.role === "admin" && <div role="note" style={{ marginTop: 8, background: "#f5f3ff", border: "1px solid #ddd6fe", color: "#4c1d95", borderRadius: 10, padding: "10px 12px", fontSize: 12.5, lineHeight: 1.6 }}>
+              {f.role === "admin" && <div role="note" style={{ marginTop: 8, background: "#f5f3ff", border: "1px solid #ddd6fe", color: "#4c1d95", borderRadius: 10, padding: "10px 12px", fontSize: "calc(12.5px * var(--fs, 1))", lineHeight: 1.6 }}>
                 <b>Full administrator access.</b> An administrator can invite and deactivate staff, change prices, and see every record and the audit trail. Invite only a person you trust. The invitation expires in 7 days and every step is logged.
                 <label style={{ display: "flex", gap: 8, alignItems: "flex-start", marginTop: 8, fontWeight: 600 }}><input type="checkbox" name="confirmAdmin" checked={!!f.confirmAdmin} onChange={e => setF({ ...f, confirmAdmin: e.target.checked })} style={{ width: "auto", marginTop: 3 }} />I confirm this person should have full administrator access.</label>
               </div>}
@@ -284,15 +284,15 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
                 required
               />
               {(nameError || numWarn) ? (
-                <span className="err" style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "#dc2626" }}>
+                <span className="err" style={{ display: "block", marginTop: "4px", fontSize: "calc(12px * var(--fs, 1))", color: "#dc2626" }}>
                   {numWarn || nameError}
                 </span>
               ) : touched.name && !validateName(f.name) ? (
-                <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "#16a34a", fontWeight: 600 }}>
+                <span style={{ display: "block", marginTop: "4px", fontSize: "calc(12px * var(--fs, 1))", color: "#16a34a", fontWeight: 600 }}>
                   Valid name format (letters only, 2-50 characters)
                 </span>
               ) : (
-                <span style={{ fontSize: "11px", color: "#64748b", marginTop: "3px", display: "block" }}>
+                <span style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#64748b", marginTop: "3px", display: "block" }}>
                   Letters only, minimum 2 to 50 characters. No numbers allowed.
                 </span>
               )}
@@ -318,7 +318,7 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
               </div>
             </div>
 
-            <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "10px 14px", fontSize: "12px", color: "#1e40af", marginTop: "14px", marginBottom: "18px", lineHeight: 1.5 }}>
+            <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "10px 14px", fontSize: "calc(12px * var(--fs, 1))", color: "#1e40af", marginTop: "14px", marginBottom: "18px", lineHeight: 1.5 }}>
               <b>Security Protocol:</b> Only Pet Owners can self-register online. Staff logins are strictly authorized by you (the Administrator). The invited staff member will set their own password and verify their phone number by SMS when opening the invitation link.
             </div>
 
@@ -416,10 +416,10 @@ function Dash({ db, setDb, me, go, say }) {
               )}
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: "17px", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
+              <h3 style={{ margin: 0, fontSize: "calc(17px * var(--fs, 1))", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
                 Clinic Exceptions &amp; Operational Attention
               </h3>
-              <p style={{ margin: "2px 0 0", fontSize: "12.5px", color: "#64748b" }}>
+              <p style={{ margin: "2px 0 0", fontSize: "calc(12.5px * var(--fs, 1))", color: "#64748b" }}>
                 Active administrative triage: review clinical blocks, unbilled records, and doctor handoffs.
               </p>
             </div>
@@ -431,7 +431,7 @@ function Dash({ db, setDb, me, go, say }) {
             gap: "6px",
             padding: "4px 12px",
             borderRadius: "99px",
-            fontSize: "12px",
+            fontSize: "calc(12px * var(--fs, 1))",
             fontWeight: 700,
             background: (locked.length + reassign.length + inactiveCare.length + unpaid.length + unfinished.length) > 0 ? "#fff1f2" : "#f0fdf4",
             color: (locked.length + reassign.length + inactiveCare.length + unpaid.length + unfinished.length) > 0 ? "#be123c" : "#15803d",
@@ -452,9 +452,9 @@ function Dash({ db, setDb, me, go, say }) {
         </div>
 
         {staff.error && (
-          <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "10px", padding: "10px 14px", fontSize: "13px", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "10px", padding: "10px 14px", fontSize: "calc(13px * var(--fs, 1))", marginBottom: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <span>{staff.error}</span>
-            <button className="btn ghost sm" onClick={() => staff.load()} style={{ fontSize: "12px" }}>Retry Staff Sync</button>
+            <button className="btn ghost sm" onClick={() => staff.load()} style={{ fontSize: "calc(12px * var(--fs, 1))" }}>Retry Staff Sync</button>
           </div>
         )}
 
@@ -477,10 +477,10 @@ function Dash({ db, setDb, me, go, say }) {
                 <Lock size={16} />
               </div>
               <div>
-                <b style={{ color: locked.length > 0 ? "#9f1239" : "#1e293b", fontSize: "13.5px" }}>
+                <b style={{ color: locked.length > 0 ? "#9f1239" : "#1e293b", fontSize: "calc(13.5px * var(--fs, 1))" }}>
                   {staff.data ? locked.length : "—"} Active Staff Account(s) Locked
                 </b>
-                <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#64748b" }}>
+                <p style={{ margin: "2px 0 0", fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
                   Failed password limits or security lockouts. Review the incident reason and restore portal access.
                 </p>
               </div>
@@ -512,10 +512,10 @@ function Dash({ db, setDb, me, go, say }) {
                 <Calendar size={16} />
               </div>
               <div>
-                <b style={{ color: reassign.length > 0 ? "#92400e" : "#1e293b", fontSize: "13.5px" }}>
+                <b style={{ color: reassign.length > 0 ? "#92400e" : "#1e293b", fontSize: "calc(13.5px * var(--fs, 1))" }}>
                   {staff.data ? reassign.length : "—"} Upcoming Visit(s) Assigned to Inactive Doctors
                 </b>
-                <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#64748b" }}>
+                <p style={{ margin: "2px 0 0", fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
                   The assigned veterinarian is inactive. Ask front desk / reception to reassign patient slots to active doctors.
                 </p>
               </div>
@@ -547,10 +547,10 @@ function Dash({ db, setDb, me, go, say }) {
                 <UserX size={16} />
               </div>
               <div>
-                <b style={{ color: inactiveCare.length > 0 ? "#9f1239" : "#1e293b", fontSize: "13.5px" }}>
+                <b style={{ color: inactiveCare.length > 0 ? "#9f1239" : "#1e293b", fontSize: "calc(13.5px * var(--fs, 1))" }}>
                   {staff.data ? inactiveCare.length : "—"} Arrived Visit(s) Assigned to Inactive Doctors
                 </b>
-                <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#64748b" }}>
+                <p style={{ margin: "2px 0 0", fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
                   Reactivate the responsible doctor to complete a clinical handoff, or reassign in clinic queues.
                 </p>
               </div>
@@ -582,11 +582,11 @@ function Dash({ db, setDb, me, go, say }) {
                 <CreditCard size={16} />
               </div>
               <div>
-                <b style={{ color: unpaid.length > 0 ? "#92400e" : "#1e293b", fontSize: "13.5px" }}>
+                <b style={{ color: unpaid.length > 0 ? "#92400e" : "#1e293b", fontSize: "calc(13.5px * var(--fs, 1))" }}>
                   {unpaid.length} Completed Visit(s) Unpaid
                 </b>
-                <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#64748b" }}>
-                  Doctor has signed off consultations; front desk checkout is awaiting payment and receipt issuance.
+                <p style={{ margin: "2px 0 0", fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
+                  Doctor has signed off consultations; front desk checkout is awaiting payment and invoice finalisation.
                 </p>
               </div>
             </div>
@@ -617,10 +617,10 @@ function Dash({ db, setDb, me, go, say }) {
                 <Clock size={16} />
               </div>
               <div>
-                <b style={{ color: unfinished.length > 0 ? "#1e40af" : "#1e293b", fontSize: "13.5px" }}>
+                <b style={{ color: unfinished.length > 0 ? "#1e40af" : "#1e293b", fontSize: "calc(13.5px * var(--fs, 1))" }}>
                   {unfinished.length} Arrived Visit(s) in Progress
                 </b>
-                <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#64748b" }}>
+                <p style={{ margin: "2px 0 0", fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
                   Patients checked-in or undergoing medical examination. Awaiting attending veterinarian SOAP finalization.
                 </p>
               </div>
@@ -643,8 +643,8 @@ function Dash({ db, setDb, me, go, say }) {
           <Bars title="Staff accounts by role" data={Object.fromEntries(Object.entries(by(staff.data.staff, "role")).map(([role, n]) => [staffRoleLabel(role), n]))} />
         ) : (
           <section className="card" style={{ padding: "20px", minHeight: "180px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", color: "#94a3b8" }}>
-            <span style={{ fontSize: "13px", fontWeight: 600 }}>Staff accounts by role</span>
-            <span style={{ fontSize: "12px", marginTop: "4px" }}>Loading breakdown…</span>
+            <span style={{ fontSize: "calc(13px * var(--fs, 1))", fontWeight: 600 }}>Staff accounts by role</span>
+            <span style={{ fontSize: "calc(12px * var(--fs, 1))", marginTop: "4px" }}>Loading breakdown…</span>
           </section>
         )}
       </div>
@@ -654,7 +654,7 @@ function Dash({ db, setDb, me, go, say }) {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "10px" }}>
           <div>
             <h3 style={{ margin: "0 0 4px" }}>Recent clinic activity</h3><button type="button" className="btn sm ghost" onClick={()=>go("audit")}>Open full audit trail</button>
-            <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
+            <p style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#64748b" }}>
               Latest 100 saved entries. Open System Audit Trail to search older activity.
             </p>
           </div>
@@ -664,7 +664,7 @@ function Dash({ db, setDb, me, go, say }) {
             placeholder="Search audit trail..."
             value={logSearch}
             onChange={e => setLogSearch(e.target.value)}
-            style={{ width: "240px", padding: "6px 12px", fontSize: "13px" }}
+            style={{ width: "240px", padding: "6px 12px", fontSize: "calc(13px * var(--fs, 1))" }}
           />
         </div>
 
@@ -699,7 +699,7 @@ export const admin = {
   menu: [
     { k: "home", l: "Clinic Overview", i: "hospital", dash: 1, sub: "Clinic-wide analytics, audit trail, and staff provisioning." },
     { k:"users", l:"Staff Access & Invitations", i:"shield", Page:StaffPage, sub:"Invite veterinarians, assistants and administrators, review access, and resolve locked accounts." },
-    { k: "sales", l: "Sales & Financial Audit", i: "receipt", Page: DailySalesPage, sub: "Review settled payments and receipts; reception collects payments." },
+    { k: "sales", l: "Sales & Financial Audit", i: "receipt", Page: DailySalesPage, sub: "Review settled payments and paid invoices; reception collects payments." },
     { k: "cal", l: "Master Calendar", i: "calendar", Page: ClinicCalendar, sub: "Clinic appointment calendar (read-only administrative oversight)." },
     { k: "clients-patients", l: "Clients & Patients Masterlist", i: "users", Page: ClientsAndPatientsPage, sub: "Unified masterlist of pet owners, animal patient profiles, and official vaccination cards." },
     { k: "records", l: "Consultations & EMR", i: "file", Page: ConsultationsPage, sub: "Certified veterinary consultation notes, EMR, and prescription handoff." },

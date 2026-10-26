@@ -238,10 +238,10 @@ export default function ReportsPage({ db, me }) {
       <div className="rep-noprint" style={{ marginBottom: "20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "14px", marginBottom: "18px" }}>
           <div>
-            <h2 style={{ margin: "0 0 4px", fontSize: "22px", color: "var(--navy, #0f172a)", fontWeight: 800 }}>
+            <h2 style={{ margin: "0 0 4px", fontSize: "calc(22px * var(--fs, 1))", color: "var(--navy, #0f172a)", fontWeight: 800 }}>
               Clinical Reports
             </h2>
-            <p style={{ margin: 0, fontSize: "13.5px", color: "#64748b" }}>
+            <p style={{ margin: 0, fontSize: "calc(13.5px * var(--fs, 1))", color: "#64748b" }}>
               Filter, audit clinical records, export CSV spreadsheets, and print saved record summaries.
             </p>
           </div>
@@ -311,10 +311,10 @@ export default function ReportsPage({ db, me }) {
                   <ItemIcon size={20} />
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ fontSize: "13px", fontWeight: 700, color: isSel ? cfg.color : "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div style={{ fontSize: "calc(13px * var(--fs, 1))", fontWeight: 700, color: isSel ? cfg.color : "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {cfg.title.split("&")[0].trim()}
                   </div>
-                  <div style={{ fontSize: "11px", color: "#64748b" }}>
+                  <div style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#64748b" }}>
                     <b>{count}</b> saved record{count === 1 ? "" : "s"}
                   </div>
                 </div>
@@ -328,20 +328,22 @@ export default function ReportsPage({ db, me }) {
           {/* Date Range & Presets */}
           {isDateFiltered && (
             <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-              <span style={{ fontSize: "12.5px", fontWeight: 700, color: "#475569" }}>Date Range:</span>
+              <span style={{ fontSize: "calc(12.5px * var(--fs, 1))", fontWeight: 700, color: "#475569" }}>Date Range:</span>
               <input
                 type="date"
                 value={from}
+                min="2000-01-01" max={to || "2100-12-31"}
                 onChange={e => setFrom(e.target.value)}
-                style={{ fontSize: "12.5px", padding: "6px 10px" }}
+                style={{ fontSize: "calc(12.5px * var(--fs, 1))", padding: "6px 10px" }}
                 aria-label="Filter from date"
               />
               <span style={{ color: "#94a3b8" }}>➜</span>
               <input
                 type="date"
                 value={to}
+                min={from || "2000-01-01"} max="2100-12-31"
                 onChange={e => setTo(e.target.value)}
-                style={{ fontSize: "12.5px", padding: "6px 10px" }}
+                style={{ fontSize: "calc(12.5px * var(--fs, 1))", padding: "6px 10px" }}
                 aria-label="Filter to date"
               />
 
@@ -357,7 +359,7 @@ export default function ReportsPage({ db, me }) {
                     type="button"
                     className="btn ghost sm"
                     onClick={() => applyPreset(key)}
-                    style={{ fontSize: "11px", padding: "3px 8px" }}
+                    style={{ fontSize: "calc(11px * var(--fs, 1))", padding: "3px 8px" }}
                   >
                     {label}
                   </button>
@@ -366,8 +368,8 @@ export default function ReportsPage({ db, me }) {
             </div>
           )}
 
-          <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", fontWeight: 700, color: "#475569" }}>{CATEGORY_LABEL[reportType]}:
-            <select value={category} onChange={e => setCategory(e.target.value)} aria-label={`Filter by ${CATEGORY_LABEL[reportType].toLowerCase()}`} style={{ fontSize: "12.5px", padding: "6px 10px" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "calc(12.5px * var(--fs, 1))", fontWeight: 700, color: "#475569" }}>{CATEGORY_LABEL[reportType]}:
+            <select value={category} onChange={e => setCategory(e.target.value)} aria-label={`Filter by ${CATEGORY_LABEL[reportType].toLowerCase()}`} style={{ fontSize: "calc(12.5px * var(--fs, 1))", padding: "6px 10px" }}>
               <option value="">All</option>{categories.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </label>
@@ -380,13 +382,13 @@ export default function ReportsPage({ db, me }) {
               placeholder={`Search in ${currentCfg.title.toLowerCase()}...`}
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{ width: "100%", paddingLeft: "32px", fontSize: "12.5px" }}
+              style={{ width: "100%", paddingLeft: "32px", fontSize: "calc(12.5px * var(--fs, 1))" }}
             />
           </div>
         </div>
 
         {isDateInvalid && (
-          <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "10px", padding: "8px 12px", fontSize: "12.5px", marginTop: "10px" }}>
+          <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "10px", padding: "8px 12px", fontSize: "calc(12.5px * var(--fs, 1))", marginTop: "10px" }}>
             The "From" date cannot be after the "To" date.
           </div>
         )}
@@ -394,60 +396,35 @@ export default function ReportsPage({ db, me }) {
 
       {!historyComplete && <p role="status">Showing loaded records only. Use “Load all history” above before exporting or printing.</p>}
       {/* Main Report Document Sheet */}
-      <section className="card rep-sheet" style={{ padding: "32px", background: "#ffffff" }}>
+      <section className="card rep-sheet">
         
-        {/* Printable Official Clinic Header */}
-        <div className="rep-print-header" style={{ borderBottom: "2px solid #0f172a", paddingBottom: "16px", marginBottom: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <PawPrint size={22} aria-hidden="true" />
-                <h1 style={{ margin: 0, fontSize: "21px", color: "var(--navy, #0f172a)", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  {CLINIC.name}
-                </h1>
-              </div>
-              <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#475569", fontWeight: 600 }}>
-                {CLINIC.subtitle}
-              </p>
-
-            </div>
-
-            <div style={{ textAlign: "right" }}>
-              <div style={{ display: "inline-block", background: currentCfg.bg, color: currentCfg.color, border: `1px solid ${currentCfg.color}`, padding: "4px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 800, textTransform: "uppercase", marginBottom: "6px" }}>
-                Saved Records Report
-              </div>
-              <div style={{ fontSize: "11.5px", color: "#475569" }}>
-                <b>Date Generated:</b> {new Date().toLocaleDateString("en-PH", { timeZone: "Asia/Manila", month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}
-              </div>
-              <div style={{ fontSize: "11px", color: "#64748b" }}>
-                <b>Generated By:</b> {me.name} ({String(me.role).toUpperCase()})
-              </div>
-              {isDateFiltered && (from || to) && (
-                <div style={{ fontSize: "11px", color: "#1e3a8a", fontWeight: 700, marginTop: "2px" }}>
-                  Date Filter: {from || "Beginning"} ➜ {to || "Present"}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div style={{ marginTop: "14px", paddingTop: "10px", borderTop: "1px dashed #cbd5e1" }}>
-            <h3 style={{ margin: 0, fontSize: "16px", color: "#0f172a", fontWeight: 800 }}>
-              {currentCfg.title}
-            </h3>
-            <span style={{ fontSize: "12px", color: "#64748b" }}>
-              {currentCfg.sub} &bull; Displaying <b>{filteredList.length}</b> total matching record(s)
-            </span>
-          </div>
-        </div>
+        {/* Official letterhead */}
+        <header className="rep-print-header rep-letterhead">
+          <PawPrint size={26} aria-hidden="true" />
+          <h1>{CLINIC.name}</h1>
+          <p className="rep-tagline">{CLINIC.subtitle}</p>
+          <h2 className="rep-doc-title">{currentCfg.title}</h2>
+          <p className="rep-doc-sub">{currentCfg.sub}</p>
+          <dl className="rep-meta">
+            <div><dt>Report type</dt><dd>Saved records report</dd></div>
+            <div><dt>Date generated</dt><dd>{new Date().toLocaleDateString("en-PH", { timeZone: "Asia/Manila", month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}</dd></div>
+            <div><dt>Prepared by</dt><dd>{me.name} ({String(me.role).toUpperCase()})</dd></div>
+            <div><dt>Records shown</dt><dd>{filteredList.length}</dd></div>
+            {isDateFiltered && (from || to) && <div><dt>Date range</dt><dd>{from || "Beginning"} to {to || "Present"}</dd></div>}
+            {category && <div><dt>{CATEGORY_LABEL[reportType]}</dt><dd>{category}</dd></div>}
+          </dl>
+        </header>
 
         {/* Summary calculated from the filtered records; also prints with the report */}
-        <dl className="rep-summary" aria-label="Report summary" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: "8px", margin: "0 0 16px" }}>
-          {summary.map(([label, value]) => <div key={label} style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "8px 12px", background: "#f8fafc" }}>
-            <dt style={{ fontSize: "11.5px", color: "#64748b", fontWeight: 700 }}>{label}</dt>
-            <dd style={{ margin: "2px 0 0", fontSize: "15px", fontWeight: 800, color: "#0f172a", overflowWrap: "anywhere" }}>{value}</dd>
+        <h3 className="rep-section">Summary</h3>
+        <dl className="rep-summary" aria-label="Report summary">
+          {summary.map(([label, value]) => <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
           </div>)}
         </dl>
 
+        <h3 className="rep-section">Records</h3>
         {/* Data Table */}
         {filteredList.length === 0 ? (
           <div className="empty sm" style={{ padding: "40px 20px" }}>
@@ -456,12 +433,12 @@ export default function ReportsPage({ db, me }) {
             </p>
           </div>
         ) : (
-          <div style={{ overflowX: "auto" }}>
-            <PaginatedTable label="Report records" resetKey={[reportType,from,to,search,category]} className="tbl" style={{ width: "100%", margin: 0, fontSize: "12.5px" }}>
+          <div className="rep-table-wrap">
+            <PaginatedTable label="Report records" resetKey={[reportType,from,to,search,category]} className="tbl rep-table">
               <thead>
-                <tr style={{ background: "#f8fafc" }}>
+                <tr>
                   {currentCfg.headers.map((h, i) => (
-                    <th key={i} style={{ padding: "9px 12px", textAlign: "left", whiteSpace: "nowrap" }}>
+                    <th key={i} scope="col">
                       {h}
                     </th>
                   ))}
@@ -473,9 +450,9 @@ export default function ReportsPage({ db, me }) {
                   return (
                     <tr key={item.id || idx}>
                       {row.map((cell, cIdx) => (
-                        <td key={cIdx} style={{ padding: "8px 12px" }}>
+                        <td key={cIdx} data-label={currentCfg.headers[cIdx]}>
                           {currentCfg.statusColumn && cIdx === row.length - 1 && cell ? (
-                            <Badge v={cell} />
+                            <span className="rep-status">{cell}</span>
                           ) : (
                             <span>{cell || "—"}</span>
                           )}
@@ -489,25 +466,14 @@ export default function ReportsPage({ db, me }) {
           </div>
         )}
 
-        {/* Printable Official Sign-off Block */}
-        <div className="rep-print-footer" style={{ marginTop: "40px", paddingTop: "20px", borderTop: "1px solid #cbd5e1" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "24px" }}>
-            <div>
-              <div style={{ border: "2px dashed #059669", padding: "6px 14px", borderRadius: "8px", display: "inline-block", color: "#047857", fontSize: "11px", fontWeight: 800, textTransform: "uppercase" }}>
-                Report source: {CLINIC.name}
-              </div>
-              <p style={{ margin: "6px 0 0", fontSize: "11px", color: "#64748b" }}>
-                This clinical record is an summary exported directly from the PawCare Clinic Portal.
-              </p>
-            </div>
-
-            <div style={{ textAlign: "center", minWidth: "220px" }}>
-              <div style={{ borderBottom: "1.5px solid #0f172a", width: "220px", marginBottom: "6px", height: "30px" }} />
-              <b style={{ fontSize: "12px", color: "#0f172a", display: "block" }}>{me.name}</b>
-              <span style={{ fontSize: "11px", color: "#64748b" }}>Prepared by &bull; PawCare</span>
-            </div>
+        {/* Sign-off block */}
+        <footer className="rep-print-footer rep-signoff">
+          <p>This report is a summary exported directly from the PawCare Clinic Portal and reflects the saved records at the time it was generated.</p>
+          <div className="rep-sign">
+            <div><span className="rep-line" /><b>{me.name}</b><small>Prepared by</small></div>
+            <div><span className="rep-line" /><b>&nbsp;</b><small>Reviewed by</small></div>
           </div>
-        </div>
+        </footer>
 
       </section>
     </>

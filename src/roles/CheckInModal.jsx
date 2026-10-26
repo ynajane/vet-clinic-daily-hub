@@ -233,11 +233,11 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "1px solid #e2e8f0", paddingBottom: "12px", marginBottom: "14px" }}>
           <div>
-            <h3 style={{ margin: "0 0 4px", fontSize: "19px", display: "flex", alignItems: "center", gap: "8px" }}>
+            <h3 style={{ margin: "0 0 4px", fontSize: "calc(19px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ color: "var(--navy)" }}><I e={ICON[species] || "paw"} size={22} /></span>
               <span>Patient Check-In &amp; Measured Vitals</span>
             </h3>
-            <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
+            <p style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#64748b" }}>
               <b>Patient:</b> {pet.name || "Patient"} ({pet.breed || species}) &bull; <b>Owner:</b> {owner.name || "—"} ({owner.phone || "—"})
             </p>
           </div>
@@ -251,8 +251,8 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
         {pet.allergies && pet.allergies.length > 0 && (
           <div style={{ background: "#fef2f2", border: "1px solid #fecaca", padding: "8px 12px", borderRadius: "8px", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
             <AlertTriangle size={18} color="#dc2626" />
-            <b style={{ color: "#991b1b", fontSize: "13px" }}>Known Allergies:</b>
-            <span style={{ color: "#dc2626", fontSize: "13px" }}>{pet.allergies.join(", ")}</span>
+            <b style={{ color: "#991b1b", fontSize: "calc(13px * var(--fs, 1))" }}>Known Allergies:</b>
+            <span style={{ color: "#dc2626", fontSize: "calc(13px * var(--fs, 1))" }}>{pet.allergies.join(", ")}</span>
           </div>
         )}
 
@@ -266,9 +266,9 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
             {/* 1. Automated Kilogram / Weight Section */}
             <div style={{ background: "#f8fafc", padding: "14px", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <b style={{ color: "var(--navy)", fontSize: "14px" }}>1. Measured weight</b>
+                <b style={{ color: "var(--navy)", fontSize: "calc(14px * var(--fs, 1))" }}>1. Measured weight</b>
                 {lastWeight && (
-                  <span style={{ fontSize: "12px", color: "#64748b" }}>
+                  <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
                     Last clinic measurement: <b>{lastWeight} kg</b>
                   </span>
                 )}
@@ -286,7 +286,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
                       {...validation.field('weight')} value={weight}
                       className={validation.errors.weight ? 'bad' : ''}
                       onChange={e => { setWeight(e.target.value); setValErr(""); }}
-                      style={{ fontSize: "18px", fontWeight: "700", padding: "8px 12px", width: "120px" }}
+                      style={{ fontSize: "calc(18px * var(--fs, 1))", fontWeight: "700", padding: "8px 12px", width: "120px" }}
                     />
                     <span style={{ fontWeight: "700", color: "#475569" }}>kg</span>
                     <button type="button" className="btn ghost sm" disabled={!Number.isFinite(parseFloat(weight))} onClick={() => handleStepWeight(-0.5)}>-0.5</button>
@@ -304,7 +304,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
                         display: "inline-block",
                         padding: "4px 10px",
                         borderRadius: "99px",
-                        fontSize: "12px",
+                        fontSize: "calc(12px * var(--fs, 1))",
                         fontWeight: "700",
                         background: weightAnalysis.color + "22",
                         color: weightAnalysis.color,
@@ -319,7 +319,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
 
               {/* Automated Feedback */}
               {weightAnalysis && (
-                <div style={{ marginTop: "10px", fontSize: "12.5px", color: "#475569" }}>
+                <div style={{ marginTop: "10px", fontSize: "calc(12.5px * var(--fs, 1))", color: "#475569" }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span>Ideal Range for {pet.breed || pet.species}: <b>{weightAnalysis.idealRange}</b></span>
                     {weightAnalysis.trend && <b style={{ color: "#0369a1" }}>{weightAnalysis.trend}</b>}
@@ -337,8 +337,8 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
             {/* 2. Automated Body Temperature Section */}
             <div style={{ background: "#f8fafc", padding: "14px", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <b style={{ color: "var(--navy)", fontSize: "14px" }}>2. Measured temperature</b>
-                <span style={{ fontSize: "12px", color: "#64748b" }}>
+                <b style={{ color: "var(--navy)", fontSize: "calc(14px * var(--fs, 1))" }}>2. Measured temperature</b>
+                <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
                   Normal {pet.species}: <b>{speciesConfig.tempMin} – {speciesConfig.tempMax}°C</b>
                 </span>
               </div>
@@ -355,7 +355,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
                       {...validation.field('temp')} value={temp}
                       className={validation.errors.temp ? 'bad' : ''}
                       onChange={e => { setTemp(e.target.value); setValErr(""); }}
-                      style={{ fontSize: "18px", fontWeight: "700", padding: "8px 12px", width: "120px" }}
+                      style={{ fontSize: "calc(18px * var(--fs, 1))", fontWeight: "700", padding: "8px 12px", width: "120px" }}
                     />
                     <span style={{ fontWeight: "700", color: "#475569" }}>°C</span>
                     <button type="button" className="btn ghost sm" disabled={!Number.isFinite(parseFloat(temp))} onClick={() => handleStepTemp(-0.2)}>-0.2</button>
@@ -371,7 +371,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
                         display: "inline-block",
                         padding: "4px 10px",
                         borderRadius: "99px",
-                        fontSize: "12px",
+                        fontSize: "calc(12px * var(--fs, 1))",
                         fontWeight: "700",
                         background: tempAnalysis.color + "22",
                         color: tempAnalysis.color,
@@ -386,7 +386,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
 
               {/* Automated Temperature Warning Banners */}
               {tempAnalysis && (
-                <div style={{ marginTop: "10px", fontSize: "12.5px" }}>
+                <div style={{ marginTop: "10px", fontSize: "calc(12.5px * var(--fs, 1))" }}>
                   {tempAnalysis.status === "high_fever" ? (
                     <div style={{ padding: "8px 12px", background: "#fef2f2", border: "1px solid #f87171", borderRadius: "8px", color: "#991b1b", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px" }}>
                       <Flame size={16} color="#dc2626" />
@@ -415,11 +415,11 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
             {/* Visit Purpose Confirmation & External Guide Indicator */}
             <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", padding: "12px 14px", borderRadius: "10px", marginBottom: "14px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                <label style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--navy)", margin: 0 }}>
+                <label style={{ fontSize: "calc(12.5px * var(--fs, 1))", fontWeight: 700, color: "var(--navy)", margin: 0 }}>
                   Confirmed Reason / Purpose for Today&rsquo;s Visit
                 </label>
                 {externalVaccs.length > 0 && (
-                  <span style={{ fontSize: "11px", background: "#fef3c7", color: "#92400e", border: "1px solid #fde68a", padding: "2px 7px", borderRadius: "6px", fontWeight: 700 }} title="Has prior records from outside clinic">
+                  <span style={{ fontSize: "calc(11px * var(--fs, 1))", background: "#fef3c7", color: "#92400e", border: "1px solid #fde68a", padding: "2px 7px", borderRadius: "6px", fontWeight: 700 }} title="Has prior records from outside clinic">
                     {externalVaccs.length} External Dose(s) on File
                   </span>
                 )}
@@ -436,7 +436,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
                       if (preset.includes("Emergency")) setTriageChoice(null);
                     }}
                     style={{
-                      fontSize: "11.5px",
+                      fontSize: "calc(11.5px * var(--fs, 1))",
                       padding: "3px 8px",
                       borderRadius: "6px",
                       border: serviceReason === preset ? "1.5px solid #2563eb" : "1px solid #cbd5e1",
@@ -457,7 +457,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
                 {...validation.field('reason')} aria-label="Visit reason" value={serviceReason}
                 onChange={e => setServiceReason(e.target.value)}
                 placeholder="Confirm or clarify what patient needs today..."
-                style={{ width: "100%", padding: "7px 10px", fontSize: "13px", borderRadius: "6px", border: validation.errors.reason ? '1px solid #dc2626' : '1px solid #cbd5e1' }}
+                style={{ width: "100%", padding: "7px 10px", fontSize: "calc(13px * var(--fs, 1))", borderRadius: "6px", border: validation.errors.reason ? '1px solid #dc2626' : '1px solid #cbd5e1' }}
               />{validation.feedback('reason')}
             </div>
 

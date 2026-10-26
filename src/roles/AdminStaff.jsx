@@ -107,10 +107,10 @@ export default function AdminStaff({ onInvite }) {
               <Shield size={24} />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: "20px", color: "var(--navy, #0f172a)", fontWeight: 800 }}>
+              <h2 style={{ margin: 0, fontSize: "calc(20px * var(--fs, 1))", color: "var(--navy, #0f172a)", fontWeight: 800 }}>
                 Staff Access &amp; Role Management
               </h2>
-              <p style={{ margin: "3px 0 0", fontSize: "13px", color: "#64748b" }}>
+              <p style={{ margin: "3px 0 0", fontSize: "calc(13px * var(--fs, 1))", color: "#64748b" }}>
                 Authorize staff and administrators, monitor 2-factor SMS status, and govern session security.
               </p>
             </div>
@@ -149,19 +149,19 @@ export default function AdminStaff({ onInvite }) {
               placeholder="Search by name, email, or doctor ID..."
               value={filter}
               onChange={e => setFilter(e.target.value)}
-              style={{ width: "100%", paddingLeft: "34px", fontSize: "13px" }}
+              style={{ width: "100%", paddingLeft: "34px", fontSize: "calc(13px * var(--fs, 1))" }}
             />
           </div>
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
-            <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 600 }}>Role:</span>
+            <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b", fontWeight: 600 }}>Role:</span>
             {['all', 'vet', 'assistant', 'admin'].map(r => (
               <button
                 key={r}
                 type="button"
                 className={`btn sm ${roleFilter === r ? 'gold' : 'ghost'}`}
                 onClick={() => setRoleFilter(r)}
-                style={{ fontSize: "11.5px", padding: "4px 10px", borderRadius: "99px" }}
+                style={{ fontSize: "calc(11.5px * var(--fs, 1))", padding: "4px 10px", borderRadius: "99px" }}
               >
                 {r === 'all' ? 'All Staff' : STAFF_ROLES[r].plural}
               </button>
@@ -170,14 +170,14 @@ export default function AdminStaff({ onInvite }) {
         </div>
 
         {notice && (
-          <div role="status" style={{ background: "#f0fdf4", border: "1px solid #86efac", color: "#15803d", borderRadius: "10px", padding: "10px 14px", fontSize: "13px", marginTop: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
+          <div role="status" style={{ background: "#f0fdf4", border: "1px solid #86efac", color: "#15803d", borderRadius: "10px", padding: "10px 14px", fontSize: "calc(13px * var(--fs, 1))", marginTop: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
             <CheckCircle2 size={16} />
             <span>{notice}</span>
           </div>
         )}
 
         {error && (
-          <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "10px", padding: "10px 14px", fontSize: "13px", marginTop: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "10px", padding: "10px 14px", fontSize: "calc(13px * var(--fs, 1))", marginTop: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <span>{error} {data && '(Showing cached staff records)'}</span>
             <button className="btn ghost sm" onClick={() => load()}>Retry</button>
           </div>
@@ -189,7 +189,7 @@ export default function AdminStaff({ onInvite }) {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%,320px), 1fr))", gap: "14px" }}>
               {[1, 2].map(k => (
                 <div key={k} className="card" style={{ padding: "20px", minHeight: "160px", background: "#f8fafc", border: "1.5px dashed #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8" }}>
-                  <span style={{ fontSize: "13px" }}>Loading staff accounts…</span>
+                  <span style={{ fontSize: "calc(13px * var(--fs, 1))" }}>Loading staff accounts…</span>
                 </div>
               ))}
             </div>
@@ -236,12 +236,12 @@ export default function AdminStaff({ onInvite }) {
                             alignItems: "center",
                             justifyContent: "center",
                             fontWeight: 800,
-                            fontSize: "15px"
+                            fontSize: "calc(15px * var(--fs, 1))"
                           }}>
                             {initials}
                           </div>
                           <div>
-                            <h3 style={{ margin: 0, fontSize: "15.5px", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
+                            <h3 style={{ margin: 0, fontSize: "calc(15.5px * var(--fs, 1))", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
                               <button type="button" className="staff-detail-link" aria-label={`View staff details for ${u.name}`} onClick={()=>openDetails(u,'staff')}>{u.name}</button>
                             </h3>
                             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "2px" }}>
@@ -249,7 +249,7 @@ export default function AdminStaff({ onInvite }) {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "3px",
-                                fontSize: "11px",
+                                fontSize: "calc(11px * var(--fs, 1))",
                                 fontWeight: 700,
                                 color: u.role === 'admin' ? "#6d28d9" : isVet ? "#1d4ed8" : "#b45309"
                               }}>
@@ -257,7 +257,7 @@ export default function AdminStaff({ onInvite }) {
                                 <span>{staffRoleLabel(u.role)}</span>{u.self && <span style={{ marginLeft: 6, background: "#ede9fe", color: "#5b21b6", borderRadius: 99, padding: "0 7px" }}>You</span>}
                               </span>
                               {u.vetId && (
-                                <span style={{ fontSize: "10.5px", background: "#f1f5f9", color: "#475569", padding: "1px 5px", borderRadius: "4px", fontFamily: "monospace" }}>
+                                <span style={{ fontSize: "calc(10.5px * var(--fs, 1))", background: "#f1f5f9", color: "#475569", padding: "1px 5px", borderRadius: "4px", fontFamily: "monospace" }}>
                                   {u.vetId}
                                 </span>
                               )}
@@ -268,7 +268,7 @@ export default function AdminStaff({ onInvite }) {
                         {/* Status Pills */}
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
                           <span style={{
-                            fontSize: "11px",
+                            fontSize: "calc(11px * var(--fs, 1))",
                             fontWeight: 700,
                             padding: "2px 8px",
                             borderRadius: "99px",
@@ -282,7 +282,7 @@ export default function AdminStaff({ onInvite }) {
                       </div>
 
                       {/* Contact Info */}
-                      <div style={{ fontSize: "12px", color: "#64748b", margin: "10px 0 12px", display: "grid", gap: "4px" }}>
+                      <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b", margin: "10px 0 12px", display: "grid", gap: "4px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                           <Mail size={13} color="#94a3b8" />
                           <span style={{ color: "#334155" }}>{u.email}</span>
@@ -296,18 +296,18 @@ export default function AdminStaff({ onInvite }) {
                       </div>
 
                       {u.reason && (
-                        <div style={{ background: "#f8fafc", padding: "6px 10px", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "11px", color: "#475569", marginBottom: "12px" }}>
+                        <div style={{ background: "#f8fafc", padding: "6px 10px", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "calc(11px * var(--fs, 1))", color: "#475569", marginBottom: "12px" }}>
                           <b>Last access note:</b> {u.reason}
                         </div>
                       )}
                     </div>
 
                     {/* Actions Row */}
-                    {u.self ? <div style={{ paddingTop: "12px", borderTop: "1px solid #f1f5f9", fontSize: "12px", color: "#64748b" }}>This is your account. Another administrator manages your access.</div> : <div style={{ display: "flex", gap: "8px", paddingTop: "12px", borderTop: "1px solid #f1f5f9", flexWrap: "wrap" }}>
+                    {u.self ? <div style={{ paddingTop: "12px", borderTop: "1px solid #f1f5f9", fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>This is your account. Another administrator manages your access.</div> : <div style={{ display: "flex", gap: "8px", paddingTop: "12px", borderTop: "1px solid #f1f5f9", flexWrap: "wrap" }}>
                       <button
                         type="button"
                         className={`btn sm ${u.active ? 'ghost' : 'gold'}`}
-                        style={{ fontSize: "12px", padding: "4px 10px", flex: 1 }}
+                        style={{ fontSize: "calc(12px * var(--fs, 1))", padding: "4px 10px", flex: 1 }}
                         onClick={() => choose(u, u.active ? 'deactivate' : 'reactivate')}
                       >
                         {u.active ? <UserX size={13} style={{ marginRight: 4 }} /> : <UserCheck size={13} style={{ marginRight: 4 }} />}
@@ -318,7 +318,7 @@ export default function AdminStaff({ onInvite }) {
                         <button
                           type="button"
                           className="btn sm"
-                          style={{ fontSize: "12px", padding: "4px 10px", background: "#fef2f2", color: "#dc2626", borderColor: "#fecaca" }}
+                          style={{ fontSize: "calc(12px * var(--fs, 1))", padding: "4px 10px", background: "#fef2f2", color: "#dc2626", borderColor: "#fecaca" }}
                           onClick={() => choose(u, 'unlock')}
                         >
                           <Unlock size={13} style={{ marginRight: 4 }} />
@@ -338,14 +338,14 @@ export default function AdminStaff({ onInvite }) {
       <section className="card" style={{ padding: "26px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "10px" }}>
           <div>
-            <h3 style={{ margin: "0 0 4px", fontSize: "17px", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
+            <h3 style={{ margin: "0 0 4px", fontSize: "calc(17px * var(--fs, 1))", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
               Staff Invitation Dispatches
             </h3>
-            <p style={{ margin: 0, fontSize: "12.5px", color: "#64748b" }}>
+            <p style={{ margin: 0, fontSize: "calc(12.5px * var(--fs, 1))", color: "#64748b" }}>
               Secure invitation links expire after 7 days. Revoking immediately voids the token.
             </p>
           </div>
-          <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 600 }}>
+          <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b", fontWeight: 600 }}>
             {invitations.length} Total Dispatched
           </span>
         </div>
@@ -360,7 +360,7 @@ export default function AdminStaff({ onInvite }) {
           </div>
         ) : (
           <div style={{ overflowX: "auto", border: "1px solid #e2e8f0", borderRadius: "14px" }}>
-            <PaginatedTable label="Staff invitations" className="tbl staff-invitation-table" style={{ margin: 0, fontSize: "12.5px" }}>
+            <PaginatedTable label="Staff invitations" className="tbl staff-invitation-table" style={{ margin: 0, fontSize: "calc(12.5px * var(--fs, 1))" }}>
               <thead>
                 <tr style={{ background: "#f8fafc" }}>
                   <th style={{ padding: "10px 14px" }}>Staff Member</th>
@@ -378,7 +378,7 @@ export default function AdminStaff({ onInvite }) {
                     <tr key={i.id} className="staff-clickable" onClick={event=>rowClick(event,i,'invitation')}>
                       <td data-label="Staff member" style={{ padding: "10px 14px" }}>
                         <button type="button" className="staff-detail-link" aria-label={`View invitation for ${i.name || i.email}`} onClick={()=>openDetails(i,'invitation')}>{i.name || i.email}</button>
-                        <div style={{ fontSize: "11.5px", color: "#64748b" }}>{i.email}</div>
+                        <div style={{ fontSize: "calc(11.5px * var(--fs, 1))", color: "#64748b" }}>{i.email}</div>
                       </td>
                       <td data-label="Role" style={{ padding: "10px 14px" }}>
                         <span style={{
@@ -390,7 +390,7 @@ export default function AdminStaff({ onInvite }) {
                           border: `1px solid ${i.role === 'admin' ? "#ddd6fe" : i.role === 'vet' ? "#bfdbfe" : "#fde68a"}`,
                           padding: "2px 8px",
                           borderRadius: "6px",
-                          fontSize: "11px",
+                          fontSize: "calc(11px * var(--fs, 1))",
                           fontWeight: 700
                         }}>
                           {staffRoleLabel(i.role)}
@@ -398,7 +398,7 @@ export default function AdminStaff({ onInvite }) {
                       </td>
                       <td data-label="Status" style={{ padding: "10px 14px" }}>
                         <span style={{
-                          fontSize: "11px",
+                          fontSize: "calc(11px * var(--fs, 1))",
                           fontWeight: 700,
                           padding: "2px 8px",
                           borderRadius: "99px",
@@ -423,7 +423,7 @@ export default function AdminStaff({ onInvite }) {
                             Revoke Link
                           </button>
                         ) : (
-                          <span style={{ fontSize: "11.5px", color: "#94a3b8" }}>—</span>
+                          <span style={{ fontSize: "calc(11.5px * var(--fs, 1))", color: "#94a3b8" }}>—</span>
                         )}
                       </td>
                     </tr>
@@ -440,11 +440,11 @@ export default function AdminStaff({ onInvite }) {
       {target && (
         <div className="scrim" onMouseDown={e => e.target === e.currentTarget && !saving && setTarget(null)}>
           <div className="modal" role="dialog" aria-modal="true" aria-labelledby="access-title" style={{ width: "min(540px, 100%)", borderRadius: "18px", padding: "26px" }}>
-            <h3 id="access-title" style={{ margin: "0 0 6px", fontSize: "18px", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
+            <h3 id="access-title" style={{ margin: "0 0 6px", fontSize: "calc(18px * var(--fs, 1))", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
               {target.action[0].toUpperCase() + target.action.slice(1)}: {target.name}
             </h3>
             
-            <p style={{ margin: "0 0 16px", fontSize: "13px", color: "#475569", lineHeight: 1.5 }}>
+            <p style={{ margin: "0 0 16px", fontSize: "calc(13px * var(--fs, 1))", color: "#475569", lineHeight: 1.5 }}>
               {target.action === 'deactivate'
                 ? 'This staff member will immediately lose clinic portal access. A veterinarian must hand off active consultation queues first. Reception must reassign upcoming visits.'
                 : target.action === 'reactivate'
@@ -456,7 +456,7 @@ export default function AdminStaff({ onInvite }) {
 
             <form onSubmit={save}>
               <div className="fld" style={{ marginBottom: "16px" }}>
-                <label htmlFor="access-reason" style={{ fontWeight: 600, fontSize: "12.5px" }}>
+                <label htmlFor="access-reason" style={{ fontWeight: 600, fontSize: "calc(12.5px * var(--fs, 1))" }}>
                   Administrative Reason<i> *</i>
                 </label>
                 <LiveControl as="textarea"
@@ -469,15 +469,15 @@ export default function AdminStaff({ onInvite }) {
                   value={reason}
                   onChange={e => setReason(e.target.value)}
                   disabled={saving}
-                  style={{ width: "100%", fontSize: "13px" }}
+                  style={{ width: "100%", fontSize: "calc(13px * var(--fs, 1))" }}
                 />
-                <span style={{ fontSize: "11px", color: "#64748b", marginTop: "3px", display: "block" }}>
+                <span style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#64748b", marginTop: "3px", display: "block" }}>
                   Recorded in the immutable system audit trail for compliance.
                 </span>
               </div>
 
               {saveError && (
-                <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "8px", padding: "8px 12px", fontSize: "12.5px", marginBottom: "14px" }}>
+                <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "8px", padding: "8px 12px", fontSize: "calc(12.5px * var(--fs, 1))", marginBottom: "14px" }}>
                   {saveError}
                 </div>
               )}

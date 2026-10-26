@@ -112,11 +112,11 @@ export default function PetApprovalModal({ request, db, setDb, me, onClose, onPr
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "1px solid #e2e8f0", paddingBottom: "12px", marginBottom: "14px" }}>
           <div>
-            <h3 style={{ margin: "0 0 4px", fontSize: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+            <h3 style={{ margin: "0 0 4px", fontSize: "calc(20px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ color: "var(--navy)" }}><I e={request.species || "paw"} size={22} /></span>
               <span>Online Pet Registration Review</span>
             </h3>
-            <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
+            <p style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#64748b" }}>
               Submitted online by Pet Owner: <b>{owner.name}</b> ({owner.phone || "No phone"}) &bull; Requested: {request.requestedAt || "Not recorded"}
             </p>
           </div>
@@ -127,8 +127,8 @@ export default function PetApprovalModal({ request, db, setDb, me, onClose, onPr
           <form {...validation.formProps} onSubmit={handleDecline}>
             <fieldset disabled={submitting || !canReview} style={{border:0,padding:0,margin:0,minWidth:0}}>
             <div style={{ background: "#fef2f2", padding: "14px", borderRadius: "10px", border: "1px solid #fecaca", marginBottom: "16px" }}>
-              <h4 style={{ margin: "0 0 6px", color: "#991b1b", fontSize: "15px" }}>Decline Pet Registration</h4>
-              <p style={{ margin: 0, fontSize: "13px", color: "#b91c1c" }}>
+              <h4 style={{ margin: "0 0 6px", color: "#991b1b", fontSize: "calc(15px * var(--fs, 1))" }}>Decline Pet Registration</h4>
+              <p style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#b91c1c" }}>
                 Provide a helpful reason to <b>{owner.name}</b>. The decision and correction instructions will appear in their portal.
               </p>
             </div>
@@ -160,7 +160,7 @@ export default function PetApprovalModal({ request, db, setDb, me, onClose, onPr
                   type="button"
                   key={reason}
                   className="btn ghost sm"
-                  style={{ fontSize: "11.5px" }}
+                  style={{ fontSize: "calc(11.5px * var(--fs, 1))" }}
                   onClick={() => { setDeclineReason(reason); validation.changed("declineReason"); }}
                 >
                   + {reason}
@@ -182,8 +182,8 @@ export default function PetApprovalModal({ request, db, setDb, me, onClose, onPr
             <div style={{ background: "#f8fafc", padding: "14px", borderRadius: "12px", border: "1px solid #e2e8f0", marginBottom: "16px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
                 <div>
-                  <h4 style={{ margin: 0, fontSize: "17px", color: "var(--navy)" }}>{request.name}</h4>
-                  <span style={{ fontSize: "13px", color: "#64748b" }}>
+                  <h4 style={{ margin: 0, fontSize: "calc(17px * var(--fs, 1))", color: "var(--navy)" }}>{request.name}</h4>
+                  <span style={{ fontSize: "calc(13px * var(--fs, 1))", color: "#64748b" }}>
                     {request.species} &bull; {request.breed || "Mixed"} &bull; {request.sex} &bull; Spayed/Neutered: {request.neutered}
                   </span>
                 </div>
@@ -191,7 +191,7 @@ export default function PetApprovalModal({ request, db, setDb, me, onClose, onPr
                   <span style={{
                     padding: "3px 8px",
                     borderRadius: "6px",
-                    fontSize: "12px",
+                    fontSize: "calc(12px * var(--fs, 1))",
                     fontWeight: 700,
                     background: weightAnalysis.color + "22",
                     color: weightAnalysis.color,
@@ -202,7 +202,7 @@ export default function PetApprovalModal({ request, db, setDb, me, onClose, onPr
                 )}
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: "10px", fontSize: "13px", color: "#334155", marginTop: "10px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: "10px", fontSize: "calc(13px * var(--fs, 1))", color: "#334155", marginTop: "10px" }}>
                 <div><b>Birth Date:</b> {request.birth} ({age.weeks} weeks / {age.months} months old)</div>
                 <div><b>Color / Markings:</b> {request.color || "None specified"}</div>
                 {request.notes && (
@@ -229,13 +229,13 @@ export default function PetApprovalModal({ request, db, setDb, me, onClose, onPr
                     <Syringe size={18} />
                   </div>
                   <div>
-                    <b style={{ color: "#166534", fontSize: "14px" }}>Internal Patient Reference & Suggested Protocols</b>
+                    <b style={{ color: "#166534", fontSize: "calc(14px * var(--fs, 1))" }}>Internal Patient Reference & Suggested Protocols</b>
                     <small style={{ display: "block", color: "#15803d" }}>
                       Approval assigns an internal treatment reference. The vaccination card shows recorded doses and does not require payment or clinic-document setup. Suggested protocols require veterinarian review and do not certify an administered dose.
                     </small>
                   </div>
                 </div>
-                <span style={{ background: "#dcfce7", color: "#15803d", fontWeight: "700", padding: "4px 8px", borderRadius: "6px", fontSize: "12px", border: "1px solid #86efac" }}>
+                <span style={{ background: "#dcfce7", color: "#15803d", fontWeight: "700", padding: "4px 8px", borderRadius: "6px", fontSize: "calc(12px * var(--fs, 1))", border: "1px solid #86efac" }}>
                   Internal reference assigned after approval
                 </span>
               </div>
@@ -254,12 +254,12 @@ export default function PetApprovalModal({ request, db, setDb, me, onClose, onPr
                       flexWrap: "wrap", gap: "8px",
                       justifyContent: "space-between",
                       alignItems: "center",
-                      fontSize: "12.5px"
+                      fontSize: "calc(12.5px * var(--fs, 1))"
                     }}
                   >
                     <div>
                       <b style={{ color: "var(--navy)" }}>{v.vaccine}</b>
-                      <span style={{ marginLeft: "8px", fontSize: "11px", background: "#f1f5f9", padding: "2px 6px", borderRadius: "4px", color: "#475569" }}>
+                      <span style={{ marginLeft: "8px", fontSize: "calc(11px * var(--fs, 1))", background: "#f1f5f9", padding: "2px 6px", borderRadius: "4px", color: "#475569" }}>
                         Suggested protocol · Vet review needed
                       </span>
                       <small style={{ display: "block", color: "#64748b", marginTop: "2px" }}>
@@ -271,7 +271,7 @@ export default function PetApprovalModal({ request, db, setDb, me, onClose, onPr
                       <span style={{ fontWeight: "700", color: "#047857" }}>
                         Suggested date: {v.nextDue}
                       </span>
-                      <small style={{ display: "block", color: "#64748b", fontSize: "11px" }}>
+                      <small style={{ display: "block", color: "#64748b", fontSize: "calc(11px * var(--fs, 1))" }}>
                         {v.doseOf > 1 ? `Dose ${v.doseNo} of ${v.doseOf}` : "Single/Annual dose"}
                       </small>
                     </div>

@@ -240,7 +240,7 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
               <h3 style={{ margin: 0, color: "var(--navy)", fontSize: "1.3rem" }}>
                 {existingOwner ? `Add New Pet for ${existingOwner.name}` : "Walk-In Registration (Client & Patient)"}
               </h3>
-              <span style={{ fontSize: "12px", color: "#64748b" }}>
+              <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
                 {existingOwner ? "Register a new pet under this saved owner record" : "Front desk intake with live validation and a stable internal patient reference"}
               </span>
             </div>
@@ -253,10 +253,10 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
             <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#dcfce7", color: "#166534", display: "grid", placeItems: "center", margin: "0 auto 12px" }}>
               <CheckCircle2 size={34} />
             </div>
-            <h4 style={{ margin: "0 0 4px", fontSize: "19px", color: "var(--navy)" }}>
+            <h4 style={{ margin: "0 0 4px", fontSize: "calc(19px * var(--fs, 1))", color: "var(--navy)" }}>
               {successData.pet.name} &amp; {successData.owner.name} Successfully Registered!
             </h4>
-            <p style={{ margin: "0 0 16px", fontSize: "13.5px", color: "#475569" }}>
+            <p style={{ margin: "0 0 16px", fontSize: "calc(13.5px * var(--fs, 1))", color: "#475569" }}>
               Internal treatment reference <b style={{ color: "var(--navy)" }}>#{successData.pet.vaccinationCardId}</b> has been assigned. The vaccination card shows vaccinations and deworming actually recorded by the veterinarian.
               {successData.appt && " Arrival created. Record current vitals to complete check-in."}
             </p>
@@ -284,22 +284,22 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
             {existingOwner ? (
               <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", padding: "14px 16px", borderRadius: "12px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontSize: "11px", fontWeight: 700, color: "#1d4ed8", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  <div style={{ fontSize: "calc(11px * var(--fs, 1))", fontWeight: 700, color: "#1d4ed8", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                     Saved owner record
                   </div>
-                  <b style={{ fontSize: "16px", color: "var(--navy)" }}>{existingOwner.name}</b>
-                  <div style={{ fontSize: "12.5px", color: "#475569", marginTop: "3px" }}>
+                  <b style={{ fontSize: "calc(16px * var(--fs, 1))", color: "var(--navy)" }}>{existingOwner.name}</b>
+                  <div style={{ fontSize: "calc(12.5px * var(--fs, 1))", color: "#475569", marginTop: "3px" }}>
                     <span>Phone: {existingOwner.phone || "No phone"}</span> &bull; <span>Email: {existingOwner.email || "No email"}</span>
                     {existingOwner.address && <span> &bull; Address: {existingOwner.address}</span>}
                   </div>
                 </div>
-                <span style={{ background: "#dbeafe", color: "#1e40af", padding: "5px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 700 }}>
+                <span style={{ background: "#dbeafe", color: "#1e40af", padding: "5px 12px", borderRadius: "8px", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 700 }}>
                   Existing owner
                 </span>
               </div>
             ) : (
               <div style={{ background: "#f8fafc", padding: "14px 16px", borderRadius: "12px", marginBottom: "16px", border: "1px solid #e2e8f0" }}>
-                <b style={{ display: "block", color: "var(--navy)", fontSize: "13.5px", marginBottom: "10px" }}>
+                <b style={{ display: "block", color: "var(--navy)", fontSize: "calc(13.5px * var(--fs, 1))", marginBottom: "10px" }}>
                   1. Owner contact details
                 </b>
                 <div className="walkin-field-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: "10px" }}>
@@ -364,7 +364,7 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
 
             {/* Section 2: Pet Clinical Registration */}
             <div style={{ background: "#f8fafc", padding: "14px 16px", borderRadius: "12px", marginBottom: "16px", border: "1px solid #e2e8f0" }}>
-              <b style={{ display: "block", color: "var(--navy)", fontSize: "13.5px", marginBottom: "10px" }}>
+              <b style={{ display: "block", color: "var(--navy)", fontSize: "calc(13.5px * var(--fs, 1))", marginBottom: "10px" }}>
                 2. Patient Clinical Details (Species &amp; Life Stage)
               </b>
 
@@ -488,7 +488,7 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
                     hint="Yesterday or earlier"
                   />
                   {ageDetails && (
-                    <div style={{ fontSize: "11px", color: "#1e3a8a", background: "#eff6ff", border: "1px solid #bfdbfe", padding: "4px 8px", borderRadius: "6px", marginTop: "4px", fontWeight: 700 }}>
+                    <div style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#1e3a8a", background: "#eff6ff", border: "1px solid #bfdbfe", padding: "4px 8px", borderRadius: "6px", marginTop: "4px", fontWeight: 700 }}>
                       Calculated Age: {petCalculatedAge} ({ageDetails.lifeStageLabel})
                     </div>
                   )}
@@ -587,11 +587,11 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
 
             {/* Section 3: Today's Clinical Purpose & Arrival Queue */}
             <div style={{ background: "#eff6ff", border: "1.5px solid #bfdbfe", padding: "14px 16px", borderRadius: "12px", marginBottom: "16px" }}>
-              <b style={{ display: "block", color: "var(--navy)", fontSize: "13.5px", marginBottom: "8px" }}>
+              <b style={{ display: "block", color: "var(--navy)", fontSize: "calc(13.5px * var(--fs, 1))", marginBottom: "8px" }}>
                 3. Today&rsquo;s visit and arrival
               </b>
 
-              <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontWeight: 700, color: "var(--navy)", fontSize: "13px", marginBottom: "12px" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontWeight: 700, color: "var(--navy)", fontSize: "calc(13px * var(--fs, 1))", marginBottom: "12px" }}>
                 <input
                   type="checkbox"
                   checked={v.addToQueue}
@@ -604,13 +604,13 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
                 <div style={{ display: "grid", gap: "10px" }}>
                   <Field id="vetId" label="Attending veterinarian" req type="select" value={vetId} onChange={setVetId} onBlur={()=>f.blur('vetId')} error={f.show('vetId')} options={(db.vets || []).map(vet=>[vet.id,vet.name])} />
                   <div>
-                    <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "#1e3a8a", marginBottom: "4px" }}>
+                    <label style={{ display: "block", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 700, color: "#1e3a8a", marginBottom: "4px" }}>
                       What does the patient need today? *
                     </label>
                     <select id="serviceCategory" aria-label="Purpose of visit" aria-invalid={!!f.show('serviceCategory')} aria-describedby="walkin-service-error"
                       value={serviceCategory}
                       onChange={e => handleServiceChange(e.target.value)}
-                      style={{ width: "100%", padding: "8px 10px", fontSize: "13px", borderRadius: "8px", border: "1.5px solid #93c5fd", fontWeight: 600, background: "#fff" }}
+                      style={{ width: "100%", padding: "8px 10px", fontSize: "calc(13px * var(--fs, 1))", borderRadius: "8px", border: "1.5px solid #93c5fd", fontWeight: 600, background: "#fff" }}
                     >
                       <option value="consultation">General Consultation &amp; Routine Check-up</option>
                       <option value="vaccination">Vaccination / Immunization Booster</option>
@@ -644,16 +644,16 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
             <div style={{ background: "#fefce8", border: "1.5px solid #fde047", padding: "14px 16px", borderRadius: "12px", marginBottom: "16px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "6px" }}>
                 <div>
-                  <b style={{ color: "#854d0e", fontSize: "13.5px", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <b style={{ color: "#854d0e", fontSize: "calc(13.5px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "6px" }}>
                     4. Prior Vaccinations from Previous Vet Clinics (Reference Guide)
                   </b>
-                  <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#713f12" }}>
+                  <p style={{ margin: "2px 0 0", fontSize: "calc(12px * var(--fs, 1))", color: "#713f12" }}>
                     Since records from external clinics are not automatically transferred, record past shots here as a clinical guide to calibrate the upcoming schedule.
                   </p>
                 </div>
               </div>
 
-              <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontWeight: 700, color: "#854d0e", fontSize: "13px", marginTop: "8px" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontWeight: 700, color: "#854d0e", fontSize: "calc(13px * var(--fs, 1))", marginTop: "8px" }}>
                 <input
                   type="checkbox"
                   checked={hasExternalHistory}
@@ -667,7 +667,7 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
 
               {hasExternalHistory && (
                 <div style={{ marginTop: "12px", background: "#fff", padding: "12px", borderRadius: "10px", border: "1px solid #fef08a" }}>
-                  <div style={{ fontSize: "12px", fontWeight: 700, color: "#854d0e", marginBottom: "8px" }}>
+                  <div style={{ fontSize: "calc(12px * var(--fs, 1))", fontWeight: 700, color: "#854d0e", marginBottom: "8px" }}>
                     Select vaccines already given by previous veterinarians:
                   </div>
 
@@ -699,7 +699,7 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
                           onClick={() => togglePriorVaccine(item)}
                           style={{
                             padding: "5px 10px",
-                            fontSize: "12px",
+                            fontSize: "calc(12px * var(--fs, 1))",
                             borderRadius: "6px",
                             border: isChecked ? "1.5px solid #d97706" : "1px solid #cbd5e1",
                             background: isChecked ? "#fef3c7" : "#f8fafc",
@@ -720,7 +720,7 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
                   </div>
 
                   <div style={{ marginTop: "8px" }}>
-                    <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: "4px" }}>
+                    <label style={{ display: "block", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 600, color: "#475569", marginBottom: "4px" }}>
                       Previous Clinic Name &amp; External Notes (Optional):
                     </label>
                     <input id="externalClinicNotes" aria-label="Previous clinic and external notes" aria-invalid={!!f.show('externalClinicNotes')} aria-describedby="walkin-history-error" maxLength={1000}
@@ -728,12 +728,12 @@ export default function InClinicRegistration({ db, setDb, me, onClose, onRegiste
                       value={externalClinicNotes}
                       onChange={e => setExternalClinicNotes(e.target.value)}
                       placeholder="e.g. Previous vet clinic name, date of last rabies, booklet presented..."
-                      style={{ width: "100%", padding: "7px 10px", fontSize: "12.5px", borderRadius: "6px", border: "1px solid #cbd5e1" }}
+                      style={{ width: "100%", padding: "7px 10px", fontSize: "calc(12.5px * var(--fs, 1))", borderRadius: "6px", border: "1px solid #cbd5e1" }}
                     />
                   </div>
 
                   <span id="walkin-history-error" className="err" aria-live="polite">{f.show('externalClinicNotes')}</span>
-                  <div style={{ marginTop: "10px", padding: "8px 10px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "6px", fontSize: "11.5px", color: "#166534" }}>
+                  <div style={{ marginTop: "10px", padding: "8px 10px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "6px", fontSize: "calc(11.5px * var(--fs, 1))", color: "#166534" }}>
                     <b>Reported vaccine history:</b> Selected previous shots will be saved as unverified references in the patient’s clinical history. Suggested protocols still require veterinarian review; these entries do not certify doses or approve booster dates.
                   </div>
                 </div>

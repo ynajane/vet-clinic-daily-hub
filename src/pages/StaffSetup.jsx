@@ -1,3 +1,4 @@
+import { clinicToday, latestBirthdayFor, EARLIEST_BIRTHDAY } from "../ageRules.js";
 import {validateStaffSetupField} from '../staffSetupValidation.js';
 import { useState, useEffect } from "react";
 import {
@@ -148,17 +149,17 @@ export default function StaffSetup({ token, onDone, onCancel }) {
         
         {/* Top Stepper Indicator */}
         <div className="staff-steps" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", background: "#eff6ff", color: "#1d4ed8", padding: "4px 12px", borderRadius: "99px", fontSize: "12px", fontWeight: 700 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", background: "#eff6ff", color: "#1d4ed8", padding: "4px 12px", borderRadius: "99px", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 700 }}>
             <span>1</span>
             <span>Staff Registration</span>
           </div>
           <span style={{ color: "#cbd5e1" }}>➜</span>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", background: "#f1f5f9", color: "#64748b", padding: "4px 12px", borderRadius: "99px", fontSize: "12px", fontWeight: 600 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", background: "#f1f5f9", color: "#64748b", padding: "4px 12px", borderRadius: "99px", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 600 }}>
             <span>2</span>
             <span>SMS OTP Verification</span>
           </div>
           <span style={{ color: "#cbd5e1" }}>➜</span>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", background: "#f1f5f9", color: "#64748b", padding: "4px 12px", borderRadius: "99px", fontSize: "12px", fontWeight: 600 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", background: "#f1f5f9", color: "#64748b", padding: "4px 12px", borderRadius: "99px", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 600 }}>
             <span>3</span>
             <span>Clinic Workspace</span>
           </div>
@@ -166,10 +167,10 @@ export default function StaffSetup({ token, onDone, onCancel }) {
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "22px" }}>
-          <h2 style={{ margin: "0 0 4px", fontSize: "22px", color: "var(--navy, #0f172a)", fontWeight: 800 }}>
+          <h2 style={{ margin: "0 0 4px", fontSize: "calc(22px * var(--fs, 1))", color: "var(--navy, #0f172a)", fontWeight: 800 }}>
             PawCare Staff Activation
           </h2>
-          <p style={{ margin: 0, fontSize: "13.5px", color: "#64748b" }}>
+          <p style={{ margin: 0, fontSize: "calc(13.5px * var(--fs, 1))", color: "#64748b" }}>
             Complete your clinical profile and set your secure password
           </p>
         </div>
@@ -184,8 +185,8 @@ export default function StaffSetup({ token, onDone, onCancel }) {
             <div style={{ color: "#ef4444", marginBottom: "14px", display: "flex", justifyContent: "center" }}>
               <AlertCircle size={52} />
             </div>
-            <h3 style={{ margin: "0 0 8px", fontSize: "18px", color: "#991b1b", fontWeight: 700 }}>Invitation Not Valid</h3>
-            <p style={{ margin: "0 0 24px", color: "#64748b", fontSize: "14px", lineHeight: 1.5 }}>
+            <h3 style={{ margin: "0 0 8px", fontSize: "calc(18px * var(--fs, 1))", color: "#991b1b", fontWeight: 700 }}>Invitation Not Valid</h3>
+            <p style={{ margin: "0 0 24px", color: "#64748b", fontSize: "calc(14px * var(--fs, 1))", lineHeight: 1.5 }}>
               {err}
             </p>
             <button className="btn ghost" onClick={onCancel}>Back to PawCare Home</button>
@@ -220,17 +221,17 @@ export default function StaffSetup({ token, onDone, onCancel }) {
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-                  <span style={{ fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: isVet ? "#1e40af" : "#92400e" }}>
+                  <span style={{ fontSize: "calc(11px * var(--fs, 1))", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px", color: isVet ? "#1e40af" : "#92400e" }}>
                     Authorized Role: {roleName}
                   </span>
-                  <span style={{ background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", padding: "1px 6px", borderRadius: "99px", fontSize: "10.5px", fontWeight: 700 }}>
+                  <span style={{ background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", padding: "1px 6px", borderRadius: "99px", fontSize: "calc(10.5px * var(--fs, 1))", fontWeight: 700 }}>
                     ✓ Pre-Verified Email
                   </span>
                 </div>
-                <div style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a", marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                <div style={{ fontSize: "calc(14px * var(--fs, 1))", fontWeight: 700, color: "#0f172a", marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {invInfo?.email}
                 </div>
-                <div style={{ fontSize: "11.5px", color: "#64748b", marginTop: "2px" }}>
+                <div style={{ fontSize: "calc(11.5px * var(--fs, 1))", color: "#64748b", marginTop: "2px" }}>
                   Only SMS phone verification will be required after setup.
                 </div>
               </div>
@@ -243,7 +244,7 @@ export default function StaffSetup({ token, onDone, onCancel }) {
                 color: "#991b1b",
                 borderRadius: "12px",
                 padding: "12px 14px",
-                fontSize: "13px",
+                fontSize: "calc(13px * var(--fs, 1))",
                 marginBottom: "18px",
                 display: "flex",
                 alignItems: "center",
@@ -256,7 +257,7 @@ export default function StaffSetup({ token, onDone, onCancel }) {
 
             {/* Section: Personal Information */}
             <div style={{ marginBottom: "18px" }}>
-              <span style={{ fontSize: "11.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#64748b", display: "block", marginBottom: "8px" }}>
+              <span style={{ fontSize: "calc(11.5px * var(--fs, 1))", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#64748b", display: "block", marginBottom: "8px" }}>
                 1. Personal Details
               </span>
 
@@ -281,7 +282,7 @@ export default function StaffSetup({ token, onDone, onCancel }) {
                     }}
                     required
                   />
-                  {getFieldError("firstName") && <span id="staff-firstName-error" aria-live="polite" className="err" style={{ fontSize: "11px" }}>{getFieldError("firstName")}</span>}
+                  {getFieldError("firstName") && <span id="staff-firstName-error" aria-live="polite" className="err" style={{ fontSize: "calc(11px * var(--fs, 1))" }}>{getFieldError("firstName")}</span>}
                 </div>
 
                 <div className="fld" style={{ margin: 0 }}>
@@ -303,7 +304,7 @@ export default function StaffSetup({ token, onDone, onCancel }) {
                     }}
                     required
                   />
-                  {getFieldError("lastName") && <span id="staff-lastName-error" aria-live="polite" className="err" style={{ fontSize: "11px" }}>{getFieldError("lastName")}</span>}
+                  {getFieldError("lastName") && <span id="staff-lastName-error" aria-live="polite" className="err" style={{ fontSize: "calc(11px * var(--fs, 1))" }}>{getFieldError("lastName")}</span>}
                 </div>
 
                 <div className="fld" style={{ margin: 0 }}>
@@ -321,7 +322,7 @@ export default function StaffSetup({ token, onDone, onCancel }) {
                   <span id="staff-middleInitial-error" className="err" aria-live="polite">{getFieldError("middleInitial")}</span>
                 </div>
               </div>
-              {numWarn && <p style={{ fontSize: "11.5px", color: "#dc2626", margin: "-6px 0 8px" }}>{numWarn}</p>}
+              {numWarn && <p style={{ fontSize: "calc(11.5px * var(--fs, 1))", color: "#dc2626", margin: "-6px 0 8px" }}>{numWarn}</p>}
 
               {/* Birthday */}
               <div className="fld" style={{ marginBottom: "12px" }}>
@@ -330,19 +331,19 @@ export default function StaffSetup({ token, onDone, onCancel }) {
                   id="staff-bday"
                   type="date"
                   name="birthday" aria-invalid={!!getFieldError('birthday')} aria-describedby="staff-birthday-error" value={formData.birthday}
-                  max={new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate()).toISOString().slice(0, 10)}
+                  min={EARLIEST_BIRTHDAY} max={latestBirthdayFor(clinicToday())}
                   className={getFieldError("birthday") ? "bad" : isFieldValid("birthday") ? "ok" : ""}
                   onChange={e => setFormData({ ...formData, birthday: e.target.value })}
                   onBlur={() => touch("birthday")}
                   required
                 />
-                {getFieldError("birthday") && <span id="staff-birthday-error" aria-live="polite" className="err" style={{ fontSize: "11.5px" }}>{getFieldError("birthday")}</span>}
+                {getFieldError("birthday") && <span id="staff-birthday-error" aria-live="polite" className="err" style={{ fontSize: "calc(11.5px * var(--fs, 1))" }}>{getFieldError("birthday")}</span>}
               </div>
             </div>
 
             {/* Section: Residential Address */}
             <div style={{ marginBottom: "18px" }}>
-              <span style={{ fontSize: "11.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#64748b", display: "block", marginBottom: "8px" }}>
+              <span style={{ fontSize: "calc(11.5px * var(--fs, 1))", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#64748b", display: "block", marginBottom: "8px" }}>
                 2. Residential Address
               </span>
 
@@ -361,7 +362,7 @@ export default function StaffSetup({ token, onDone, onCancel }) {
                   }}
                   required
                 />
-                {getFieldError("houseStreet") && <span id="staff-houseStreet-error" aria-live="polite" className="err" style={{ fontSize: "11px" }}>{getFieldError("houseStreet")}</span>}
+                {getFieldError("houseStreet") && <span id="staff-houseStreet-error" aria-live="polite" className="err" style={{ fontSize: "calc(11px * var(--fs, 1))" }}>{getFieldError("houseStreet")}</span>}
               </div>
 
               <div className="staff-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 90px", gap: "10px" }}>
@@ -414,7 +415,7 @@ export default function StaffSetup({ token, onDone, onCancel }) {
 
             {/* Section: Contact & Mobile OTP Verification */}
             <div style={{ marginBottom: "18px" }}>
-              <span style={{ fontSize: "11.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#64748b", display: "block", marginBottom: "8px" }}>
+              <span style={{ fontSize: "calc(11.5px * var(--fs, 1))", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#64748b", display: "block", marginBottom: "8px" }}>
                 3. Security &amp; SMS OTP Setup
               </span>
 
@@ -435,9 +436,9 @@ export default function StaffSetup({ token, onDone, onCancel }) {
                   required
                 />
                 {getFieldError("mobileNumber") ? (
-                  <span id="staff-mobileNumber-error" aria-live="polite" className="err" style={{ fontSize: "11.5px" }}>{getFieldError("mobileNumber")}</span>
+                  <span id="staff-mobileNumber-error" aria-live="polite" className="err" style={{ fontSize: "calc(11.5px * var(--fs, 1))" }}>{getFieldError("mobileNumber")}</span>
                 ) : (
-                  <span style={{ fontSize: "11px", color: "#64748b", marginTop: "3px", display: "block" }}>
+                  <span style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#64748b", marginTop: "3px", display: "block" }}>
                     A 6-digit SMS verification code will be sent to this number to verify your mobile identity.
                   </span>
                 )}
@@ -490,12 +491,12 @@ export default function StaffSetup({ token, onDone, onCancel }) {
                 </div>
                 
                 {/* Rules Checklist */}
-                <div className="staff-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 8px", marginTop: "8px", fontSize: "11px", color: "#64748b" }}>
+                <div className="staff-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 8px", marginTop: "8px", fontSize: "calc(11px * var(--fs, 1))", color: "#64748b" }}>
                   {PW_RULES.map(([testFn, label], idx) => {
                     const ok = testFn(formData.password);
                     return (
                       <div key={idx} style={{ display: "flex", alignItems: "center", gap: "4px", color: ok ? "#15803d" : "#64748b" }}>
-                        <span style={{ fontSize: "12px", fontWeight: 700 }}>{ok ? "✓" : "○"}</span>
+                        <span style={{ fontSize: "calc(12px * var(--fs, 1))", fontWeight: 700 }}>{ok ? "✓" : "○"}</span>
                         <span>{label}</span>
                       </div>
                     );
@@ -536,7 +537,7 @@ export default function StaffSetup({ token, onDone, onCancel }) {
                     {showConfirmPw ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {getFieldError("confirmPassword") && <span id="staff-confirmPassword-error" aria-live="polite" className="err" style={{ fontSize: "11px" }}>{getFieldError("confirmPassword")}</span>}
+                {getFieldError("confirmPassword") && <span id="staff-confirmPassword-error" aria-live="polite" className="err" style={{ fontSize: "calc(11px * var(--fs, 1))" }}>{getFieldError("confirmPassword")}</span>}
               </div>
             </div>
 
@@ -551,7 +552,7 @@ export default function StaffSetup({ token, onDone, onCancel }) {
                 justifyContent: "center",
                 gap: "8px",
                 padding: "13px",
-                fontSize: "15px",
+                fontSize: "calc(15px * var(--fs, 1))",
                 fontWeight: 700,
                 borderRadius: "12px"
               }}
@@ -565,7 +566,7 @@ export default function StaffSetup({ token, onDone, onCancel }) {
                 type="button"
                 className="btn ghost sm"
                 onClick={onCancel}
-                style={{ fontSize: "12px", color: "#64748b" }}
+                style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}
               >
                 Cancel and return to home
               </button>

@@ -12,7 +12,7 @@ export function visitNextStep(visit,date=today()) {
   if(visit.status==='Checked-in')return {by:'Assigned veterinarian',text:'Review intake and start the visit.'};
   if(visit.status==='In consultation')return {by:'Assigned veterinarian',text:'Finish and save the visit record.'};
   if(visit.status==='Completed')return visit.billingStatus==='Paid'
-    ? {by:'Owner',text:'Review the saved receipt, visit notes and any follow-up instructions.'}
+    ? {by:'Owner',text:'Review the paid invoice, visit notes and any follow-up instructions.'}
     : {by:'Reception',text:'Finalize the bill and record payment.'};
   return {by:'Reception',text:'Review this visit’s current status.'};
 }

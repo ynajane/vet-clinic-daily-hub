@@ -1,3 +1,4 @@
+import TextSize from "../../components/TextSize.jsx";
 import {useUnsavedChanges} from '../../components/useUnsavedChanges.jsx';
 import { useState, useEffect, useRef } from "react";
 import { accountProfile } from "../../accountProfile.js";
@@ -26,7 +27,7 @@ export default function OwnerHeader({ db, setDb, me, say, onLogout }) {
       {open && <div className="ow-menu" role="menu">
         <button role="menuitem" onClick={() => to("profile")}>My Profile</button>
         <button role="menuitem" onClick={() => to("password")}>Change Password</button>
-        <hr /><button role="menuitem" onClick={() => { setOpen(false); onLogout(); }}>Log out</button>
+        <hr /><TextSize /><hr /><button role="menuitem" onClick={() => { setOpen(false); onLogout(); }}>Log out</button>
       </div>}
       {unsaved.card}
       {dlg && <Modal title={dlg === "profile" ? "My Profile" : "Change Password"} onClose={unsaved.close} className={`ow-account-dialog ow-account-${dlg}`} portalTo={ref.current?.closest(".shell")} closeButton>

@@ -64,22 +64,40 @@ export default function NoteOptionsPage({onPageState}={}) {
       if(mounted.current){setError(e.message);if(e.status===409 || e.unconfirmed)setNeedsReload(true);}
     } finally {operation.current=null;if(mounted.current)setSaving(false);}
   };
-  return <section className="card">
-    {review.card}<h2>Diagnosis &amp; treatment choices</h2>
-    <p>Enter one choice per line, up to 100 choices in each list. Remove a line to retire a choice. Veterinarians can always enter their own notes. These text entries do not add billing charges.</p>
-    <p>Use entries approved by the clinic's veterinarians. Vets choose diagnosis and treatment independently and can edit either. Custom visit notes join the shared lists only when an administrator adds and saves them here.</p>
-    {loading && <p role="status">Loading saved suggestions…</p>}
+  const count=text=>noteLines(text).length;
+  const list=(name,title,hint,value,setter)=><div className="nc-list">
+    <div className="nc-list-head"><label htmlFor={`nc-${name}`}>{title}</label><span className={`nc-count${count(value)>100?' over':''}`}>{count(value)} of 100</span></div>
+    <textarea rows={11} {...validation.field(name)} id={`nc-${name}`} value={value} onChange={e=>setter(e.target.value)} />
+    <small>{hint}</small>{validation.feedback(name)}
+  </div>;
+  return <section className="card nc-page">
+    {review.card}
+    <header className="nc-intro">
+      <h2>Diagnosis &amp; treatment choices</h2>
+      <p>These are the suggestions veterinarians pick from during a consultation. They never add billing charges, and vets can always type their own notes.</p>
+      <ol className="nc-steps">
+        <li><b>One choice per line</b><span>Up to 100 in each list.</span></li>
+        <li><b>Remove a line to retire it</b><span>Saved clinical notes keep their text.</span></li>
+        <li><b>Use clinic-approved wording</b><span>Custom visit notes join the lists only when you add them here.</span></li>
+      </ol>
+    </header>
+    {loading && <p role="status" className="nc-status">Loading saved suggestions…</p>}
     {config && <form {...validation.formProps} onSubmit={submit}>
       <fieldset disabled={saving || loading} style={{border:0,padding:0,margin:0,minWidth:0}}>
-        <label>Diagnosis choices<textarea rows={9} {...validation.field('diagnosis')} value={diagnosis} onChange={e=>setDiagnosis(e.target.value)} />{validation.feedback('diagnosis')}</label>
-        <label>Treatment choices<textarea rows={9} {...validation.field('treatment')} value={treatment} onChange={e=>setTreatment(e.target.value)} />{validation.feedback('treatment')}</label>
-        <button className="btn gold" disabled={saving || loading || needsReload}>{saving?'Saving…':'Review and save choices'}</button>
+        <div className="nc-grid">
+          {list('diagnosis','Diagnosis choices','Example: Otitis externa, Gastroenteritis',diagnosis,setDiagnosis)}
+          {list('treatment','Treatment choices','Example: Ear cleaning and topical drops',treatment,setTreatment)}
+        </div>
+        <div className="nc-actions">
+          <button className="btn gold" disabled={saving || loading || needsReload}>{saving?'Saving…':'Review and save choices'}</button>
+          <button type="button" className="btn ghost" disabled={saving || loading} onClick={reload}>Reload saved choices</button>
+          {dirty && <span role="status" className="nc-dirty">Unsaved changes</span>}
+        </div>
       </fieldset>
     </form>}
-    {dirty && <p role="status">Unsaved changes</p>}
-    {needsReload && <p role="status">Your entries are retained. Copy any changes you want to keep, then reload the saved choices before reviewing another save.</p>}
+    {!config && <div className="nc-actions"><button type="button" className="btn ghost" disabled={saving || loading} onClick={reload}>Reload saved choices</button></div>}
+    {needsReload && <p role="status" className="nc-status">Your entries are retained. Copy any changes you want to keep, then reload the saved choices before reviewing another save.</p>}
     {error && <p role="alert" className="err">{error}</p>}
-    {message && !dirty && <p role="status">{message}</p>}
-    <button type="button" className="btn ghost" disabled={saving || loading} onClick={reload}>Reload saved choices</button>
+    {message && !dirty && <p role="status" className="nc-ok">{message}</p>}
   </section>;
 }

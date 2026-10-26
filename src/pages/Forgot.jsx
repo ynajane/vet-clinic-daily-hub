@@ -156,7 +156,7 @@ export default function Forgot({ onBack, go }) {
 
 
           <div style={{ textAlign: "center", margin: "14px 0" }}>
-            <label style={{ fontSize: "12px", fontWeight: 700, color: "var(--navy)", display: "block", marginBottom: "4px" }}>
+            <label style={{ fontSize: "calc(12px * var(--fs, 1))", fontWeight: 700, color: "var(--navy)", display: "block", marginBottom: "4px" }}>
               6-DIGIT VERIFICATION CODE<i> *</i>
             </label>
             <OtpBoxInput

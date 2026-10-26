@@ -5,5 +5,5 @@
 html,body,button,input,select,textarea,.shell,.login,.lp,.lg,.w,.scrim,.modal,.toast{font-family:var(--font)}
 
 /* Poppins is wider than the old font, so base sizes come down a little to keep tables, menus and cards from wrapping. */
-.shell,.login{font-size:14px;line-height:1.5}
-.lp,.w{font-size:15px;line-height:1.55}
+.shell,.login{font-size:calc(14px*var(--fs,1));line-height:1.5}
+.lp,.w{font-size:calc(15px*var(--fs,1));line-height:1.55}

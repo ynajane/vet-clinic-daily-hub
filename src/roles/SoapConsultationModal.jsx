@@ -357,11 +357,11 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "1px solid #e2e8f0", paddingBottom: "12px", marginBottom: "14px" }}>
           <div>
-            <h3 id="soap-title" style={{ margin: "0 0 4px", fontSize: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+            <h3 id="soap-title" style={{ margin: "0 0 4px", fontSize: "calc(20px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ color: "var(--navy)" }}><I e={pet.species || "paw"} size={22} /></span>
               <span>{formTitle} &amp; EMR: <b>{pet.name}</b></span>
             </h3>
-            <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
+            <p style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#64748b" }}>
               <b>Owner:</b> {owner.name} ({owner.phone}) &bull; <b>Breed:</b> {pet.breed || pet.species} &bull; <b>Sex:</b> {pet.sex}
             </p>
           </div>
@@ -374,8 +374,8 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
           <div style={{ background: "#fef2f2", border: "1px solid #fecaca", padding: "10px 14px", borderRadius: "10px", marginBottom: "14px", display: "flex", alignItems: "center", gap: "10px" }}>
             <AlertTriangle size={20} color="#dc2626" />
             <div>
-              <b style={{ color: "#991b1b", fontSize: "13.5px" }}>CLINICAL ALLERGY ALERT:</b>
-              <span style={{ color: "#b91c1c", fontSize: "13px", marginLeft: "6px" }}>{pet.allergies.join(", ")}</span>
+              <b style={{ color: "#991b1b", fontSize: "calc(13.5px * var(--fs, 1))" }}>CLINICAL ALLERGY ALERT:</b>
+              <span style={{ color: "#b91c1c", fontSize: "calc(13px * var(--fs, 1))", marginLeft: "6px" }}>{pet.allergies.join(", ")}</span>
             </div>
           </div>
         ) : null}
@@ -402,38 +402,38 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
 
         {tab === "emr" ? (
           <div style={{ maxHeight: "55vh", overflowY: "auto", paddingRight: "4px" }}>
-            <h4 style={{ margin: "0 0 10px", fontSize: "15px", color: "var(--navy)" }}>Past Consultation History</h4>
+            <h4 style={{ margin: "0 0 10px", fontSize: "calc(15px * var(--fs, 1))", color: "var(--navy)" }}>Past Consultation History</h4>
             {prevRecords.length ? (
               <PaginatedList label="Previous consultations" resetKey={pet.id} style={{ display: "grid", gap: "12px", marginBottom: "20px" }}>
                 {prevRecords.map(r => (
                   <div key={r.id} className="card" style={{ padding: "14px", border: "1px solid #e2e8f0" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                      <b style={{ color: "var(--navy)", fontSize: "14px" }}>{r.diagnosis}</b>
-                      <span style={{ fontSize: "12px", color: "#64748b" }}>{r.date}</span>
+                      <b style={{ color: "var(--navy)", fontSize: "calc(14px * var(--fs, 1))" }}>{r.diagnosis}</b>
+                      <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>{r.date}</span>
                     </div>
-                    {r.symptoms && <p style={{ margin: "0 0 4px", fontSize: "12.5px" }}><b>Subjective:</b> {r.symptoms}</p>}
-                    {r.objective && <p style={{ margin: "0 0 4px", fontSize: "12.5px" }}><b>Objective:</b> {r.objective}</p>}
-                    <p style={{ margin: "0 0 4px", fontSize: "12.5px" }}><b>Plan / Treatment:</b> {r.treatment}</p>
-                    {r.prescription && <p style={{ margin: "0 0 4px", fontSize: "12.5px", color: "#1d4ed8" }}><b>Prescription:</b> {r.prescription}</p>}
+                    {r.symptoms && <p style={{ margin: "0 0 4px", fontSize: "calc(12.5px * var(--fs, 1))" }}><b>Subjective:</b> {r.symptoms}</p>}
+                    {r.objective && <p style={{ margin: "0 0 4px", fontSize: "calc(12.5px * var(--fs, 1))" }}><b>Objective:</b> {r.objective}</p>}
+                    <p style={{ margin: "0 0 4px", fontSize: "calc(12.5px * var(--fs, 1))" }}><b>Plan / Treatment:</b> {r.treatment}</p>
+                    {r.prescription && <p style={{ margin: "0 0 4px", fontSize: "calc(12.5px * var(--fs, 1))", color: "#1d4ed8" }}><b>Prescription:</b> {r.prescription}</p>}
                   </div>
                 ))}
               </PaginatedList>
             ) : (
-              <p style={{ color: "#64748b", fontSize: "13px", marginBottom: "20px" }}>No past consultation records on file.</p>
+              <p style={{ color: "#64748b", fontSize: "calc(13px * var(--fs, 1))", marginBottom: "20px" }}>No past consultation records on file.</p>
             )}
 
-            <h4 style={{ margin: "0 0 10px", fontSize: "15px", color: "var(--navy)" }}>Vaccination History</h4>
+            <h4 style={{ margin: "0 0 10px", fontSize: "calc(15px * var(--fs, 1))", color: "var(--navy)" }}>Vaccination History</h4>
             {prevVaccs.length ? (
               <PaginatedList label="Previous vaccines" resetKey={pet.id} style={{ display: "grid", gap: "8px" }}>
                 {prevVaccs.map(v => (
-                  <div key={v.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "13px" }}>
+                  <div key={v.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "calc(13px * var(--fs, 1))" }}>
                     <span><b>{v.vaccine}</b> {v.brand ? `(${v.brand})` : ""}</span>
                     <span>Administered: {v.date} &bull; Next Booster: <b>{v.nextDue || "—"}</b></span>
                   </div>
                 ))}
               </PaginatedList>
             ) : (
-              <p style={{ color: "#64748b", fontSize: "13px" }}>No vaccinations logged.</p>
+              <p style={{ color: "#64748b", fontSize: "calc(13px * var(--fs, 1))" }}>No vaccinations logged.</p>
             )}
           </div>
         ) : (
@@ -448,7 +448,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                 borderRadius: "10px",
                 padding: "10px 14px",
                 marginBottom: "14px",
-                fontSize: "13px"
+                fontSize: "calc(13px * var(--fs, 1))"
               }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
                   <b style={{ color: "var(--navy)", display: "flex", alignItems: "center", gap: "6px" }}>
@@ -457,7 +457,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                   {iv.triageLevel && (
                     <span style={{
                       fontWeight: 700,
-                      fontSize: "11px",
+                      fontSize: "calc(11px * var(--fs, 1))",
                       padding: "2px 6px",
                       borderRadius: "4px",
                       background: iv.triageLevel === "Emergency" ? "#fee2e2" : iv.triageLevel === "Priority" ? "#fef3c7" : "#e2e8f0",
@@ -474,7 +474,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                   {iv.recordedAt && <span style={{ color: "#64748b" }}>Logged at: {iv.recordedAt}</span>}
                 </div>
                 {iv.triageNotes && (
-                  <div style={{ marginTop: "4px", fontSize: "12px", color: "#475569" }}>
+                  <div style={{ marginTop: "4px", fontSize: "calc(12px * var(--fs, 1))", color: "#475569" }}>
                     <b>Assistant Notes:</b> &ldquo;{iv.triageNotes}&rdquo;
                   </div>
                 )}
@@ -681,7 +681,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
               {/* Administration is shown only for preventive visits. */}
               {preventive && <div className={`care-block ${formType}`} style={{ gridColumn: "1/-1", background: formType==='deworming' ? "#fffbeb" : "#eff6ff", border: `1px solid ${formType==='deworming' ? "#fde68a" : "#bfdbfe"}`, borderLeft: `5px solid ${formType==='deworming' ? "#d97706" : "#2563eb"}`, padding: "14px", borderRadius: "12px", marginTop: "4px" }}>
                 <h4 style={{margin:"0 0 2px",display:"flex",alignItems:"center",gap:8,color:formType==='deworming' ? "#92400e" : "#1e3a8a"}}>{formType==='deworming' ? <Pill size={18}/> : <Syringe size={18}/>}{formType==='deworming' ? 'Deworming treatment' : 'Vaccine administration'}</h4>
-                <p style={{margin:0,fontSize:13,color:"#475569"}}>{formType==='deworming' ? 'Parasite prevention: choose the product, lot and repeat interval. The next date is worked out for you.' : 'Immunization: choose the vaccine. Dose number, booster interval and suggested brands fill in automatically.'}</p>
+                <p style={{margin:0,fontSize:"calc(13px * var(--fs, 1))",color:"#475569"}}>{formType==='deworming' ? 'Parasite prevention: choose the product, lot and repeat interval. The next date is worked out for you.' : 'Immunization: choose the vaccine. Dose number, booster interval and suggested brands fill in automatically.'}</p>
                 {f.giveVaccine && (
                   <div className="soap-fields" style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: "10px", marginTop: "12px" }}>
                     <div className="fld">
@@ -797,7 +797,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                           key={preset.days}
                           type="button"
                           className={`btn sm ${f.followUpDays === String(preset.days) ? "primary" : "ghost"}`}
-                          style={{ fontSize: "12px", padding: "4px 10px" }}
+                          style={{ fontSize: "calc(12px * var(--fs, 1))", padding: "4px 10px" }}
                           onClick={() => handleFollowUpDaysChange(preset.days)}
                         >
                           {preset.label}

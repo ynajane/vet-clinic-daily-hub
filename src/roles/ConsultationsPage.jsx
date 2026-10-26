@@ -61,12 +61,12 @@ export function ConsultationDetailModal({ record, db, setDb, me, onClose, onEdit
         <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "2px solid #e2e8f0", paddingBottom: "14px", marginBottom: "18px" }}>
           <div>
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-              <span style={{ background: "#dbeafe", color: "#1e40af", padding: "3px 8px", borderRadius: "6px", fontSize: "11px", fontWeight: 700, textTransform: "uppercase" }}>
+              <span style={{ background: "#dbeafe", color: "#1e40af", padding: "3px 8px", borderRadius: "6px", fontSize: "calc(11px * var(--fs, 1))", fontWeight: 700, textTransform: "uppercase" }}>
                 Official Medical EMR Record
               </span>
-              <span style={{ fontSize: "12px", color: "#64748b" }}>Case ID: <b>REC-{record.id.slice(-6).toUpperCase()}</b></span>
+              <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>Case ID: <b>REC-{record.id.slice(-6).toUpperCase()}</b></span>
               {(!isVet(me?.role) || !onEdit) && (
-                <span style={{ background: "#f1f5f9", color: "#475569", padding: "2px 7px", borderRadius: "4px", fontSize: "11px", fontWeight: 600 }}>
+                <span style={{ background: "#f1f5f9", color: "#475569", padding: "2px 7px", borderRadius: "4px", fontSize: "calc(11px * var(--fs, 1))", fontWeight: 600 }}>
                   Read-Only Clinical View
                 </span>
               )}
@@ -75,7 +75,7 @@ export function ConsultationDetailModal({ record, db, setDb, me, onClose, onEdit
               <Stethoscope size={22} color="var(--navy)" />
               <span>{title}: <b>{pet.name || "Patient"}</b></span>
             </h3>
-            <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
+            <p style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#64748b" }}>
               Examined on <b>{record.date}</b> &bull; Attending Veterinarian: <b>{vetName}</b>
             </p>
           </div>
@@ -114,33 +114,33 @@ export function ConsultationDetailModal({ record, db, setDb, me, onClose, onEdit
           gap: "12px"
         }}>
           <div>
-            <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#64748b", fontWeight: 700 }}>Patient Details</span>
-            <div style={{ fontWeight: 700, fontSize: "14.5px", color: "var(--navy)", marginTop: "2px" }}>
+            <span style={{ fontSize: "calc(11px * var(--fs, 1))", textTransform: "uppercase", color: "#64748b", fontWeight: 700 }}>Patient Details</span>
+            <div style={{ fontWeight: 700, fontSize: "calc(14.5px * var(--fs, 1))", color: "var(--navy)", marginTop: "2px" }}>
               {pet.name} ({formatSpeciesLabel(pet.species)})
             </div>
-            <div style={{ fontSize: "12px", color: "#475569" }}>
+            <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#475569" }}>
               Breed: {pet.breed || "Not recorded"} &bull; Sex: {pet.sex || "Unknown"}
             </div>
           </div>
 
           <div>
-            <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#64748b", fontWeight: 700 }}>Client &amp; Contact</span>
-            <div style={{ fontWeight: 700, fontSize: "14px", color: "#1e293b", marginTop: "2px" }}>
+            <span style={{ fontSize: "calc(11px * var(--fs, 1))", textTransform: "uppercase", color: "#64748b", fontWeight: 700 }}>Client &amp; Contact</span>
+            <div style={{ fontWeight: 700, fontSize: "calc(14px * var(--fs, 1))", color: "#1e293b", marginTop: "2px" }}>
               {owner.name || "Not recorded"}
             </div>
-            <div style={{ fontSize: "12px", color: "#475569" }}>
+            <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#475569" }}>
               Phone: {owner.phone || "No phone"} &bull; {owner.address || "Address not recorded"}
             </div>
           </div>
 
           <div>
-            <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#64748b", fontWeight: 700 }}>Health Passport</span>
+            <span style={{ fontSize: "calc(11px * var(--fs, 1))", textTransform: "uppercase", color: "#64748b", fontWeight: 700 }}>Health Passport</span>
             <div style={{ marginTop: "3px" }}>
               <button
                 type="button"
                 className="btn sm ghost"
                 onClick={() => setCardPetId(pet.id)}
-                style={{ padding: "3px 8px", fontSize: "11.5px", background: "#eff6ff", borderColor: "#bfdbfe", color: "#1d4ed8", fontWeight: 700 }}
+                style={{ padding: "3px 8px", fontSize: "calc(11.5px * var(--fs, 1))", background: "#eff6ff", borderColor: "#bfdbfe", color: "#1d4ed8", fontWeight: 700 }}
               >
                 Card #{pet.vaccinationCardId || "VACC-UNISSUED"} <ChevronRight size={14} aria-hidden="true" />
               </button>
@@ -153,67 +153,67 @@ export function ConsultationDetailModal({ record, db, setDb, me, onClose, onEdit
 
           {/* S - Subjective */}
           <div style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "14px 16px", background: "#ffffff" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", color: "#1e3a8a", fontWeight: 700, fontSize: "13.5px" }}>
-              <span style={{ background: "#dbeafe", color: "#1e40af", width: "22px", height: "22px", borderRadius: "4px", display: "grid", placeItems: "center", fontSize: "12px", fontWeight: 800 }}>{isSoap ? "S" : "•"}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", color: "#1e3a8a", fontWeight: 700, fontSize: "calc(13.5px * var(--fs, 1))" }}>
+              <span style={{ background: "#dbeafe", color: "#1e40af", width: "22px", height: "22px", borderRadius: "4px", display: "grid", placeItems: "center", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 800 }}>{isSoap ? "S" : "•"}</span>
               <span>{isSoap ? 'Subjective (Chief Complaint & Clinical History)' : 'Reason for visit'}</span>
             </div>
-            <p style={{ margin: 0, fontSize: "13.5px", color: "#334155", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
+            <p style={{ margin: 0, fontSize: "calc(13.5px * var(--fs, 1))", color: "#334155", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
               {record.symptoms || "Not recorded"}
             </p>
           </div>
 
           {/* O - Objective */}
           <div style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "14px 16px", background: "#ffffff" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "10px", color: "#065f46", fontWeight: 700, fontSize: "13.5px" }}>
-              <span style={{ background: "#d1fae5", color: "#065f46", width: "22px", height: "22px", borderRadius: "4px", display: "grid", placeItems: "center", fontSize: "12px", fontWeight: 800 }}>{isSoap ? "O" : "•"}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "10px", color: "#065f46", fontWeight: 700, fontSize: "calc(13.5px * var(--fs, 1))" }}>
+              <span style={{ background: "#d1fae5", color: "#065f46", width: "22px", height: "22px", borderRadius: "4px", display: "grid", placeItems: "center", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 800 }}>{isSoap ? "O" : "•"}</span>
               <span>{isSoap ? 'Objective (Vitals & Physical Examination)' : 'Recorded vitals & visit observations'}</span>
             </div>
 
             {/* Vitals summary cards */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 140px), 1fr))", gap: "10px", marginBottom: "10px" }}>
               <div style={{ background: "#f8fafc", padding: "8px 12px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                <span style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>Weight</span>
-                <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--navy)" }}>
+                <span style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>Weight</span>
+                <div style={{ fontSize: "calc(16px * var(--fs, 1))", fontWeight: 700, color: "var(--navy)" }}>
                   {iv?.weight != null ? `${iv.weight} kg` : "Not recorded"}
                 </div>
               </div>
               <div style={{ background: "#f8fafc", padding: "8px 12px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                <span style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>Body Temp</span>
-                <div style={{ fontSize: "16px", fontWeight: 700, color: "#166534" }}>
+                <span style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>Body Temp</span>
+                <div style={{ fontSize: "calc(16px * var(--fs, 1))", fontWeight: 700, color: "#166534" }}>
                   {iv?.temp != null ? `${iv.temp}°C` : "Not recorded"}
                 </div>
               </div>
               <div style={{ background: "#f8fafc", padding: "8px 12px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                <span style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>Triage Level</span>
-                <div style={{ fontSize: "14px", fontWeight: 700, color: iv?.triageLevel === "Emergency" ? "#b91c1c" : "#1e40af" }}>
+                <span style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#64748b", textTransform: "uppercase", fontWeight: 700 }}>Triage Level</span>
+                <div style={{ fontSize: "calc(14px * var(--fs, 1))", fontWeight: 700, color: iv?.triageLevel === "Emergency" ? "#b91c1c" : "#1e40af" }}>
                   {iv?.triageLevel || "Not recorded"}
                 </div>
               </div>
             </div>
 
-            <p style={{ margin: 0, fontSize: "13px", color: "#334155", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
+            <p style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#334155", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
               {record.objective || "Not recorded"}
             </p>
           </div>
 
           {/* A - Assessment (Diagnosis) */}
           <div style={{ border: "1.5px solid #bfdbfe", borderRadius: "10px", padding: "14px 16px", background: "#eff6ff" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", color: "#1e40af", fontWeight: 700, fontSize: "13.5px" }}>
-              <span style={{ background: "#1e40af", color: "#ffffff", width: "22px", height: "22px", borderRadius: "4px", display: "grid", placeItems: "center", fontSize: "12px", fontWeight: 800 }}>{isSoap ? "A" : "•"}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", color: "#1e40af", fontWeight: 700, fontSize: "calc(13.5px * var(--fs, 1))" }}>
+              <span style={{ background: "#1e40af", color: "#ffffff", width: "22px", height: "22px", borderRadius: "4px", display: "grid", placeItems: "center", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 800 }}>{isSoap ? "A" : "•"}</span>
               <span>{isSoap ? 'Assessment & Veterinary Diagnosis' : 'Visit assessment'}</span>
             </div>
-            <div style={{ fontSize: "15px", fontWeight: 700, color: "#1e3a8a", margin: "2px 0 4px" }}>
+            <div style={{ fontSize: "calc(15px * var(--fs, 1))", fontWeight: 700, color: "#1e3a8a", margin: "2px 0 4px" }}>
               {record.diagnosis || "Not recorded"}
             </div>
           </div>
 
           {/* P - Plan & Treatments */}
           <div style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "14px 16px", background: "#ffffff" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", color: "#854d0e", fontWeight: 700, fontSize: "13.5px" }}>
-              <span style={{ background: "#fef08a", color: "#854d0e", width: "22px", height: "22px", borderRadius: "4px", display: "grid", placeItems: "center", fontSize: "12px", fontWeight: 800 }}>{isSoap ? "P" : "•"}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", color: "#854d0e", fontWeight: 700, fontSize: "calc(13.5px * var(--fs, 1))" }}>
+              <span style={{ background: "#fef08a", color: "#854d0e", width: "22px", height: "22px", borderRadius: "4px", display: "grid", placeItems: "center", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 800 }}>{isSoap ? "P" : "•"}</span>
               <span>{isSoap ? 'Plan (In-Clinic Procedures & Care Rendered)' : 'Care provided & instructions'}</span>
             </div>
-            <p style={{ margin: 0, fontSize: "13.5px", color: "#334155", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
+            <p style={{ margin: 0, fontSize: "calc(13.5px * var(--fs, 1))", color: "#334155", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
               {record.treatment || "Not recorded"}
             </p>
           </div>
@@ -222,10 +222,10 @@ export function ConsultationDetailModal({ record, db, setDb, me, onClose, onEdit
           {(isSoap || rxLines.length > 0) && <div style={{ border: "1.5px solid #86efac", borderRadius: "12px", padding: "16px", background: "#f0fdf4" }}>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", borderBottom: "1px solid #bbf7d0", paddingBottom: "6px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ fontFamily: "serif", fontSize: "22px", fontWeight: 800, color: "#166534" }}>Rx</span>
-                <b style={{ color: "#166534", fontSize: "14px" }}>Veterinary Prescription &amp; Home Administration</b>
+                <span style={{ fontFamily: "serif", fontSize: "calc(22px * var(--fs, 1))", fontWeight: 800, color: "#166534" }}>Rx</span>
+                <b style={{ color: "#166534", fontSize: "calc(14px * var(--fs, 1))" }}>Veterinary Prescription &amp; Home Administration</b>
               </div>
-              <span style={{ fontSize: "11px", background: "#dcfce7", color: "#166534", padding: "2px 8px", borderRadius: "6px", fontWeight: 700 }}>
+              <span style={{ fontSize: "calc(11px * var(--fs, 1))", background: "#dcfce7", color: "#166534", padding: "2px 8px", borderRadius: "6px", fontWeight: 700 }}>
                 Saved prescription
               </span>
             </div>
@@ -235,14 +235,14 @@ export function ConsultationDetailModal({ record, db, setDb, me, onClose, onEdit
                 {rxLines.map((line, idx) => (
                   <div key={idx} style={{ background: "#ffffff", padding: "10px 12px", borderRadius: "8px", border: "1px solid #bbf7d0", display: "flex", alignItems: "flex-start", gap: "8px" }}>
                     <Pill size={16} color="#15803d" style={{ marginTop: "2px", flexShrink: 0 }} />
-                    <div style={{ fontSize: "13px", color: "#1e293b", lineHeight: 1.4 }}>
+                    <div style={{ fontSize: "calc(13px * var(--fs, 1))", color: "#1e293b", lineHeight: 1.4 }}>
                       {line}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div style={{ color: "#64748b", fontSize: "12.5px", fontStyle: "italic" }}>
+              <div style={{ color: "#64748b", fontSize: "calc(12.5px * var(--fs, 1))", fontStyle: "italic" }}>
                 No prescription recorded.
               </div>
             )}
@@ -251,16 +251,16 @@ export function ConsultationDetailModal({ record, db, setDb, me, onClose, onEdit
           {/* Administered Vaccines During Consult (if any) */}
           {vaccsGiven.length > 0 && (
             <div style={{ border: "1px solid #cbd5e1", borderRadius: "10px", padding: "12px 14px", background: "#f8fafc" }}>
-              <b style={{ color: "var(--navy)", fontSize: "13px", display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
+              <b style={{ color: "var(--navy)", fontSize: "calc(13px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
                 <Syringe size={16} color="#2563eb" /> Vaccinations / Deworming Recorded for This Visit
               </b>
               <div style={{ display: "grid", gap: "6px" }}>
                 {vaccsGiven.map(v => (
-                  <div key={v.id} style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "space-between", alignItems: "center", background: "#ffffff", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e2e8f0", fontSize: "12.5px" }}>
+                  <div key={v.id} style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "space-between", alignItems: "center", background: "#ffffff", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e2e8f0", fontSize: "calc(12.5px * var(--fs, 1))" }}>
                     <div>
                       <b>{v.vaccine}</b> <span style={{ color: "#64748b" }}>({v.brand || "Brand not recorded"} &bull; Lot: {v.batch || "Not recorded"})</span>
                     </div>
-                    <span style={{ fontSize: "11.5px", color: "#15803d", fontWeight: 700 }}>
+                    <span style={{ fontSize: "calc(11.5px * var(--fs, 1))", color: "#15803d", fontWeight: 700 }}>
                       Next Booster: {v.nextDue || "Not recorded"}
                     </span>
                   </div>
@@ -273,7 +273,7 @@ export function ConsultationDetailModal({ record, db, setDb, me, onClose, onEdit
 
         {/* Footer Actions */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", justifyContent: "space-between", alignItems: "center", marginTop: "22px", paddingTop: "14px", borderTop: "1px solid #e2e8f0" }}>
-          <div style={{ fontSize: "12px", color: "#64748b" }}>
+          <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
             Recorded veterinarian: <b>{vetName}</b>
           </div>
           <div style={{ display: "flex", gap: "10px" }}>
@@ -361,13 +361,13 @@ export default function ConsultationsPage({ db, setDb, me, go, say }) {
             <FileText size={20} color="var(--navy)" />
             <span>Veterinary Consultations &amp; Medical EMR Records</span>
           </h3>
-          <span style={{ fontSize: "12.5px", color: "#64748b" }}>
+          <span style={{ fontSize: "calc(12.5px * var(--fs, 1))", color: "#64748b" }}>
             Saved visit records, clinical assessments, care provided, and veterinary prescriptions.
           </span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--navy)", background: "#eff6ff", padding: "6px 12px", borderRadius: "8px", border: "1px solid #bfdbfe" }}>
+          <span style={{ fontSize: "calc(12.5px * var(--fs, 1))", fontWeight: 700, color: "var(--navy)", background: "#eff6ff", padding: "6px 12px", borderRadius: "8px", border: "1px solid #bfdbfe" }}>
             {db.totals?.consultations ?? records.length} Consultations on file · {records.length} loaded
           </span>
         </div>
@@ -393,17 +393,17 @@ export default function ConsultationsPage({ db, setDb, me, go, say }) {
             placeholder="Search diagnosis, medication, patient, owner..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{ width: "100%", padding: "8px 12px 8px 36px", fontSize: "13px", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+            style={{ width: "100%", padding: "8px 12px 8px 36px", fontSize: "calc(13px * var(--fs, 1))", borderRadius: "8px", border: "1px solid #cbd5e1" }}
           />
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12.5px", fontWeight: 600, color: "#475569", margin: 0 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "calc(12.5px * var(--fs, 1))", fontWeight: 600, color: "#475569", margin: 0 }}>
             <User size={14} />
             <select
               value={vetFilter}
               onChange={e => setVetFilter(e.target.value)}
-              style={{ padding: "6px 10px", fontSize: "12.5px", borderRadius: "6px", border: "1px solid #cbd5e1" }}
+              style={{ padding: "6px 10px", fontSize: "calc(12.5px * var(--fs, 1))", borderRadius: "6px", border: "1px solid #cbd5e1" }}
             >
               <option value="">All Attending Veterinarians</option>
               {(db.vets || []).map(({id, name}) => <option key={id} value={id}>{name}</option>)}
@@ -415,17 +415,17 @@ export default function ConsultationsPage({ db, setDb, me, go, say }) {
       {/* Main Consultations Ledger Table */}
       <section className="card" style={{ padding: "0", overflow: "hidden" }}>
         <div style={{ padding: "12px 18px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "12.5px", color: "#475569" }}>
+          <span style={{ fontSize: "calc(12.5px * var(--fs, 1))", color: "#475569" }}>
             <b>Tip:</b> Click any consultation row to open the complete <b>Clinical Visit Record</b>.
           </span>
-          <span style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--navy)" }}>
+          <span style={{ fontSize: "calc(12.5px * var(--fs, 1))", fontWeight: 700, color: "var(--navy)" }}>
             {filtered.length} record(s) found
           </span>
         </div>
 
         {filtered.length ? (
           <div style={{ overflowX: "auto" }}>
-            <PaginatedTable label="Consultations" resetKey={[search,vetFilter]} style={{ width: "100%", fontSize: "13px", borderCollapse: "collapse" }}>
+            <PaginatedTable label="Consultations" resetKey={[search,vetFilter]} style={{ width: "100%", fontSize: "calc(13px * var(--fs, 1))", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ textAlign: "left", background: "#f8fafc", color: "#475569", borderBottom: "2px solid #e2e8f0" }}>
                   <th style={{ padding: "12px 14px" }}>Date &amp; Time</th>
@@ -468,7 +468,7 @@ export default function ConsultationsPage({ db, setDb, me, go, say }) {
                           <span style={{ color: "var(--navy)" }}><I e={ICON[pet.species] || "paw"} size={16} /></span>
                           <div>
                             <b style={{ color: "var(--navy)" }}>{pet.name || "Patient"}</b>
-                            <div style={{ fontSize: "11.5px", color: "#64748b" }}>
+                            <div style={{ fontSize: "calc(11.5px * var(--fs, 1))", color: "#64748b" }}>
                               {pet.breed || pet.species} {pet.weight ? `(${pet.weight} kg)` : ""}
                             </div>
                           </div>
@@ -478,7 +478,7 @@ export default function ConsultationsPage({ db, setDb, me, go, say }) {
                       {/* Owner */}
                       <td data-label="Registered Owner" style={{ padding: "12px 14px" }}>
                         <span style={{ color: "#334155", fontWeight: 600 }}>{owner.name || "Walk-in Client"}</span>
-                        <div style={{ fontSize: "11.5px", color: "#64748b" }}>{owner.phone || "No phone"}</div>
+                        <div className="nowrap" style={{ fontSize: "calc(11.5px * var(--fs, 1))", color: "#64748b" }}>{owner.phone || "No phone"}</div>
                       </td>
 
                       {/* Diagnosis */}
@@ -491,12 +491,12 @@ export default function ConsultationsPage({ db, setDb, me, go, say }) {
                           padding: "2px 8px",
                           borderRadius: "6px",
                           fontWeight: 700,
-                          fontSize: "12px"
+                          fontSize: "calc(12px * var(--fs, 1))"
                         }}>
                           {r.diagnosis || "Not recorded"}
                         </div>
                         {r.treatment && (
-                          <div style={{ fontSize: "11.5px", color: "#64748b", marginTop: "3px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                          <div style={{ fontSize: "calc(11.5px * var(--fs, 1))", color: "#64748b", marginTop: "3px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
                             {r.treatment}
                           </div>
                         )}
@@ -514,13 +514,13 @@ export default function ConsultationsPage({ db, setDb, me, go, say }) {
                             border: "1px solid #bbf7d0",
                             padding: "2px 8px",
                             borderRadius: "6px",
-                            fontSize: "11px",
+                            fontSize: "calc(11px * var(--fs, 1))",
                             fontWeight: 700
                           }}>
                             <Pill size={12} /> Prescribed
                           </span>
                         ) : (
-                          <span style={{ color: "#94a3b8", fontSize: "11.5px" }}>None</span>
+                          <span style={{ color: "#94a3b8", fontSize: "calc(11.5px * var(--fs, 1))" }}>None</span>
                         )}
                       </td>
 
@@ -540,7 +540,7 @@ export default function ConsultationsPage({ db, setDb, me, go, say }) {
                           }}
                           style={{
                             padding: "4px 10px",
-                            fontSize: "12px",
+                            fontSize: "calc(12px * var(--fs, 1))",
                             fontWeight: 600,
                             color: "var(--navy)",
                             border: "1px solid #bfdbfe",

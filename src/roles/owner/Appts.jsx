@@ -306,10 +306,10 @@ export default function OwnerAppts({ db, setDb, me, say }) {
 
     <style>{`.ap-split{display:grid;grid-template-columns:minmax(260px,320px) minmax(0,1fr);gap:16px;align-items:start}
 @media(max-width:1180px){.ap-split{grid-template-columns:1fr}.ap-split .ow-cal{max-width:520px}}
-.ap-split .ow-calhd{flex-wrap:nowrap;gap:6px}.ap-split .ow-calhd h2{min-width:0;font-size:18px;white-space:nowrap}
+.ap-split .ow-calhd{flex-wrap:nowrap;gap:6px}.ap-split .ow-calhd h2{min-width:0;font-size:calc(18px*var(--fs,1));white-space:nowrap}
 .ap-split .tw{overflow-x:visible}.ap-split table{width:100%;table-layout:auto}
 .ap-split td,.ap-split th{vertical-align:top}.ap-when{white-space:nowrap}.ap-when b,.ap-visit b{display:block;font-weight:700;color:var(--navy)}
-.ap-visit{min-width:170px}.ap-status{min-width:180px;max-width:260px}.ap-status .visit-next-step{margin:6px 0 0;padding:6px 8px;font-size:11.5px;line-height:1.4}
+.ap-visit{min-width:170px}.ap-status{min-width:180px;max-width:260px}.ap-status .visit-next-step{margin:6px 0 0;padding:6px 8px;font-size:calc(11.5px*var(--fs,1));line-height:1.4}
 .ap-status .badge{display:inline-block;white-space:nowrap;margin-bottom:4px}
 .ap-actions{display:flex;flex-wrap:nowrap;gap:6px;justify-content:flex-end}td.act{white-space:nowrap;vertical-align:middle}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -318,7 +318,7 @@ export default function OwnerAppts({ db, setDb, me, say }) {
 .ap-rt thead{display:none}.ap-rt,.ap-rt tbody,.ap-rt tr,.ap-rt td{display:block;width:100%;min-width:0}
 .ap-rt tr{margin:0 0 12px;padding:8px 0;background:#fff;border:1px solid #e3e9f7;border-radius:18px}
 .ap-rt td{padding:7px 16px;border:0;text-align:left;max-width:none}
-.ap-rt td::before{content:attr(data-label);display:block;margin-bottom:3px;color:#64748b;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.ap-rt td::before{content:attr(data-label);display:block;margin-bottom:3px;color:#64748b;font-weight:700;font-size:calc(11px*var(--fs,1));text-transform:uppercase;letter-spacing:.05em}
 .ap-rt td.act{padding-top:4px}.ap-rt td.act::before{content:none}.ap-actions{justify-content:flex-start}
 .ap-rt td.ap-status,.ap-rt td.ap-visit{max-width:none}
 }

@@ -23,7 +23,7 @@ export default function ApptDetails({ a, db, note, onClose, onEdit, onCancel }) 
       <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
         <p style={{ margin: "0 0 12px" }}><Badge v={a.status} />{note && <small className="ow-sub">{note}</small>}</p>
         <dl style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12, margin: 0 }}>
-          {rows.map(([k, x]) => <div key={k}><dt style={{ fontSize: 12.5, fontWeight: 700, color: "var(--mu)" }}>{k}</dt><dd style={{ margin: "2px 0 0", overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}>{x}</dd></div>)}
+          {rows.map(([k, x]) => <div key={k}><dt style={{ fontSize: "calc(12.5px * var(--fs, 1))", fontWeight: 700, color: "var(--mu)" }}>{k}</dt><dd style={{ margin: "2px 0 0", overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}>{x}</dd></div>)}
         </dl>
         <VisitNextStep visit={a} />
         <VaccineEstimate appointment={a} />

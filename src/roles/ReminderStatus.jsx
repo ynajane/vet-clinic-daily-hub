@@ -80,10 +80,10 @@ export default function ReminderStatus() {
               <Bell size={20} />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: "17px", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
+              <h3 style={{ margin: 0, fontSize: "calc(17px * var(--fs, 1))", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
                 Automatic Vaccination Recall Reminders
               </h3>
-              <p style={{ margin: "2px 0 0", fontSize: "12.5px", color: "#64748b" }}>
+              <p style={{ margin: "2px 0 0", fontSize: "calc(12.5px * var(--fs, 1))", color: "#64748b" }}>
                 Reminders are scheduled at 30, 14, and 3 days before booster dates. Check processing and provider acceptance below.
               </p>
             </div>
@@ -97,7 +97,7 @@ export default function ReminderStatus() {
             gap: "6px",
             padding: "4px 10px",
             borderRadius: "99px",
-            fontSize: "11.5px",
+            fontSize: "calc(11.5px * var(--fs, 1))",
             fontWeight: 700,
             background: isHealthy ? "#dcfce7" : "#fef3c7",
             color: isHealthy ? "#15803d" : "#b45309",
@@ -112,7 +112,7 @@ export default function ReminderStatus() {
             className="btn ghost sm"
             onClick={load}
             disabled={loading}
-            style={{ display: "inline-flex", alignItems: "center", gap: "5px", fontSize: "12px", padding: "5px 10px" }}
+            style={{ display: "inline-flex", alignItems: "center", gap: "5px", fontSize: "calc(12px * var(--fs, 1))", padding: "5px 10px" }}
             title="Refresh reminder status"
           >
             <RefreshCw size={13} className={loading ? "spin" : ""} />
@@ -122,9 +122,9 @@ export default function ReminderStatus() {
       </div>
 
       {error && (
-        <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "10px", padding: "10px 14px", fontSize: "13px", marginBottom: "16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div role="alert" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", borderRadius: "10px", padding: "10px 14px", fontSize: "calc(13px * var(--fs, 1))", marginBottom: "16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span>{error}</span>
-          <button className="btn ghost sm" disabled={loading} onClick={load} style={{ fontSize: "12px" }}>Retry</button>
+          <button className="btn ghost sm" disabled={loading} onClick={load} style={{ fontSize: "calc(12px * var(--fs, 1))" }}>Retry</button>
         </div>
       )}
 
@@ -136,63 +136,63 @@ export default function ReminderStatus() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 180px), 1fr))", gap: "12px", marginBottom: "18px" }}>
         {/* Pending Card */}
         <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "14px", padding: "14px 16px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: "#64748b", fontSize: "12px", fontWeight: 600 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: "#64748b", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 600 }}>
             <span>Queued / Scheduled</span>
             <Clock size={16} color="#3b82f6" />
           </div>
-          <div style={{ fontSize: "24px", fontWeight: 800, color: "#1e40af", marginTop: "6px" }}>
+          <div style={{ fontSize: "calc(24px * var(--fs, 1))", fontWeight: 800, color: "#1e40af", marginTop: "6px" }}>
             {data ? pending : "—"}
           </div>
-          <div style={{ fontSize: "11px", color: "#64748b", marginTop: "2px" }}>
+          <div style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#64748b", marginTop: "2px" }}>
             Scheduled for future booster dates
           </div>
         </div>
 
         {/* Accepted Card */}
         <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "14px", padding: "14px 16px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: "#166534", fontSize: "12px", fontWeight: 600 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: "#166534", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 600 }}>
             <span>Accepted by provider</span>
             <CheckCircle2 size={16} color="#16a34a" />
           </div>
-          <div style={{ fontSize: "24px", fontWeight: 800, color: "#15803d", marginTop: "6px" }}>
+          <div style={{ fontSize: "calc(24px * var(--fs, 1))", fontWeight: 800, color: "#15803d", marginTop: "6px" }}>
             {data ? accepted : "—"}
           </div>
-          <div style={{ fontSize: "11px", color: "#166534", marginTop: "2px" }}>
+          <div style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#166534", marginTop: "2px" }}>
             Delivery to the owner is not confirmed
           </div>
         </div>
 
         {/* Attention Card */}
         <div style={{ background: issues > 0 ? "#fffbeb" : "#f8fafc", border: `1px solid ${issues > 0 ? "#fde68a" : "#e2e8f0"}`, borderRadius: "14px", padding: "14px 16px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: issues > 0 ? "#b45309" : "#64748b", fontSize: "12px", fontWeight: 600 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: issues > 0 ? "#b45309" : "#64748b", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 600 }}>
             <span>Needs Attention</span>
             <AlertTriangle size={16} color={issues > 0 ? "#d97706" : "#94a3b8"} />
           </div>
-          <div style={{ fontSize: "24px", fontWeight: 800, color: issues > 0 ? "#b45309" : "#334155", marginTop: "6px" }}>
+          <div style={{ fontSize: "calc(24px * var(--fs, 1))", fontWeight: 800, color: issues > 0 ? "#b45309" : "#334155", marginTop: "6px" }}>
             {data ? issues : "—"}
           </div>
-          <div style={{ fontSize: "11px", color: issues > 0 ? "#92400e" : "#64748b", marginTop: "2px" }}>
+          <div style={{ fontSize: "calc(11px * var(--fs, 1))", color: issues > 0 ? "#92400e" : "#64748b", marginTop: "2px" }}>
             {!data ? "Status not loaded" : issues > 0 ? "Requires contact check" : "No failed or uncertain sends recorded"}
           </div>
         </div>
 
         {/* Worker Health Card */}
         <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "14px", padding: "14px 16px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: "#64748b", fontSize: "12px", fontWeight: 600 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", color: "#64748b", fontSize: "calc(12px * var(--fs, 1))", fontWeight: 600 }}>
             <span>Last completed run</span>
             <Radio size={16} color="#059669" />
           </div>
-          <div style={{ fontSize: "16px", fontWeight: 700, color: "#0f172a", marginTop: "10px" }}>
+          <div style={{ fontSize: "calc(16px * var(--fs, 1))", fontWeight: 700, color: "#0f172a", marginTop: "10px" }}>
             {data ? formatLastRun(data.health.lastRun) : loading ? "Checking…" : "Not available"}
           </div>
-          <div style={{ fontSize: "11px", color: "#64748b", marginTop: "2px" }}>
+          <div style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#64748b", marginTop: "2px" }}>
             Successful reminder processing
           </div>
         </div>
       </div>
 
       {/* Gateway Status Strip */}
-      <div style={{ background: "#f8fafc", borderRadius: "12px", padding: "10px 16px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", marginBottom: "16px", fontSize: "12.5px" }}>
+      <div style={{ background: "#f8fafc", borderRadius: "12px", padding: "10px 16px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", marginBottom: "16px", fontSize: "calc(12.5px * var(--fs, 1))" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <Mail size={15} color={data?.health?.emailConfigured ? "#16a34a" : "#dc2626"} />
@@ -211,7 +211,7 @@ export default function ReminderStatus() {
           </div>
         </div>
 
-        <span style={{ color: "#64748b", fontSize: "11.5px" }}>
+        <span style={{ color: "#64748b", fontSize: "calc(11.5px * var(--fs, 1))" }}>
           Dispatches to Philippine mobile (+63) &amp; verified owner emails
         </span>
       </div>
@@ -219,12 +219,12 @@ export default function ReminderStatus() {
       {/* Attention Required Table */}
       {data?.attention && data.attention.length > 0 ? (
         <div>
-          <h4 style={{ margin: "0 0 10px", fontSize: "13.5px", color: "#991b1b", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
+          <h4 style={{ margin: "0 0 10px", fontSize: "calc(13.5px * var(--fs, 1))", color: "#991b1b", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
             <AlertTriangle size={15} />
             <span>Reminders Requiring Manual Staff Review ({data.attention.length})</span>
           </h4>
           <div style={{ overflowX: "auto", border: "1px solid #fed7aa", borderRadius: "12px" }}>
-            <PaginatedTable label="Reminder delivery issues" className="tbl" style={{ margin: 0, fontSize: "12.5px" }}>
+            <PaginatedTable label="Reminder delivery issues" className="tbl" style={{ margin: 0, fontSize: "calc(12.5px * var(--fs, 1))" }}>
               <thead>
                 <tr style={{ background: "#fff7ed" }}>
                   <th style={{ padding: "8px 12px" }}>Patient</th>
@@ -244,7 +244,7 @@ export default function ReminderStatus() {
                       <b>{r.vaccine}</b> &bull; {r.dueDate}
                     </td>
                     <td style={{ padding: "8px 12px" }}>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "#f1f5f9", padding: "2px 6px", borderRadius: "6px", fontSize: "11px", fontWeight: 600 }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "#f1f5f9", padding: "2px 6px", borderRadius: "6px", fontSize: "calc(11px * var(--fs, 1))", fontWeight: 600 }}>
                         {r.channel === "sms" ? <Phone size={11} /> : <Mail size={11} />}
                         <span>{r.channel.toUpperCase()}</span>
                       </span>
@@ -266,7 +266,7 @@ export default function ReminderStatus() {
           </div>
         </div>
       ) : isHealthy ? (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#15803d", fontSize: "12.5px", background: "#f0fdf4", padding: "8px 14px", borderRadius: "10px", border: "1px solid #bbf7d0" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#15803d", fontSize: "calc(12.5px * var(--fs, 1))", background: "#f0fdf4", padding: "8px 14px", borderRadius: "10px", border: "1px solid #bbf7d0" }}>
           <CheckCircle2 size={16} />
           <span>No failed or uncertain sends are recorded. Provider acceptance does not confirm delivery to an owner.</span>
         </div>

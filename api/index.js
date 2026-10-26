@@ -9,6 +9,7 @@ import { accountRouter } from "../server/routes/account.js";
 import { clinicRouter } from "../server/routes/clinic.js";
 import { geo as geoRouter, check as checkRouter, checkEmail } from "../server/geo.js";
 import { query } from "../server/db.js";
+import { warmClinicSchemas } from "../server/warmup.js";
 
 dotenv.config({quiet:true});
 
@@ -33,6 +34,7 @@ app.get("/api/health", async (req, res) => {
     try {
       const result = await query("SELECT NOW() as now");
       if (result.rows?.[0]?.now) dbStatus = "connected";
+      if (req.query.warm && dbStatus === "connected") await warmClinicSchemas().catch(() => {});
     } catch (err) {
       dbStatus = "error: " + err.message;
     }

@@ -178,11 +178,11 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
       <div className="card" style={{ marginBottom: "16px", padding: "16px 20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
           <div>
-            <h2 style={{ margin: "0 0 4px", fontSize: "20px", display: "flex", alignItems: "center", gap: "8px", color: "var(--navy)" }}>
+            <h2 style={{ margin: "0 0 4px", fontSize: "calc(20px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "8px", color: "var(--navy)" }}>
               <Syringe size={22} color="var(--navy)" />
               <span>Front Desk Vaccination Card Management</span>
             </h2>
-            <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
+            <p style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#64748b" }}>
               Update patient vaccination records upon doctor examination, record vial batches, and manage official digital cards.
             </p>
           </div>
@@ -216,8 +216,8 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
         <div>
           <div className="card" style={{ padding: "14px", marginBottom: "14px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-              <b style={{ fontSize: "13.5px", color: "var(--navy)" }}>Select Patient</b>
-              <span style={{ fontSize: "11px", color: "#64748b" }}>{filteredPets.length} pets</span>
+              <b style={{ fontSize: "calc(13.5px * var(--fs, 1))", color: "var(--navy)" }}>Select Patient</b>
+              <span style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#64748b" }}>{filteredPets.length} pets</span>
             </div>
 
             <div style={{ position: "relative", marginBottom: "10px" }}>
@@ -226,7 +226,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                 placeholder="Search pet or owner..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                style={{ padding: "6px 10px 6px 30px", width: "100%", fontSize: "12.5px" }}
+                style={{ padding: "6px 10px 6px 30px", width: "100%", fontSize: "calc(12.5px * var(--fs, 1))" }}
               />
               <span style={{ position: "absolute", left: "9px", top: "8px", color: "#94a3b8" }}>
                 <Search size={14} />
@@ -264,16 +264,16 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <b style={{ fontSize: "13.5px", color: isSelected ? "#0369a1" : "#1e293b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <b style={{ fontSize: "calc(13.5px * var(--fs, 1))", color: isSelected ? "#0369a1" : "#1e293b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {p.name}
                         </b>
                         {hasOverdue && (
-                          <span style={{ fontSize: "10px", background: "#fee2e2", color: "#991b1b", padding: "1px 5px", borderRadius: "4px", fontWeight: "700" }}>
+                          <span style={{ fontSize: "calc(10px * var(--fs, 1))", background: "#fee2e2", color: "#991b1b", padding: "1px 5px", borderRadius: "4px", fontWeight: "700" }}>
                             Overdue
                           </span>
                         )}
                       </div>
-                      <small style={{ color: "#64748b", fontSize: "11.5px", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <small style={{ color: "#64748b", fontSize: "calc(11.5px * var(--fs, 1))", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {p.breed || p.species} &bull; {o.name}
                       </small>
                     </div>
@@ -286,10 +286,10 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
           {/* Quick Reminders Due Card */}
           <div className="card" style={{ padding: "14px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-              <b style={{ fontSize: "13px", color: "var(--navy)", display: "flex", alignItems: "center", gap: "6px" }}>
+              <b style={{ fontSize: "calc(13px * var(--fs, 1))", color: "var(--navy)", display: "flex", alignItems: "center", gap: "6px" }}>
                 <Clock size={15} /> Clinic Boosters Due ({allReminders.length})
               </b>
-              <span style={{ fontSize: "11px", color: "#64748b" }}>Next 14 Days</span>
+              <span style={{ fontSize: "calc(11px * var(--fs, 1))", color: "#64748b" }}>Next 14 Days</span>
             </div>
 
             {allReminders.length ? (
@@ -307,7 +307,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                         borderRadius: "8px",
                         background: isLate ? "#fef2f2" : "#f8fafc",
                         border: `1px solid ${isLate ? "#fca5a5" : "#e2e8f0"}`,
-                        fontSize: "12px",
+                        fontSize: "calc(12px * var(--fs, 1))",
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -316,7 +316,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                           {v.nextDue}
                         </span>
                       </div>
-                      <div style={{ color: "#64748b", fontSize: "11.5px", margin: "2px 0 4px" }}>
+                      <div style={{ color: "#64748b", fontSize: "calc(11.5px * var(--fs, 1))", margin: "2px 0 4px" }}>
                         {v.vaccine} &bull; {o.name}
                       </div>
                       {(() => {
@@ -326,7 +326,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                           (a.date === v.nextDue || (a.date >= TODAY && (a.reason || "").toLowerCase().includes((v.vaccine || "").toLowerCase())))
                         );
                         return hasAppt ? (
-                          <div style={{ color: "#15803d", fontSize: "11px", fontWeight: 700, margin: "0 0 6px" }}>
+                          <div style={{ color: "#15803d", fontSize: "calc(11px * var(--fs, 1))", fontWeight: 700, margin: "0 0 6px" }}>
                             {hasAppt.status} on {hasAppt.date} {hasAppt.time ? `(${hasAppt.time})` : ""}
                           </div>
                         ) : null;
@@ -334,7 +334,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                       <button
                         type="button"
                         className="btn ghost sm"
-                        style={{ fontSize: "11px", padding: "2px 8px", width: "100%", justifyContent: "center" }}
+                        style={{ fontSize: "calc(11px * var(--fs, 1))", padding: "2px 8px", width: "100%", justifyContent: "center" }}
                         onClick={() => handleSendReminderSms(v)}
                       >
                         <Phone size={11} style={{ marginRight: "4px" }} /> Send Email & SMS Reminder
@@ -344,7 +344,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                 })}
               </div>
             ) : (
-              <div style={{ fontSize: "12px", color: "#64748b", fontStyle: "italic", textAlign: "center", padding: "12px 0" }}>
+              <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b", fontStyle: "italic", textAlign: "center", padding: "12px 0" }}>
                 All patient vaccines up to date!
               </div>
             )}
@@ -374,17 +374,17 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                   </div>
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                      <h3 style={{ margin: 0, fontSize: "20px", color: "var(--navy)" }}>{selectedPet.name}</h3>
-                      <span style={{ fontSize: "12px", background: "#f1f5f9", padding: "2px 8px", borderRadius: "6px", color: "#334155" }}>
+                      <h3 style={{ margin: 0, fontSize: "calc(20px * var(--fs, 1))", color: "var(--navy)" }}>{selectedPet.name}</h3>
+                      <span style={{ fontSize: "calc(12px * var(--fs, 1))", background: "#f1f5f9", padding: "2px 8px", borderRadius: "6px", color: "#334155" }}>
                         {selectedPet.species} &bull; {selectedPet.breed || "Mixed"} &bull; {selectedPet.sex}
                       </span>
                       {selectedPet.vaccinationCardId && (
-                        <span style={{ fontSize: "12px", background: "#dbeafe", color: "#1e40af", padding: "2px 8px", borderRadius: "6px", fontWeight: "700", border: "1px solid #bfdbfe" }}>
+                        <span style={{ fontSize: "calc(12px * var(--fs, 1))", background: "#dbeafe", color: "#1e40af", padding: "2px 8px", borderRadius: "6px", fontWeight: "700", border: "1px solid #bfdbfe" }}>
                           Card #{selectedPet.vaccinationCardId}
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: "12.5px", color: "#64748b", marginTop: "4px" }}>
+                    <div style={{ fontSize: "calc(12.5px * var(--fs, 1))", color: "#64748b", marginTop: "4px" }}>
                       <b>Owner:</b> {owner.name} &bull; <b>Phone:</b> {owner.phone || "No phone"} &bull; <b>Birth:</b> {selectedPet.birth || "Not specified"} &bull; <b>Weight:</b> {selectedPet.weight ? `${selectedPet.weight} kg` : "—"}
                     </div>
                   </div>
@@ -393,17 +393,17 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                 {/* Status Badges */}
                 <div style={{ display: "flex", gap: "8px" }}>
                   <div style={{ textAlign: "center", background: "#f8fafc", padding: "6px 12px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                    <b style={{ fontSize: "15px", color: "#15803d" }}>{completedCount}</b>
-                    <small style={{ display: "block", fontSize: "10.5px", color: "#64748b" }}>Administered</small>
+                    <b style={{ fontSize: "calc(15px * var(--fs, 1))", color: "#15803d" }}>{completedCount}</b>
+                    <small style={{ display: "block", fontSize: "calc(10.5px * var(--fs, 1))", color: "#64748b" }}>Administered</small>
                   </div>
                   <div style={{ textAlign: "center", background: "#f8fafc", padding: "6px 12px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                    <b style={{ fontSize: "15px", color: "#0369a1" }}>{pendingCount}</b>
-                    <small style={{ display: "block", fontSize: "10.5px", color: "#64748b" }}>Scheduled</small>
+                    <b style={{ fontSize: "calc(15px * var(--fs, 1))", color: "#0369a1" }}>{pendingCount}</b>
+                    <small style={{ display: "block", fontSize: "calc(10.5px * var(--fs, 1))", color: "#64748b" }}>Scheduled</small>
                   </div>
                   {overdueCount > 0 && (
                     <div style={{ textAlign: "center", background: "#fef2f2", padding: "6px 12px", borderRadius: "8px", border: "1px solid #fca5a5" }}>
-                      <b style={{ fontSize: "15px", color: "#dc2626" }}>{overdueCount}</b>
-                      <small style={{ display: "block", fontSize: "10.5px", color: "#dc2626" }}>Overdue</small>
+                      <b style={{ fontSize: "calc(15px * var(--fs, 1))", color: "#dc2626" }}>{overdueCount}</b>
+                      <small style={{ display: "block", fontSize: "calc(10.5px * var(--fs, 1))", color: "#dc2626" }}>Overdue</small>
                     </div>
                   )}
                 </div>
@@ -411,17 +411,17 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
 
               {/* Vaccine Table */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                <h4 style={{ margin: 0, fontSize: "15px", color: "var(--navy)" }}>
+                <h4 style={{ margin: 0, fontSize: "calc(15px * var(--fs, 1))", color: "var(--navy)" }}>
                   Official Vaccination History &amp; Schedules
                 </h4>
-                <span style={{ fontSize: "12px", color: "#64748b" }}>
+                <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>
                   Assistant logged records reflect immediately in the Pet Owner Portal
                 </span>
               </div>
 
               {petVaccs.length ? (
                 <div style={{ overflowX: "auto" }}>
-                  <PaginatedTable label="Vaccination records" resetKey={selectedPetId} style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+                  <PaginatedTable label="Vaccination records" resetKey={selectedPetId} style={{ width: "100%", borderCollapse: "collapse", fontSize: "calc(13px * var(--fs, 1))" }}>
                     <thead>
                       <tr style={{ background: "#f8fafc", borderBottom: "2px solid #e2e8f0", textAlign: "left" }}>
                         <th style={{ padding: "10px 12px" }}>Vaccine &amp; Prophylaxis</th>
@@ -445,7 +445,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                             <td style={{ padding: "10px 12px" }}>
                               <b style={{ color: "var(--navy)" }}>{v.vaccine}</b>
                               {v.notes && (
-                                <small style={{ display: "block", color: "#64748b", fontSize: "11px", maxWidth: "220px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                <small style={{ display: "block", color: "#64748b", fontSize: "calc(11px * var(--fs, 1))", maxWidth: "220px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                   {v.notes}
                                 </small>
                               )}
@@ -454,7 +454,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                             {/* Brand & Lot */}
                             <td style={{ padding: "10px 12px" }}>
                               <div>{v.brand || "—"}</div>
-                              <small style={{ color: "#64748b", fontSize: "11px" }}>
+                              <small style={{ color: "#64748b", fontSize: "calc(11px * var(--fs, 1))" }}>
                                 {v.batch ? `Lot: ${v.batch}` : "No lot recorded"}
                               </small>
                             </td>
@@ -462,7 +462,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                             {/* Dose */}
                             <td style={{ padding: "10px 12px" }}>
                               {v.doseNo ? (
-                                <span style={{ background: "#f1f5f9", padding: "2px 6px", borderRadius: "4px", fontSize: "11.5px", fontWeight: "600" }}>
+                                <span style={{ background: "#f1f5f9", padding: "2px 6px", borderRadius: "4px", fontSize: "calc(11.5px * var(--fs, 1))", fontWeight: "600" }}>
                                   {v.doseOf ? `Dose ${v.doseNo}/${v.doseOf}` : `Dose ${v.doseNo}`}
                                 </span>
                               ) : (
@@ -475,7 +475,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                               {v.done ? (
                                 <span style={{ fontWeight: 600 }}>{v.date}</span>
                               ) : (
-                                <span style={{ color: "#0369a1", fontSize: "11.5px", fontStyle: "italic" }}>
+                                <span style={{ color: "#0369a1", fontSize: "calc(11.5px * var(--fs, 1))", fontStyle: "italic" }}>
                                   Scheduled Protocol
                                 </span>
                               )}
@@ -493,7 +493,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                                   <b style={{ color: v.nextDue < TODAY ? "#dc2626" : "#047857" }}>
                                     {v.nextDue}
                                   </b>
-                                  <small style={{ display: "block", color: "#64748b", fontSize: "11px" }}>
+                                  <small style={{ display: "block", color: "#64748b", fontSize: "calc(11px * var(--fs, 1))" }}>
                                     {v.nextDue < TODAY ? "Overdue" : `in ${Math.round((new Date(v.nextDue) - new Date(TODAY)) / 864e5)} days`}
                                   </small>
                                 </div>
@@ -514,7 +514,7 @@ export default function AssistantVaccinationManager({ db, setDb, me, say }) {
                                   <button
                                     type="button"
                                     className="btn gold sm"
-                                    style={{ fontSize: "11.5px", padding: "3px 8px" }}
+                                    style={{ fontSize: "calc(11.5px * var(--fs, 1))", padding: "3px 8px" }}
                                     onClick={() => setLogModal({ pet: selectedPet, existingVacc: v })}
                                     title="Doctor administered shot: record batch and mark completed"
                                   >
@@ -629,11 +629,11 @@ function VaccineEntryModal({ pet, existing, db, me, onClose, onSave }) {
       <div className="modal" style={{ width: "min(600px, 100%)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #e2e8f0", paddingBottom: "12px", marginBottom: "16px" }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: "18px", display: "flex", alignItems: "center", gap: "8px", color: "var(--navy)" }}>
+            <h3 style={{ margin: 0, fontSize: "calc(18px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "8px", color: "var(--navy)" }}>
               <Syringe size={20} color="var(--navy)" />
               <span>{isEditing ? "Update Vaccine Entry" : "Log Administered Vaccine"}</span>
             </h3>
-            <p style={{ margin: "2px 0 0", fontSize: "12.5px", color: "#64748b" }}>
+            <p style={{ margin: "2px 0 0", fontSize: "calc(12.5px * var(--fs, 1))", color: "#64748b" }}>
               Patient: <b>{pet.name}</b> ({pet.breed || pet.species}) &bull; Recorded by: <b>{me.name}</b>
             </p>
           </div>
@@ -667,7 +667,7 @@ function VaccineEntryModal({ pet, existing, db, me, onClose, onSave }) {
 
               <div className="fld">
                 <label><b>Date Administered</b><i> *</i></label>
-                <LiveControl as="input" type="date" value={date} onChange={e => setDate(e.target.value)} max={TODAY} required />
+                <LiveControl as="input" type="date" value={date} onChange={e => setDate(e.target.value)} min="2000-01-01" max={TODAY} required />
               </div>
             </div>
 
@@ -710,7 +710,7 @@ function VaccineEntryModal({ pet, existing, db, me, onClose, onSave }) {
 
               <div className="fld">
                 <label><b>Next Booster Due Date</b><i> *</i></label>
-                <LiveControl as="input" type="date" error={nextDue && nextDue<=date ? 'The booster date must follow the vaccination date.' : ''} value={nextDue} onChange={e => setNextDue(e.target.value)} required />
+                <LiveControl as="input" type="date" error={nextDue && nextDue<=date ? 'The booster date must follow the vaccination date.' : ''} value={nextDue} min={date || undefined} max="2100-12-31" onChange={e => setNextDue(e.target.value)} required />
               </div>
             </div>
 
@@ -723,7 +723,7 @@ function VaccineEntryModal({ pet, existing, db, me, onClose, onSave }) {
                 onChange={e => setIsDone(e.target.checked)}
                 style={{ width: "18px", height: "18px" }}
               />
-              <label htmlFor="doneCheck" style={{ margin: 0, fontSize: "13px", color: "#166534", cursor: "pointer" }}>
+              <label htmlFor="doneCheck" style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#166534", cursor: "pointer" }}>
                 <b>Mark as Administered &amp; Verified Today</b> (Updates pet’s vaccination status to &ldquo;Completed&rdquo;)
               </label>
             </div>

@@ -1,4 +1,5 @@
 import ClinicDialog from '../components/ClinicDialog.jsx';
+import VisitCard from '../components/VisitCard.jsx';
 import {useUnsavedChanges} from '../components/useUnsavedChanges.jsx';
 import {chronologicalAppointments,upcomingAppointments,appointmentMinutes} from '../appointmentOrder.js';
 import BookingReason from '../components/BookingReason.jsx';
@@ -120,6 +121,8 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
   const starting = useRef(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
 
+  const peek = id => ({"data-visit": id, role: "button", tabIndex: 0, "aria-label": "Show visit details", onClick: () => setPeekId(id), onKeyDown: e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setPeekId(id); } }});
+
   const canGoPrevMonth = cur.y > curYearMin || (cur.y === curYearMin && cur.m > curMonthMin);
   const canGoNextMonth = cur.y < curYearMin + 1 || (cur.y === curYearMin + 1 && cur.m < 11);
 
@@ -131,6 +134,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
   const [billingAppt, setBillingAppt] = useState(null);
   const [cardPetId, setCardPetId] = useState(null);
   const [cardAppt, setCardAppt] = useState(null);
+  const [peekId, setPeekId] = useState(null);
 
   const slotsByVet = Object.fromEntries(visibleDoctors.map(([id]) => [id, openSlots(scheduleDb, { vetId: id, date: sel, service: "vaccination" })]));
   const appts = db.appts.filter(a => (!vetFilter || doctorId(a.vetId) === vetFilter) && !["Cancelled","Rejected","No-show"].includes(a.status));
@@ -286,7 +290,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                 >
                   <ChevronLeft size={16} />
                 </button>
-                <h2 style={{ margin: 0, fontSize: "19px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <h2 style={{ margin: 0, fontSize: "calc(19px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "8px" }}>
                   <Calendar size={20} color="var(--navy)" />
                   <span>{MONTHS[cur.m]} {cur.y}</span>
                 </h2>
@@ -306,11 +310,11 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                 <button className="btn ghost sm" onClick={() => moveDay(-1)} aria-label="Previous day">
                   <ChevronLeft size={16} />
                 </button>
-                <h2 style={{ margin: 0, fontSize: "19px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <h2 style={{ margin: 0, fontSize: "calc(19px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "8px" }}>
                   <Clock size={20} color="var(--navy)" />
                   <span>{niceDate}</span>
                   {sel === TODAY && (
-                    <span style={{ fontSize: "11.5px", background: "#dbeafe", color: "#1e40af", padding: "2px 8px", borderRadius: "99px", fontWeight: 700 }}>
+                    <span style={{ fontSize: "calc(11.5px * var(--fs, 1))", background: "#dbeafe", color: "#1e40af", padding: "2px 8px", borderRadius: "99px", fontWeight: 700 }}>
                       Today
                     </span>
                   )}
@@ -340,7 +344,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                   type="button"
                   aria-pressed={viewMode === "timeline"}
                   className={`btn sm ${viewMode === "timeline" ? "gold" : "ghost"}`}
-                  style={{ padding: "4px 10px", fontSize: "12.5px", display: "flex", alignItems: "center", gap: "6px" }}
+                  style={{ padding: "4px 10px", fontSize: "calc(12.5px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "6px" }}
                   onClick={() => setViewMode("timeline")}
                 >
                   <Columns size={15} />
@@ -351,7 +355,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                 type="button"
                 aria-pressed={viewMode === "month"}
                 className={`btn sm ${viewMode === "month" ? "gold" : "ghost"}`}
-                style={{ padding: "4px 10px", fontSize: "12.5px", display: "flex", alignItems: "center", gap: "6px" }}
+                style={{ padding: "4px 10px", fontSize: "calc(12.5px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "6px" }}
                 onClick={() => setViewMode("month")}
               >
                 <LayoutGrid size={15} />
@@ -361,7 +365,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                 type="button"
                 aria-pressed={viewMode === "list"}
                 className={`btn sm ${viewMode === "list" ? "gold" : "ghost"}`}
-                style={{ padding: "4px 10px", fontSize: "12.5px", display: "flex", alignItems: "center", gap: "6px" }}
+                style={{ padding: "4px 10px", fontSize: "calc(12.5px * var(--fs, 1))", display: "flex", alignItems: "center", gap: "6px" }}
                 onClick={() => setViewMode("list")}
               >
                 <Calendar size={15} />
@@ -370,14 +374,14 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
             </div>
 
             {/* Doctor Filter */}
-            <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", fontWeight: "600", margin: 0 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "calc(13px * var(--fs, 1))", fontWeight: "600", margin: 0 }}>
               <User size={15} color="#64748b" />
               <select
                 aria-label="Veterinarian"
                 disabled={isDoctor}
                 value={vetFilter}
                 onChange={e => setVetFilter(e.target.value)}
-                style={{ width: "auto", padding: "6px 10px", fontSize: "13px" }}
+                style={{ width: "auto", padding: "6px 10px", fontSize: "calc(13px * var(--fs, 1))" }}
               >
                 {!isDoctor && <option value="">All Veterinarians</option>}
                 {doctors.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
@@ -412,22 +416,24 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
 
               // Daily capacity meter status
               const loadBadge = isPast ? (
-                <span style={{ fontSize: "10px", color: "#94a3b8", fontWeight: "600" }}>Past</span>
+                <span style={{ fontSize: "calc(10px * var(--fs, 1))", color: "#94a3b8", fontWeight: "600" }}>Past</span>
               ) : loadCount === 0 ? null : loadCount <= 3 ? (
-                <span style={{ fontSize: "10px", color: "#16a34a", fontWeight: "700" }}>Light ({loadCount})</span>
+                <span style={{ fontSize: "calc(10px * var(--fs, 1))", color: "#16a34a", fontWeight: "700" }}>Light ({loadCount})</span>
               ) : loadCount <= 7 ? (
-                <span style={{ fontSize: "10px", color: "#d97706", fontWeight: "700" }}>Optimal ({loadCount})</span>
+                <span style={{ fontSize: "calc(10px * var(--fs, 1))", color: "#d97706", fontWeight: "700" }}>Optimal ({loadCount})</span>
               ) : (
-                <span style={{ fontSize: "10px", color: "#dc2626", fontWeight: "700" }}>Full ({loadCount})</span>
+                <span style={{ fontSize: "calc(10px * var(--fs, 1))", color: "#dc2626", fontWeight: "700" }}>Full ({loadCount})</span>
               );
 
               return (
                 <button
                   key={k}
                   className={`ow-day${out ? " out" : ""}${isToday ? " today" : ""}${isSel ? " sel" : ""}`}
-                  onClick={() => {
+                  onClick={ev => {
                     setSel(k);
                     if (out) setCur({ y: d.getFullYear(), m: d.getMonth() });
+                    const chip = ev.target.closest?.("[data-visit]");
+                    if (chip) setPeekId(chip.getAttribute("data-visit"));
                   }}
                   style={{
                     minHeight: "88px",
@@ -448,8 +454,9 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                       return (
                         <div
                           key={i}
+                          data-visit={item.id}
                           style={{
-                            fontSize: "11px",
+                            fontSize: "calc(11px * var(--fs, 1))",
                             lineHeight: "1.3",
                             padding: "2px 5px",
                             borderRadius: "4px",
@@ -467,13 +474,13 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                           }}
                           title={`${item.time} ${item.pet} (${item.reason})`}
                         >
-                          <span style={{ fontSize: "10px", fontWeight: "700" }}>{item.time}</span>
+                          <span style={{ fontSize: "calc(10px * var(--fs, 1))", fontWeight: "700" }}>{item.time}</span>
                           <span>{item.pet}</span>
                         </div>
                       );
                     })}
                     {items.length > 3 && (
-                      <span style={{ fontSize: "10.5px", color: "#64748b", fontWeight: "700" }}>
+                      <span style={{ fontSize: "calc(10.5px * var(--fs, 1))", color: "#64748b", fontWeight: "700" }}>
                         +{items.length - 3} more
                       </span>
                     )}
@@ -491,10 +498,10 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
         <div className="card cc-schedule">
           <div className="cc-schedule-heading">
             <div>
-              <h3 style={{ margin: "0 0 2px", fontSize: "18px" }}>
+              <h3 style={{ margin: "0 0 2px", fontSize: "calc(18px * var(--fs, 1))" }}>
                 {isDoctor ? "Your daily schedule" : "Clinic daily schedule"}
               </h3>
-              <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
+              <p style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#64748b" }}>
                 {isDoctor ? "View your assigned visits and continue patient care. Reception manages bookings." : canBook ? "View each veterinarian’s day. Choose an open slot to book a visit." : "Review clinic capacity and appointments."}
               </p>
             </div>
@@ -507,8 +514,8 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
               <span style={{ background: "#eff6ff", color: "#1d4ed8", padding: "3px 8px", borderRadius: "4px", border: "1px solid #bfdbfe", display: "flex", alignItems: "center", gap: "4px" }}>
                 <Stethoscope size={12} /> Consultation
               </span>
-              <span style={{ background: "#f5f3ff", color: "#7c3aed", padding: "3px 8px", borderRadius: "4px", border: "1px solid #ddd6fe", display: "flex", alignItems: "center", gap: "4px" }}>
-                <Scissors size={12} /> Surgery / Dental
+              <span style={{ background: "#fffbeb", color: "#b45309", padding: "3px 8px", borderRadius: "4px", border: "1px solid #fde68a", display: "flex", alignItems: "center", gap: "4px" }}>
+                <FlaskConical size={12} /> Diagnostic / Lab
               </span>
               <span style={{ background: "#fef2f2", color: "#b91c1c", padding: "3px 8px", borderRadius: "4px", border: "1px solid #fecaca", display: "flex", alignItems: "center", gap: "4px" }}>
                 <AlertCircle size={12} /> Emergency
@@ -528,20 +535,20 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
               <caption className="cc-sr-only">Appointments for {niceDate}</caption>
               <thead>
                 <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-                  <th scope="col" style={{ width: "100px", padding: "12px", textAlign: "center", borderRight: "1px solid #e2e8f0", fontSize: "13px", color: "var(--navy)" }}>
+                  <th scope="col" style={{ width: "100px", padding: "12px", textAlign: "center", borderRight: "1px solid #e2e8f0", fontSize: "calc(13px * var(--fs, 1))", color: "var(--navy)" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
                       <Clock size={15} /> Time
                     </div>
                   </th>
                   {visibleDoctors.map(([id, name]) => (
-                    <th scope="col" key={id} style={{ padding: "12px 16px", textAlign: "left", fontSize: "13.5px", color: "var(--navy)", borderRight: "1px solid #e2e8f0" }}>
+                    <th scope="col" key={id} style={{ padding: "12px 16px", textAlign: "left", fontSize: "calc(13.5px * var(--fs, 1))", color: "var(--navy)", borderRight: "1px solid #e2e8f0" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <div style={{ background: "#e0f2fe", padding: "6px", borderRadius: "6px", color: "#0369a1" }}>
                           <Stethoscope size={16} />
                         </div>
                         <div>
                           <b>{name}</b>
-                          <small style={{ display: "block", color: "#64748b", fontWeight: "400", fontSize: "11.5px" }}>{dayEvents.filter(e => e.vetId === id).length} {dayEvents.filter(e => e.vetId === id).length === 1 ? "appointment" : "appointments"}</small>
+                          <small style={{ display: "block", color: "#64748b", fontWeight: "400", fontSize: "calc(11.5px * var(--fs, 1))" }}>{dayEvents.filter(e => e.vetId === id).length} {dayEvents.filter(e => e.vetId === id).length === 1 ? "appointment" : "appointments"}</small>
                         </div>
                       </div>
                     </th>
@@ -580,25 +587,25 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                                   boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
                                 }}
                               >
-                                <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                                <div className="cc-peek" {...peek(apptMatch.id)} style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
                                   <div style={{ background: "#fff", padding: "6px", borderRadius: "8px", border: `1px solid ${svc.border}`, color: svc.color, marginTop: "2px" }}>
                                     <SpeciesIcon species={apptMatch.species} size={18} />
                                   </div>
                                   <div>
                                     <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-                                      <b style={{ color: "var(--navy)", fontSize: "14px" }}>{apptMatch.pet}</b>
-                                      <span style={{ fontSize: "12px", color: "#64748b" }}>({apptMatch.owner})</span>
-                                      <span style={{ fontSize: "11px", fontWeight: "700", color: svc.color, display: "flex", alignItems: "center", gap: "3px" }}>
+                                      <b style={{ color: "var(--navy)", fontSize: "calc(14px * var(--fs, 1))" }}>{apptMatch.pet}</b>
+                                      <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>({apptMatch.owner})</span>
+                                      <span style={{ fontSize: "calc(11px * var(--fs, 1))", fontWeight: "700", color: svc.color, display: "flex", alignItems: "center", gap: "3px" }}>
                                         <Icon size={12} /> {svc.label}
                                       </span>
                                     </div>
 
-                                    <div style={{ fontSize: "12px", color: "#475569", marginTop: "2px" }}>
+                                    <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#475569", marginTop: "2px" }}>
                                       {apptMatch.reason}
                                     </div>
 
                                     {iv && (
-                                      <div style={{ marginTop: "4px", display: "flex", gap: "6px", fontSize: "11px" }}>
+                                      <div style={{ marginTop: "4px", display: "flex", gap: "6px", fontSize: "calc(11px * var(--fs, 1))" }}>
                                         <span style={{ background: "#fff", padding: "1px 6px", borderRadius: "4px", border: "1px solid #e2e8f0", color: "#334155" }}>
                                           Temp: {iv.temp}°C
                                         </span>
@@ -619,7 +626,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                                       className="btn sm"
                                       disabled={!!confirming[apptMatch.id]}
                                       onClick={() => handleAction(apptMatch.appt, "Scheduled")}
-                                      style={{ fontSize: "12px", padding: "4px 8px" }}
+                                      style={{ fontSize: "calc(12px * var(--fs, 1))", padding: "4px 8px" }}
                                     >
                                       {confirming[apptMatch.id] ? "Approving…" : "Approve"}
                                     </button>
@@ -629,7 +636,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                                     <button
                                       className="btn sm gold"
                                       onClick={() => setCheckInAppt(apptMatch.appt)}
-                                      style={{ fontSize: "12px", padding: "4px 8px" }}
+                                      style={{ fontSize: "calc(12px * var(--fs, 1))", padding: "4px 8px" }}
                                       disabled={!!checkInDateError(apptMatch.appt, bookingToday())}
                                       title={checkInDateError(apptMatch.appt, bookingToday()) || "Intake triage and record vitals"}
                                     >
@@ -666,7 +673,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                                   justifyContent: "center",
                                   gap: "4px",
                                   padding: "6px 8px",
-                                  fontSize: "11.5px",
+                                  fontSize: "calc(11.5px * var(--fs, 1))",
                                   background: "transparent",
                                 }}
                                 onClick={() => setBookingSlot({ date: sel, time, vetId })}
@@ -683,7 +690,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                                   color: "#94a3b8",
                                   textAlign: "center",
                                   padding: "6px 8px",
-                                  fontSize: "11px",
+                                  fontSize: "calc(11px * var(--fs, 1))",
                                   borderRadius: "6px",
                                   background: "#f8fafc"
                                 }}
@@ -706,10 +713,10 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
         <div className="card" style={{ padding: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "10px" }}>
             <div>
-              <h3 style={{ margin: "0 0 4px", fontSize: "18px" }}>
+              <h3 style={{ margin: "0 0 4px", fontSize: "calc(18px * var(--fs, 1))" }}>
                 Visits on {niceDate} {sel === TODAY ? "(Today)" : ""}
               </h3>
-              <p style={{ margin: 0, fontSize: "13px", color: "#64748b" }}>
+              <p style={{ margin: 0, fontSize: "calc(13px * var(--fs, 1))", color: "#64748b" }}>
                 {dayEvents.length} patient visit(s) scheduled on this date
               </p>
             </div>
@@ -737,20 +744,20 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                       background: e.status === "Checked-in" ? "#f0f7ff" : "#fff",
                     }}
                   >
-                    <div style={{ display: "flex", gap: "14px", alignItems: "center" }}>
-                      <b style={{ fontSize: "16px", color: "var(--navy)", minWidth: "55px" }}>{e.time}</b>
+                    <div className="cc-peek" {...peek(e.id)} style={{ display: "flex", gap: "14px", alignItems: "center" }}>
+                      <b style={{ fontSize: "calc(16px * var(--fs, 1))", color: "var(--navy)", minWidth: "55px" }}>{e.time}</b>
                       <div style={{ background: svc.bg, padding: "8px", borderRadius: "8px", border: `1px solid ${svc.border}`, color: svc.color }}>
                         <SpeciesIcon species={e.species} size={20} />
                       </div>
                       <div>
-                        <div style={{ fontWeight: "700", fontSize: "14.5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
+                        <div style={{ fontWeight: "700", fontSize: "calc(14.5px * var(--fs, 1))", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
                           <span>{e.pet}</span>
                           <span style={{ fontWeight: "400", color: "#64748b" }}>({e.owner})</span>
-                          <span style={{ fontSize: "11px", color: svc.color, fontWeight: "700", display: "flex", alignItems: "center", gap: "3px" }}>
+                          <span style={{ fontSize: "calc(11px * var(--fs, 1))", color: svc.color, fontWeight: "700", display: "flex", alignItems: "center", gap: "3px" }}>
                             <Icon size={12} /> {svc.label}
                           </span>
                         </div>
-                        <div style={{ fontSize: "12.5px", color: "#64748b", marginTop: "2px" }}>
+                        <div style={{ fontSize: "calc(12.5px * var(--fs, 1))", color: "#64748b", marginTop: "2px" }}>
                           <b>Reason:</b> {e.reason} &bull; <b>Doctor:</b> {e.vet}
                         </div>
                       </div>
@@ -790,12 +797,12 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                 placeholder="Search patient, owner, reason, or date..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                style={{ width: "100%", maxWidth: "340px", padding: "7px 12px", fontSize: "13px", borderRadius: "8px", border: "1.5px solid #cbd5e1" }}
+                style={{ width: "100%", maxWidth: "340px", padding: "7px 12px", fontSize: "calc(13px * var(--fs, 1))", borderRadius: "8px", border: "1.5px solid #cbd5e1" }}
               />
               <select
                 value={statusFilter}
                 onChange={e => setStatusFilter(e.target.value)}
-                style={{ padding: "7px 10px", fontSize: "13px", borderRadius: "8px", border: "1.5px solid #cbd5e1" }}
+                style={{ padding: "7px 10px", fontSize: "calc(13px * var(--fs, 1))", borderRadius: "8px", border: "1.5px solid #cbd5e1" }}
               >
                 <option value="">All Statuses</option>
                 {["Pending Approval", "Scheduled", "Checked-in", "In consultation", "Completed", "Cancelled", "Rejected", "No-show"].map(s => (
@@ -842,13 +849,13 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
 
             return (
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", padding: "8px 14px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "12.5px", color: "#475569" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", padding: "8px 14px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "calc(12.5px * var(--fs, 1))", color: "#475569" }}>
                   <span><b>Nearest upcoming dates first.</b> Previous visits follow, newest first. Select a row to view the pet card and visit details.</span>
                   <span style={{ fontWeight: 600 }}>{filtered.length} appointment(s)</span>
                 </div>
 
                 <div style={{ overflowX: "auto" }}>
-                  <PaginatedTable label="Appointments" resetKey={[search,statusFilter,vetFilter]} style={{ width: "100%", fontSize: "13px", borderCollapse: "collapse" }}>
+                  <PaginatedTable label="Appointments" resetKey={[search,statusFilter,vetFilter]} style={{ width: "100%", fontSize: "calc(13px * var(--fs, 1))", borderCollapse: "collapse" }}>
                     <thead>
                       <tr style={{ textAlign: "left", color: "#64748b", borderBottom: "2px solid #e2e8f0", background: "#f8fafc" }}>
                         <th style={{ padding: "10px 10px" }}>Date &amp; Time</th>
@@ -918,7 +925,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                             <td style={{ padding: "11px 10px", whiteSpace: "nowrap" }}>
                               {isPaid ? (
                                 <span style={{
-                                  fontSize: "11.5px",
+                                  fontSize: "calc(11.5px * var(--fs, 1))",
                                   fontWeight: 700,
                                   padding: "2px 8px",
                                   borderRadius: "6px",
@@ -929,7 +936,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                                 </span>
                               ) : a.status === "Completed" ? (
                                 <span style={{
-                                  fontSize: "11.5px",
+                                  fontSize: "calc(11.5px * var(--fs, 1))",
                                   fontWeight: 700,
                                   padding: "2px 8px",
                                   borderRadius: "6px",
@@ -939,7 +946,7 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
                                   {a.billingStatus || "Unbilled"}
                                 </span>
                               ) : (
-                                <span style={{ color: "#94a3b8", fontSize: "12px" }}>
+                                <span style={{ color: "#94a3b8", fontSize: "calc(12px * var(--fs, 1))" }}>
                                   {a.billingStatus || "Unbilled"}
                                 </span>
                               )}
@@ -956,6 +963,27 @@ export default function ClinicCalendar({ db, setDb, me, go, say }) {
           })()}
         </div>
       )}
+
+      {/* Pop-up card for the selected calendar entry */}
+      {(() => {
+        const visit = peekId && (Object.values(ev).flat().find(x => x.id === peekId));
+        if (!visit) return null;
+        const svc = getServiceCategory(visit.reason), { Icon } = svc, a = visit.appt;
+        const close = () => setPeekId(null);
+        const paid = a.billingStatus === "Paid";
+        return <VisitCard title={visit.pet} subtitle={`${[formatSpeciesLabel(visit.species), visit.breed].filter(Boolean).join(" · ")} · owner ${visit.owner}`}
+          tone={svc.color} icon={<SpeciesIcon species={visit.species} size={22} />} status={<Badge v={visit.status} />} onClose={close}
+          rows={[["Date", a.date], ["Time", fmt12(visit.time)], ["Veterinarian", visit.vet || "Not assigned"], ["Service", svc.label],
+            ["Reason", a.reason], ["Owner contact", visit.ownerPhone],
+            ["Intake vitals", a.intakeVitals ? [a.intakeVitals.temp && `${a.intakeVitals.temp}°C`, a.intakeVitals.weight && `${a.intakeVitals.weight} kg`].filter(Boolean).join(" · ") : ""],
+            ["Billing", paid ? `Paid${a.amount ? ` · ₱${Number(a.amount).toLocaleString()}` : ""}` : a.status === "Completed" ? (a.billingStatus || "Awaiting checkout") : ""],
+            ["Owner note", a.notes], [a.status === "Rejected" ? "Rejection reason" : "Cancellation reason", a.cancelReason]]}>
+          <button type="button" className="btn ghost sm" onClick={() => { close(); setCardAppt(a); setCardPetId(a.petId); }}>Open pet card</button>
+          {me.role === "assistant" && a.status === "Pending Approval" && <button type="button" className="btn sm" disabled={!!confirming[a.id]} onClick={() => handleAction(a, "Scheduled")}>{confirming[a.id] ? "Approving…" : "Approve"}</button>}
+          {me.role === "assistant" && a.status === "Scheduled" && <button type="button" className="btn sm gold" disabled={!!checkInDateError(a, bookingToday())} onClick={() => { close(); setCheckInAppt(a); }}>Check in</button>}
+          <span className="vcard-more" onClick={close}>{manageAppointment(a)}{doctorActions(a, visit.petObj)}</span>
+        </VisitCard>;
+      })()}
 
       {/* Quick Booking Modal from Open Slot */}
       {canBook && bookingSlot && (

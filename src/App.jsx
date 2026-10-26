@@ -79,6 +79,13 @@ export default function App() {
   const retrySync = useRef(() => {});
   const [otpEnabled, setOtpEnabled] = useState(() => getInitialView() !== "otp");
   const dbRef = useRef(db); dbRef.current = db;
+  // Wake the server and database while the person is still reading the first screen, and
+  // fetch the shared workspace code in the background, so signing in does not start from cold.
+  useEffect(() => {
+    try { fetch("/api/health?warm=1", { cache: "no-store", keepalive: true }).catch(() => {}); } catch (_) {}
+    const idle = window.requestIdleCallback || (f => setTimeout(f, 1200));
+    idle(() => { import("./Portal.jsx").catch(() => {}); });
+  }, []);
   useEffect(() => { bindStore(() => dbRef.current, setDb); }, []);
   // Restore an existing SERVER-VALIDATED session on reload. Never trust a saved user/role.
   // Verification, invite and password recovery URLs must keep their own screens.
@@ -223,7 +230,7 @@ export default function App() {
   if (me) {
     const RolePortal = CFG[me.role];
     const ready = loadedFor === `${me.id}:${me.role}`;
-    return <Suspense fallback={<div className="clinic-loading" role="status">Loading your workspace…</div>}>
+    return <Suspense fallback={<div className="clinic-loading" role="status"><span className="clinic-spinner" aria-hidden="true" />Opening your workspace…</div>}>
       <RolePortal key={`${me.id}:${me.role}`} me={me} db={ready ? db : blankClinic} setDb={setDb} onLogout={() => logout()}
         dataLoading={!ready} dataError={clinicError} refreshing={refreshing} onRetry={() => retrySync.current()} />
     </Suspense>;

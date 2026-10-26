@@ -33,8 +33,8 @@ function ViewOwnerModal({ owner, db, onClose }) {
               <User size={24} />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: "18px", color: "var(--navy, #0f172a)", fontWeight: 700 }}>{owner.name}</h3>
-              <span style={{ fontSize: "12px", color: "#64748b" }}>Registered Client ID: {owner.id}</span>
+              <h3 style={{ margin: 0, fontSize: "calc(18px * var(--fs, 1))", color: "var(--navy, #0f172a)", fontWeight: 700 }}>{owner.name}</h3>
+              <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b" }}>Registered Client ID: {owner.id}</span>
             </div>
           </div>
           <button className="btn ghost sm" onClick={onClose} style={{ padding: "6px" }} aria-label="Close">
@@ -44,24 +44,24 @@ function ViewOwnerModal({ owner, db, onClose }) {
 
         {/* Contact Details Card */}
         <div style={{ background: "#f8fafc", borderRadius: "12px", padding: "14px", border: "1px solid #e2e8f0", marginBottom: "16px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", fontSize: "13px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", fontSize: "calc(13px * var(--fs, 1))" }}>
             <div>
-              <span style={{ color: "#64748b", display: "block", fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Email Address</span>
+              <span style={{ color: "#64748b", display: "block", fontSize: "calc(11px * var(--fs, 1))", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Email Address</span>
               <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "3px", fontWeight: 500, color: "#1e293b" }}>
                 <Mail size={14} color="#64748b" />
                 <span>{owner.email}</span>
               </div>
             </div>
             <div>
-              <span style={{ color: "#64748b", display: "block", fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Mobile Number</span>
+              <span style={{ color: "#64748b", display: "block", fontSize: "calc(11px * var(--fs, 1))", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Mobile Number</span>
               <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "3px", fontWeight: 500, color: "#1e293b" }}>
                 <Phone size={14} color="#64748b" />
                 <span>{owner.phone}</span>
               </div>
             </div>
           </div>
-          <div style={{ marginTop: "10px", paddingTop: "10px", borderTop: "1px dashed #cbd5e1", fontSize: "13px" }}>
-            <span style={{ color: "#64748b", display: "block", fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Primary Address</span>
+          <div style={{ marginTop: "10px", paddingTop: "10px", borderTop: "1px dashed #cbd5e1", fontSize: "calc(13px * var(--fs, 1))" }}>
+            <span style={{ color: "#64748b", display: "block", fontSize: "calc(11px * var(--fs, 1))", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Primary Address</span>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "3px", fontWeight: 500, color: "#1e293b" }}>
               <MapPin size={14} color="#64748b" />
               <span>{owner.address || "No address provided"}</span>
@@ -71,12 +71,12 @@ function ViewOwnerModal({ owner, db, onClose }) {
 
         {/* Registered Patients */}
         <div style={{ marginBottom: "16px" }}>
-          <h4 style={{ margin: "0 0 10px", fontSize: "14px", fontWeight: 600, color: "var(--navy, #0f172a)", display: "flex", alignItems: "center", gap: "6px" }}>
+          <h4 style={{ margin: "0 0 10px", fontSize: "calc(14px * var(--fs, 1))", fontWeight: 600, color: "var(--navy, #0f172a)", display: "flex", alignItems: "center", gap: "6px" }}>
             <PawPrint size={16} color="#d97706" />
             <span>Registered Patients ({pets.length})</span>
           </h4>
           {pets.length === 0 ? (
-            <div style={{ padding: "14px", textAlign: "center", background: "#f8fafc", borderRadius: "10px", fontSize: "13px", color: "#64748b", border: "1px dashed #cbd5e1" }}>
+            <div style={{ padding: "14px", textAlign: "center", background: "#f8fafc", borderRadius: "10px", fontSize: "calc(13px * var(--fs, 1))", color: "#64748b", border: "1px dashed #cbd5e1" }}>
               No pets registered under this owner yet.
             </div>
           ) : (
@@ -84,13 +84,13 @@ function ViewOwnerModal({ owner, db, onClose }) {
               {pets.map(p => (
                 <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#ffffff", padding: "10px 14px", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
                   <div>
-                    <b style={{ color: "var(--navy, #0f172a)", fontSize: "14px" }}>{p.name}</b>
-                    <span style={{ fontSize: "12px", color: "#64748b", marginLeft: "8px" }}>
+                    <b style={{ color: "var(--navy, #0f172a)", fontSize: "calc(14px * var(--fs, 1))" }}>{p.name}</b>
+                    <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b", marginLeft: "8px" }}>
                       {p.species} • {p.breed} • {p.weight} kg
                     </span>
                   </div>
                   {p.vaccinationCardId && (
-                    <span style={{ fontSize: "11px", background: "rgba(16, 185, 129, 0.1)", color: "#065f46", padding: "3px 8px", borderRadius: "99px", fontWeight: 600 }}>
+                    <span style={{ fontSize: "calc(11px * var(--fs, 1))", background: "rgba(16, 185, 129, 0.1)", color: "#065f46", padding: "3px 8px", borderRadius: "99px", fontWeight: 600 }}>
                       <CreditCard size={11} aria-hidden="true" style={{ verticalAlign: "-1px", marginRight: 4 }} />{p.vaccinationCardId}
                     </span>
                   )}
@@ -101,7 +101,7 @@ function ViewOwnerModal({ owner, db, onClose }) {
         </div>
 
         {/* Security / RBAC Banner */}
-        <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "10px 14px", fontSize: "12px", color: "#1e40af", display: "flex", alignItems: "center", gap: "10px", marginBottom: "18px" }}>
+        <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "10px 14px", fontSize: "calc(12px * var(--fs, 1))", color: "#1e40af", display: "flex", alignItems: "center", gap: "10px", marginBottom: "18px" }}>
           <ShieldAlert size={20} style={{ flexShrink: 0 }} />
           <span>
             <b>Account Security:</b> Pet owner personal credentials and contact settings are strictly managed by the client or Clinic Administrator. Front desk staff have read-only access to client account records.
@@ -201,7 +201,7 @@ export default function EntityPage({ ent, db, setDb, me, say }) {
               padding: "10px 14px 10px 42px",
               borderRadius: "10px",
               border: "1px solid #cbd5e1",
-              fontSize: "14px",
+              fontSize: "calc(14px * var(--fs, 1))",
               background: "#f8fafc",
               outline: "none",
               color: "#1e293b",
@@ -228,7 +228,7 @@ export default function EntityPage({ ent, db, setDb, me, say }) {
                 padding: "10px 20px",
                 borderRadius: "10px",
                 fontWeight: 600,
-                fontSize: "14px",
+                fontSize: "calc(14px * var(--fs, 1))",
                 boxShadow: "0 2px 4px rgba(245, 158, 11, 0.25)",
                 whiteSpace: "nowrap",
                 cursor: "pointer"

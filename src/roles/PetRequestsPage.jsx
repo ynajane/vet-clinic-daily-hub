@@ -29,10 +29,10 @@ export default function PetRequestsPage({ db, setDb, me, say, go }) {
     <div className="staff-requests" style={{ padding: "0 0 24px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "10px" }}>
         <div>
-          <h2 style={{ margin: "0 0 4px", fontSize: "22px", color: "var(--navy)" }}>
+          <h2 style={{ margin: "0 0 4px", fontSize: "calc(22px * var(--fs, 1))", color: "var(--navy)" }}>
             Pets without a visit and registration history
           </h2>
-          <p style={{ margin: 0, color: "#64748b", fontSize: "13.5px" }}>
+          <p style={{ margin: 0, color: "#64748b", fontSize: "calc(13.5px * var(--fs, 1))" }}>
             Booked pets use one combined appointment and registration review at Front Desk. This page retains registration details and previous decisions. Approval keeps the patient’s treatment reference. Administered vaccinations are recorded by the attending veterinarian.
           </p>
         </div>
@@ -66,7 +66,7 @@ export default function PetRequestsPage({ db, setDb, me, say, go }) {
               placeholder="Search pet, breed, owner..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{ padding: "6px 12px", width: "100%", fontSize: "13px" }}
+              style={{ padding: "6px 12px", width: "100%", fontSize: "calc(13px * var(--fs, 1))" }}
             />
           </div>
         </div>
@@ -102,16 +102,16 @@ export default function PetRequestsPage({ db, setDb, me, say, go }) {
                   title={isPending ? "Review registration" : "View the recorded decision"}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                    <span style={{ fontSize: "28px", color: "var(--navy)" }}><I e={r.species || "paw"} size={28} /></span>
+                    <span style={{ fontSize: "calc(28px * var(--fs, 1))", color: "var(--navy)" }}><I e={r.species || "paw"} size={28} /></span>
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                        <b style={{ fontSize: "16px", color: "var(--navy)" }}>{r.name}</b>
-                        <span style={{ fontSize: "12px", background: "#f1f5f9", padding: "2px 8px", borderRadius: "6px", color: "#334155" }}>
+                        <b style={{ fontSize: "calc(16px * var(--fs, 1))", color: "var(--navy)" }}>{r.name}</b>
+                        <span style={{ fontSize: "calc(12px * var(--fs, 1))", background: "#f1f5f9", padding: "2px 8px", borderRadius: "6px", color: "#334155" }}>
                           {r.species} &bull; {r.breed || "Mixed"} &bull; {r.sex}
                         </span>
                         <span
                           style={{
-                            fontSize: "11.5px",
+                            fontSize: "calc(11.5px * var(--fs, 1))",
                             padding: "2px 8px",
                             borderRadius: "99px",
                             fontWeight: 700,
@@ -123,24 +123,24 @@ export default function PetRequestsPage({ db, setDb, me, say, go }) {
                           {r.status}
                         </span>
                         {r.cardId && (
-                          <span style={{ fontSize: "11.5px", background: "#e0f2fe", color: "#0369a1", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>
+                          <span style={{ fontSize: "calc(11.5px * var(--fs, 1))", background: "#e0f2fe", color: "#0369a1", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>
                             Card #{r.cardId}
                           </span>
                         )}
                       </div>
 
-                      <div style={{ fontSize: "13px", color: "#475569", marginTop: "4px" }}>
+                      <div style={{ fontSize: "calc(13px * var(--fs, 1))", color: "#475569", marginTop: "4px" }}>
                         <b>Owner:</b> {owner.name} ({owner.phone || "No phone"}) &bull; <b>Birth:</b> {r.birth} &bull; <b>Weight:</b> {r.weight} kg
                       </div>
 
                       {r.notes && (
-                        <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px", fontStyle: "italic" }}>
+                        <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#64748b", marginTop: "2px", fontStyle: "italic" }}>
                           Notes: &ldquo;{r.notes}&rdquo;
                         </div>
                       )}
 
                       {isDeclined && r.declineReason && (
-                        <div style={{ fontSize: "12px", color: "#dc2626", marginTop: "4px", fontWeight: 600 }}>
+                        <div style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#dc2626", marginTop: "4px", fontWeight: 600 }}>
                           Declined reason: {r.declineReason}
                         </div>
                       )}
@@ -158,7 +158,7 @@ export default function PetRequestsPage({ db, setDb, me, say, go }) {
                         <b>View registration / booking details</b>
                       </button>
                     ) : isApproved ? (
-                      <span style={{ fontSize: "12px", color: "#16a34a", fontWeight: 600 }}>
+                      <span style={{ fontSize: "calc(12px * var(--fs, 1))", color: "#16a34a", fontWeight: 600 }}>
                         Approved ({r.approvedAt || "date not recorded"})
                       </span>
                     ) : (
