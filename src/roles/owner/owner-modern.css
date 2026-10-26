@@ -218,6 +218,12 @@
 .shell.th-owner tbody tr:first-child td{border-top:0}
 .shell.th-owner tbody tr:hover td{background:#f8faff}
 .shell.th-owner .vh-r{transition:background .15s}
+.shell.th-owner .vh-type{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11.5px;font-weight:700;white-space:nowrap;background:#e5edfb;color:#1e3a8a;border:1px solid #cbdcf5}
+.shell.th-owner .vh-type.is-vaccination{background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe}
+.shell.th-owner .vh-type.is-deworming{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.shell.th-owner .vh-type.is-grooming{background:#fce7f3;color:#9d174d;border-color:#fbcfe8}
+.shell.th-owner .vh-doses{border:1px solid #bfdbfe;border-left:5px solid #2563eb;border-radius:10px;background:#f0f7ff;padding:12px 14px;margin:0 0 14px}
+.shell.th-owner .vh-doses h4{margin:0 0 8px}.shell.th-owner .vh-doses ul{margin:0 0 10px;padding-left:18px}.shell.th-owner .vh-doses li{margin:4px 0}
 .shell.th-owner .badge{padding:3px 12px;font-size:12px;font-weight:600;background:#fff4cc;color:#7a5200}
 .shell.th-owner .badge.ok{background:#dcf5e6;color:#14532d}
 .shell.th-owner .badge.er{background:#fde4e0;color:#8a2417}
@@ -535,3 +541,11 @@
  .shell.th-owner .ow-book-form .ow-svc b{grid-column:2;align-self:center;overflow-wrap:anywhere}
  .shell.th-owner .ow-book-form .ow-svc small{grid-column:1/-1}
 }
+
+/* Status chips and amounts that sit next to their notes instead of running into them. */
+.shell.th-owner .ow-status-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 2px}
+.shell.th-owner .ow-chip-status{display:inline-block;padding:2px 11px;border-radius:99px;font-size:12px;font-weight:700;background:#e5edfb;color:#1e3a8a;border:1px solid #cbdcf5}
+.shell.th-owner .ow-chip-status.is-Paid{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+.shell.th-owner .ow-chip-status.is-Unpaid{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.shell.th-owner .ow-chip-status.is-Unbilled{background:#f1f5f9;color:#475569;border-color:#e2e8f0}
+.shell.th-owner .ow-amount{margin:4px 0 0}

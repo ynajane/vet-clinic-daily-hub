@@ -33,7 +33,7 @@
 .shell.th-owner[data-page] .ow-appt-toolbar,.shell.th-owner[data-page] .vh-filters,.shell.th-owner[data-page] .ow-bill-filters,.shell.th-owner[data-page] .ow-price-filters{padding:16px;background:#f8fafd;border:1px solid #e2e9f4;border-radius:14px;gap:12px}
 .shell.th-owner[data-page] .ow-bill-filters,.shell.th-owner[data-page] .ow-price-filters{margin:18px 0}
 .shell.th-owner[data-page] .ow-prices-heading{align-items:flex-start}
-.shell.th-owner[data-page] .ow-price-list>li{padding:20px 0;border-color:#e8edf5}
+.shell.th-owner[data-page] .ow-price-list>li{padding:18px 22px;border-color:#e8edf5}
 .shell.th-owner[data-page] .ow-price-amount strong{font-size:21px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .shell.th-owner[data-page] .ow-price-group>h4{display:flex;align-items:center;gap:10px;font-size:16px;margin-top:28px}
 .shell.th-owner[data-page] .ow-price-group>h4:before{content:"";width:4px;height:20px;border-radius:4px;background:#4774ce}

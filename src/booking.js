@@ -73,7 +73,9 @@ export const niceDay = d => new Date(d + "T00:00:00").toLocaleDateString("en-PH"
 
 export const inferService = r => {
   if (!r) return "";
-  if (/vaccin|rabies|booster|deworm|5-in-1|6-in-1|8-in-1|kennel|feline|\bshot/i.test(r)) return "vaccination";
+  // Deworming is its own service, as it is on the server.
+  if (/deworm/i.test(r)) return "deworming";
+  if (/vaccin|rabies|booster|5-in-1|6-in-1|8-in-1|kennel|feline|\bshot/i.test(r)) return "vaccination";
   return "checkup";
 };
 export const serviceOf = a => a.service && SERVICES[a.service] ? a.service : inferService(a.reason);

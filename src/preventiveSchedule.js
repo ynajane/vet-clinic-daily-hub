@@ -42,7 +42,7 @@ export function formatSpeciesLabel(species) {
     case "Lagomorph": return "Lagomorph (Rabbit)";
     case "Rodent": return "Rodent (Hamster / Guinea Pig / etc.)";
     case "Avian": return "Avian (Bird)";
-    default: return "Other / Exotic";
+    default: return "Other";
   }
 }
 
@@ -880,10 +880,10 @@ export function getPreventiveSchedule(birthDate, rawSpecies = "Canine", complete
         daysOffset: 180,
         category: "exam",
         className: "Wellness Exam",
-        care: "Comprehensive Exotic Wellness & Parasite Check",
+        care: "Comprehensive Wellness & Parasite Check",
         target: "Species-specific metabolic & environmental husbandry review",
         protocol: "Annual veterinary health inspection",
-        constraints: "Periodic exotic wellness protocol.",
+        constraints: "Periodic wellness protocol.",
         isCore: true
       }
     ];

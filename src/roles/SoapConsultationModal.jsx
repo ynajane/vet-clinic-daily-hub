@@ -9,6 +9,7 @@ import {useFormValidation} from '../components/useFormValidation.jsx';
 import AdmissionForm from './AdmissionForm.jsx';
 import { useClinicRead } from '../useClinicRead.js';
 import ClinicDialog from "../components/ClinicDialog.jsx";
+import AllergyEditor from "../components/AllergyEditor.jsx";
 import { useSoapDraft } from "../useSoapDraft.js";
 import { VaccineEstimate } from "../components/VaccineBooking.jsx";
 import { PaginatedList } from "../components/Pagination.jsx";
@@ -378,6 +379,8 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
             </div>
           </div>
         ) : null}
+
+        <AllergyEditor key={pet.id + (pet.allergies || []).join("|")} pet={pet} setDb={setDb} />
 
         {/* Tab switch */}
         <div className="tabs" style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>

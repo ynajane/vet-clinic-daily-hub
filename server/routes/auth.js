@@ -16,6 +16,7 @@ import {
 } from '../security.js';
 import { sendMail, sendSms } from '../services.js';
 import { validateOwnerRegistration } from '../registrationValidation.js';
+import { validateStaffSetupField } from '../../src/staffSetupValidation.js';
 
 export const getAppUrl = () => appUrl();
 
@@ -640,6 +641,10 @@ router.post('/staff/accept-invite', async (req,res) => {
   const validName=v=>typeof v==='string'&&v.trim().length>0&&v.trim().length<=50&&/^[\p{L} .'-]+$/u.test(v.trim());
   const phone=typeof mobileNumber==='string'?parsePhoneNumberFromString(mobileNumber,'PH'):null;
   if(typeof token!=='string'||token.length>256||!token||!validName(firstName)||!validName(lastName)||typeof birthday!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(birthday)||!Number.isFinite(Date.parse(birthday))||new Date(birthday).toISOString().slice(0,10)!==birthday||birthday<'1900-01-01'||birthday>=new Date().toISOString().slice(0,10)||!phone?.isValid()||!['MOBILE','FIXED_LINE_OR_MOBILE'].includes(phone.getType())) return res.status(400).json({error:'Enter your full name, real birth date and a valid mobile number.'});
+  // The setup form's own rules apply on the server too: age 18+, a real address, field lengths.
+  const setupErrors=Object.fromEntries(['firstName','lastName','middleInitial','birthday','houseStreet','city','state','zipCode','mobileNumber'].map(field=>[field,validateStaffSetupField(field,req.body[field],req.body)]).filter(([,message])=>message));
+  if(typeof country!=='undefined' && (typeof country!=='string' || country.length>100))setupErrors.country='Check the country.';
+  if(Object.keys(setupErrors).length)return res.status(400).json({error:Object.values(setupErrors)[0],errors:setupErrors});
   const pwErr=validatePasswordComplexity(password);
   if(pwErr)return res.status(400).json({error:pwErr});
   try {

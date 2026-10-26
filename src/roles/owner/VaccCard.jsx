@@ -18,7 +18,7 @@ export function OwnerVacc({db,setDb,me,go}){
   {photoError && <p className="err" role="alert">{photoError}</p>}
   <p role="status" aria-live="polite">{photoBusy ? 'Saving pet photo…' : photoStatus}</p>
   <fieldset disabled={photoBusy} style={{border:0,padding:0,margin:0,minWidth:0}}>
-  <div className="row" style={{flexWrap:'wrap',gap:12}}><label htmlFor="card-pet">Pet</label><select id="card-pet" value={sel} onChange={e=>setSelected(e.target.value)}>{pets.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select><button className="btn ghost sm" onClick={()=>{setPrefill({petId:p.id});go('appts');}}>Book a visit</button></div>
+  <div className="row" style={{flexWrap:'wrap',gap:12,alignItems:'center',marginBottom:12}}><label htmlFor="card-pet" style={{margin:0,fontWeight:700}}>Pet</label><select id="card-pet" style={{width:'auto',minWidth:220,maxWidth:'100%',flex:'0 1 320px'}} value={sel} onChange={e=>setSelected(e.target.value)}>{pets.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select><button className="btn ghost sm" onClick={()=>{setPrefill({petId:p.id});go('appts');}}>Book a visit</button></div>
   <DigitalVetCard key={p.id} petId={p.id} appointments={scope(db,me,'appts')} onBook={prefill=>{setPrefill(prefill);go('appts');}} portrait={<PetPortrait pet={p} inputRef={fileInputRef} onChange={handlePhotoFileChange} onRemove={()=>savePhoto()}/>}/>
   </fieldset>
  </section>;

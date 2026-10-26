@@ -1,4 +1,4 @@
-import {pn,pwOk} from './validate.js';
+import {pn,pwOk} from './textRules.js';
 import {parsePhoneNumberFromString} from 'libphonenumber-js/max';
 
 export function validateStaffSetupField(field, val, formData) {

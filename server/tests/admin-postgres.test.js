@@ -88,11 +88,11 @@ test('invitations validate roles, preserve the admin session and can be revoked 
  const list=await call('admin','GET','/admin/staff');const invitation=list.data.invitations.find(i=>i.email==='new@example.invalid');assert.equal(invitation.status,'Pending');assert.doesNotMatch(JSON.stringify(invitation),/token/);
  assert.equal((await call('admin','POST',`/admin/invitations/${invitation.id}/revoke`,{reason:'Synthetic replacement'})).status,200);
  const token=new URL(invited.data.inviteLink).searchParams.get('invite');assert.equal((await call(null,'GET',`/auth/staff/invite-info?token=${token}`)).status,404);
- assert.equal((await call(null,'POST','/auth/staff/accept-invite',{token,firstName:'New',lastName:'Staff',birthday:'1990-01-01',mobileNumber:'+639170000001',password})).status,409);
+ assert.equal((await call(null,'POST','/auth/staff/accept-invite',{token,firstName:'New',lastName:'Staff',birthday:'1990-01-01',mobileNumber:'+639170000001',password,houseStreet:'12 Test Street',city:'Makati',state:'Metro Manila',zipCode:'1200'})).status,409);
 });
 test('staff setup validates identity, consumes invitations once, and never exposes the OTP',async()=>{
  const invited=await call('admin','POST','/auth/staff/invite',{role:'assistant',name:'Accepted Staff',email:'accepted@example.invalid'});const token=new URL(invited.data.inviteLink).searchParams.get('invite');
- const body={token,firstName:'Accepted',lastName:'Staff',birthday:'1990-01-01',mobileNumber:'+639170000001',password};
+ const body={token,firstName:'Accepted',lastName:'Staff',birthday:'1990-01-01',mobileNumber:'+639170000001',password,houseStreet:'12 Test Street',city:'Makati',state:'Metro Manila',zipCode:'1200'};
  assert.equal((await call(null,'POST','/auth/staff/accept-invite',{...body,birthday:'2025-02-30'})).status,400);
  const results=await Promise.all([call(null,'POST','/auth/staff/accept-invite',body),call(null,'POST','/auth/staff/accept-invite',body)]);assert.deepEqual(results.map(r=>r.status).sort(),[200,409]);
  const good=results.find(r=>r.status===200);assert.equal(good.data.needsOtp,true);assert.equal(good.data.devCode,undefined);assert.equal((await call(good.data.token,'GET','/auth/me')).status,403);
@@ -105,7 +105,7 @@ test('invitation acceptance rechecks expiry after waiting for a revocation lock'
  try{
   await blocker.query('BEGIN');
   await blocker.query('UPDATE staff_invitations SET expired_at=clock_timestamp() WHERE token_hash=$1',[sha256(token)]);
-  accepting=call(null,'POST','/auth/staff/accept-invite',{token,firstName:'Revoked',lastName:'Race',birthday:'1990-01-01',mobileNumber:'+639170000001',password});
+  accepting=call(null,'POST','/auth/staff/accept-invite',{token,firstName:'Revoked',lastName:'Race',birthday:'1990-01-01',mobileNumber:'+639170000001',password,houseStreet:'12 Test Street',city:'Makati',state:'Metro Manila',zipCode:'1200'});
   let waiting=false;
   for(let n=0;n<100;n++){
    waiting=(await query("SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE 'SELECT * FROM staff_invitations WHERE token_hash=$1 FOR UPDATE%') AS waiting")).rows[0].waiting;

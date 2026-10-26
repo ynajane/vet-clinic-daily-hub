@@ -31,6 +31,7 @@ import { ensureCareSchema, validateCarePlan } from "../careWorkflow.js";
 import { priceCatalog, canonicalInvoice, validateCheckoutAddons } from "../priceCatalog.js";
 import { adminRouter } from "./admin.js";
 import { refreshManagedCatalog } from "../clinicCatalog.js";
+import { saveAllergies } from "../allergies.js";
 import { ADMINISTERED_VACCINES } from "../../src/vaccineSchedule.js";
 import {walkInReasonError} from '../../src/walkInRegistration.js';
 import { validateWalkInRegistration } from '../walkInRegistration.js';
@@ -1004,6 +1005,7 @@ clinicRouter.post(['/owner/pets/:id/photo','/pets/:id/photo'],async (req,res) =>
   } catch(error) {res.status(error.status || 500).json({error:error.status ? error.message : 'Unable to save the pet picture. Please retry.'});}
 });
 
+clinicRouter.put('/pets/:id/allergies', saveAllergies);
 clinicRouter.put('/pets/:id/reference-history', async (req,res) => {
   try {
     const error=Object.values(externalHistoryErrors(req.body)).find(Boolean);

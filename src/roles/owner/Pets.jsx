@@ -30,7 +30,7 @@ export const SPECIES = [
   "Lagomorph (Rabbit)",
   "Rodent (Hamster / Guinea Pig / etc.)",
   "Avian (Bird)",
-  "Other / Exotic"
+  "Other"
 ];
 
 export const NEUTERED = ["Yes", "No", "Not sure"];
@@ -157,14 +157,7 @@ export const BREEDS_BY_SPECIES = {
     "Dove / Pigeon",
     "Other (type your own)"
   ],
-  "Other / Exotic": [
-    "African Pygmy Hedgehog",
-    "Sugar Glider",
-    "Ferret",
-    "Bearded Dragon (Reptile)",
-    "Leopard Gecko (Reptile)",
-    "Red-eared Slider (Turtle)",
-    "Sulcata Tortoise",
+  "Other": [
     "Other (type your own)"
   ]
 };
@@ -175,7 +168,6 @@ BREEDS_BY_SPECIES.Cat = BREEDS_BY_SPECIES["Feline (Cat)"];
 BREEDS_BY_SPECIES.Rabbit = BREEDS_BY_SPECIES["Lagomorph (Rabbit)"];
 BREEDS_BY_SPECIES.Rodent = BREEDS_BY_SPECIES["Rodent (Hamster / Guinea Pig / etc.)"];
 BREEDS_BY_SPECIES.Bird = BREEDS_BY_SPECIES["Avian (Bird)"];
-BREEDS_BY_SPECIES.Other = BREEDS_BY_SPECIES["Other / Exotic"];
 
 export const GUIDANCE_BY_SPECIES = {
   "Canine (Dog)": "Canine Protocol (VCMS v2.0): Bi-weekly deworming starts at Day 14, switching to monthly at Day 90. Core DHPP starts at 6 weeks (Day 42), with Rabies at 12+ weeks (Day 84). Flea/tick/heartworm starts at 8 weeks. Strict heartworm antigen testing required for dogs >= 7 months with safety gaps.",
@@ -183,7 +175,7 @@ export const GUIDANCE_BY_SPECIES = {
   "Lagomorph (Rabbit)": "Lagomorph Protocol (VCMS v2.0): Annual RHDV1/RHDV2 vaccination starts at Day 35. High-fiber timothy hay (80%+) and semi-annual dental checks are vital. Strict toxicology block: Fipronil (Frontline) is strictly prohibited due to fatal neurotoxicity.",
   "Rodent (Hamster / Guinea Pig / etc.)": "Rodent Protocol (VCMS v2.0): Continuous elodont dentition requires semi-annual molar and incisor occlusion surveillance. Monitor for incisor overgrowth, molar spurs, and wet chin / drooling.",
   "Avian (Bird)": "Avian Protocol (VCMS v2.0): Annual fecal float screening at 6 months. Home Hazard Warning: Inhaled PTFE/Teflon cookware fumes and aerosol sprays cause fatal hemorrhagic respiratory failure.",
-  "Other / Exotic": "Exotic Species Protocol: Specialized husbandry, temperature regulation, and regular preventative veterinary evaluations."
+  "Other": "Other species: the veterinarian will advise on the right care and preventive visits for this pet after the first examination."
 };
 
 const getYesterday = () => {
@@ -613,7 +605,7 @@ export function PetProfileModal({ pet, db, setDb, me, onClose, onVacc, onBook })
       </div>
 
       <p className="ow-hint">Need to change the name, breed or birth date? Ask the clinic front desk, they keep the official record.</p>
-      <div className="row end"><button className="btn ghost" onClick={onVacc}>Vaccination card</button><button className="btn" onClick={onBook}>Book a visit</button></div>
+      <div className="row end"><button className="btn ghost" onClick={onVacc}>Vaccination card</button><button className="btn" onClick={() => onBook()}>Book a visit</button></div>
     </Modal>
   );
 }

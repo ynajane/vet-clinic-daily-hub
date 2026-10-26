@@ -5,7 +5,14 @@ import "./owner.css";
 
 /* Hand-off between pages (e.g. "Book a visit" on a pet card opens the form with that pet selected). */
 export const prefill = { data: null };
-export const setPrefill = d => { prefill.data = d; };
+// A shortcut may only carry plain values. Anything else (such as a click event) would break the booking form.
+const PREFILL_TEXT = ['petId', 'service', 'reason', 'date', 'followUpId', 'vaccineName', 'vaccineDueDate'];
+export const setPrefill = d => {
+  if (!d || typeof d !== 'object') { prefill.data = null; return; }
+  const safe = Object.fromEntries(PREFILL_TEXT.filter(key => typeof d[key] === 'string' && d[key]).map(key => [key, d[key]]));
+  if (d.fromVaccineCard === true) safe.fromVaccineCard = true;
+  prefill.data = safe.petId || safe.service || safe.reason || safe.date ? safe : null;
+};
 
 export const pad = n => String(n).padStart(2, "0");
 export const nowHM = () => { const d = new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };

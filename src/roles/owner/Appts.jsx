@@ -35,7 +35,9 @@ const mkRules = (db, me, editing) => v => ({...bookingReasonErrors(v.service,v.r
 function BookForm({ db, setDb, me, say, editing, start, onClose, onExisting }) {
   const TODAY = bookingToday(), LAST = lastDay();
   const pets = scope(db, me, "pets").filter(p=>p.registrationStatus!=="Declined"), owner = db.owners.find(o => o.id === me.ownerId) || {};
-  const prev = editing ? serviceOf(editing) : "", svc0 = editing ? prev : start?.service || (start?.reason ? inferService(start.reason) : "");
+  const prev = editing ? serviceOf(editing) : "", requested = editing ? prev : start?.service || (start?.reason ? inferService(start.reason) : ""),
+    // Surgery and dental are no longer booked directly; an old shortcut opens a check-up instead.
+    svc0 = !editing && SERVICES[requested]?.retired ? "checkup" : requested;
   const catalog = useBookingCatalog()?.data?.catalog || [];
   const initialReason = editing?.reason || start?.reason || start?.vaccineName || "";
   const [choice0,other0]=splitReason(svc0,initialReason);
@@ -302,8 +304,15 @@ export default function OwnerAppts({ db, setDb, me, say }) {
     </div>
     {waiting > 0 && <div className="ow-banner wa"><span>{waiting} visit(s) waiting for the clinic to confirm. You can still edit or cancel them.</span></div>}
 
-    <style>{`.ap-split{display:grid;grid-template-columns:minmax(300px,400px) minmax(0,1fr);gap:16px;align-items:start}
-@media(max-width:980px){.ap-split{grid-template-columns:1fr}}
+    <style>{`.ap-split{display:grid;grid-template-columns:minmax(260px,320px) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:1180px){.ap-split{grid-template-columns:1fr}.ap-split .ow-cal{max-width:520px}}
+.ap-split .ow-calhd{flex-wrap:nowrap;gap:6px}.ap-split .ow-calhd h2{min-width:0;font-size:18px;white-space:nowrap}
+.ap-split .tw{overflow-x:visible}.ap-split table{width:100%;table-layout:auto}
+.ap-split td,.ap-split th{vertical-align:top}.ap-when{white-space:nowrap}.ap-when b,.ap-visit b{display:block;font-weight:700;color:var(--navy)}
+.ap-visit{min-width:170px}.ap-status{min-width:180px;max-width:260px}.ap-status .visit-next-step{margin:6px 0 0;padding:6px 8px;font-size:11.5px;line-height:1.4}
+.ap-status .badge{display:inline-block;white-space:nowrap;margin-bottom:4px}
+.ap-actions{display:flex;flex-wrap:nowrap;gap:6px;justify-content:flex-end}td.act{white-space:nowrap;vertical-align:middle}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .ap-split .ow-cal{padding:12px}.ap-split .ow-day{min-height:50px;align-items:center;padding:4px}
 .ap-split .ow-day .ow-hol,.ap-split .ow-ev span,.ap-split .ow-more{display:none}
 .ap-split .ow-evs{display:flex;flex-wrap:wrap;gap:2px;justify-content:center}`}</style>
@@ -383,20 +392,18 @@ export default function OwnerAppts({ db, setDb, me, say }) {
           <div className="tw">
             <PaginatedTable label="My appointments" resetKey={[q,view,pet,svc,day]}>
               <thead>
-                <tr><th>Date</th><th>Time</th><th>Pet</th><th>Veterinarian</th><th>Reason</th><th>Status</th><th /></tr>
+                <tr><th>When</th><th>Pet</th><th>Visit</th><th>Status</th><th><span className="sr-only">Actions</span></th></tr>
               </thead>
               <tbody>
                 {list.map(a => {
                   const p = db.pets.find(x => x.id === a.petId) || {}, open = OPEN.includes(a.status) && a.date >= TODAY;
                   return (
                     <tr key={a.id} className="vh-r" tabIndex={0} style={{ cursor: "pointer" }} title="Click to see details" onClick={() => setModal({ view: a })} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setModal({ view: a }); } }}>
-                      <td>{a.date}</td>
-                      <td>{fmt12(a.time)}{a.service && SERVICES[a.service] && <small className="ow-sub">to {fmt12(addMin(a.time, durOf(a)))}</small>}</td>
-                      <td><span className="who"><span className="av"><I e={ICON[p.species]} size={16} /></span>{p.name}</span></td>
-                      <td>{(liveDoctors(db).find(v => v[0] === a.vetId) || [])[1] || "—"}</td>
-                      <td>{a.reason}<VaccineEstimate appointment={a} compact />{a.service && SERVICES[a.service] && <small className="ow-sub">{SERVICES[a.service].label} · {durText(durOf(a))}</small>}{a.notes && <small className="ow-sub">Note: {a.notes}</small>}{a.cancelReason && <small className="ow-sub">{a.status === "Rejected" ? "Rejected" : "Cancelled"}: {a.cancelReason}</small>}</td>
-                      <td><Badge v={a.status} /><small className="ow-sub">{STATUS_NOTE[a.status]}</small><VisitNextStep visit={a} /></td>
-                      <td className="act">{open && <><button className="btn ghost sm" onClick={e => { e.stopPropagation(); setModal({ book: true, editing: a }); }}>Edit</button> <button className="btn danger sm" onClick={e => { e.stopPropagation(); setModal({ cancel: a }); }}>Cancel</button></>}</td>
+                      <td data-label="When" className="ap-when"><b>{a.date}</b><small className="ow-sub">{fmt12(a.time)}{a.service && SERVICES[a.service] ? ` – ${fmt12(addMin(a.time, durOf(a)))}` : ""}</small></td>
+                      <td data-label="Pet"><span className="who"><span className="av"><I e={ICON[p.species]} size={16} /></span>{p.name}</span></td>
+                      <td data-label="Visit" className="ap-visit"><b>{a.reason}</b><small className="ow-sub">With {(liveDoctors(db).find(v => v[0] === a.vetId) || [])[1] || "a veterinarian"}</small><VaccineEstimate appointment={a} compact />{a.service && SERVICES[a.service] && <small className="ow-sub">{SERVICES[a.service].label} · {durText(durOf(a))}</small>}{a.notes && <small className="ow-sub">Note: {a.notes}</small>}{a.cancelReason && <small className="ow-sub">{a.status === "Rejected" ? "Rejected" : "Cancelled"}: {a.cancelReason}</small>}</td>
+                      <td data-label="Status" className="ap-status"><Badge v={a.status} /><small className="ow-sub">{STATUS_NOTE[a.status]}</small><VisitNextStep visit={a} /></td>
+                      <td className="act" data-label="">{open && <div className="ap-actions"><button className="btn ghost sm" onClick={e => { e.stopPropagation(); setModal({ book: true, editing: a }); }}>Edit</button> <button className="btn danger sm" onClick={e => { e.stopPropagation(); setModal({ cancel: a }); }}>Cancel</button></div>}</td>
                     </tr>
                   );
                 })}

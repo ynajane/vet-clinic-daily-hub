@@ -1,4 +1,5 @@
 import ClinicDialog from '../components/ClinicDialog.jsx';
+import AllergyEditor from '../components/AllergyEditor.jsx';
 import {useUnsavedChanges} from '../components/useUnsavedChanges.jsx';
 import {visitFormType} from '../visitForm.js';
 import { useFormValidation } from '../components/useFormValidation.jsx';
@@ -254,6 +255,8 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
             <span style={{ color: "#dc2626", fontSize: "13px" }}>{pet.allergies.join(", ")}</span>
           </div>
         )}
+
+        {pet.id && <AllergyEditor key={pet.id + (pet.allergies || []).join("|")} pet={pet} setDb={setDb} />}
 
         {dateError && <p className="err" role="alert">{dateError}</p>}
 

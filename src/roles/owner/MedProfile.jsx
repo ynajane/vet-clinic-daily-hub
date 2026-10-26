@@ -44,7 +44,7 @@ export default function MedProfile({ p,me }) {
           </ul>
         ) : (
           <div style={{ background: "#f8fafc", border: "1px dashed var(--ln)", borderRadius: "10px", padding: "14px 18px", color: "#64748b", fontSize: "0.88rem" }}>
-            <span>No allergies recorded for {p.name}. Tell the clinic about any known reactions.</span>
+            <span>No allergies recorded for {p.name}. Tell the front desk about any known reactions at your next visit. The clinic records them on your pet’s profile.</span>
           </div>
         )}
       </section>

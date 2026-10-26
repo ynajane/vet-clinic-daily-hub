@@ -44,8 +44,8 @@ export const pwStrength = (p) => {
   return [str.length >= 12, /[A-Z]/.test(str), /[a-z]/.test(str), /\d/.test(str), /[^A-Za-z0-9]/.test(str)].filter(Boolean).length;
 };
 
-export const pn = (v) => /^(?=.*\p{L})[\p{L}\p{M}'’ -]{2,50}$/u.test(v) ? '' : '2-50 letters, spaces, hyphens or apostrophes only.';
-export const pwOk = (v) => v.length >= 12 && v.length <= 128 && /[A-Z]/.test(v) && /[a-z]/.test(v) && /\d/.test(v) && /[^A-Za-z0-9]/.test(v);
+import { pn, pwOk } from './textRules.js';
+export { pn, pwOk };
 export const emOk = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) && v.length <= 255;
 
 export function vPassword(v, { username = '', name = '' } = {}) {
@@ -141,7 +141,6 @@ export const SPECIES = [
   "Lagomorph (Rabbit)",
   "Rodent (Hamster / Guinea Pig / etc.)",
   "Avian (Bird)",
-  "Other / Exotic",
   "Canine", "Dog",
   "Feline", "Cat",
   "Lagomorph", "Rabbit",
