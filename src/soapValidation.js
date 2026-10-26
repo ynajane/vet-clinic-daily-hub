@@ -1,6 +1,7 @@
 import {elapsedDays} from './visitCare.js';
 import {vaccinationCardFieldErrors} from './vaccinationCardFields.js';
 import {boosterDate} from './clinicalWorkflow.js';
+import {ADMINISTERED_VACCINES} from './vaccineSchedule.js';
 import {procedureErrors,procedureNote} from './procedureDecision.js';
 // Match the consultation endpoint's SOAP, date and weight limits before sending.
 const validDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
@@ -27,6 +28,7 @@ export function validateSoapFields(form, today, birth, visitDate) {
   if (form.giveVaccine) {
     for(const [field,label] of [['brand','Product brand'],['batch','Batch / lot']]) if(String(form[field] || '').length>60) errors[field]=`${label} cannot exceed 60 characters.`;
     if (!form.vaccine) errors.vaccine='Please select the administered biological / vaccine.';
+    else if (!ADMINISTERED_VACCINES.includes(form.vaccine)) errors.vaccine='Choose the vaccine from the list.';
     if (!Number.isInteger(Number(form.doseNo)) || Number(form.doseNo)<1 || Number(form.doseNo)>20) errors.doseNo='Enter the administered dose number (1–20).';
     if (!Number.isInteger(Number(form.doseOf)) || Number(form.doseOf)<1 || Number(form.doseOf)>20 || Number(form.doseOf)<Number(form.doseNo)) errors.doseOf='Total planned doses must be 1–20 and at least the administered dose number.';
     if (!boosterDate(form.date,form.intervalDays)) errors.intervalDays='Enter a whole booster interval from 1 to 3,650 days and a valid administration date.';

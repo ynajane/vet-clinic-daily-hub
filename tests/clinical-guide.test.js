@@ -56,3 +56,31 @@ test('profile edits follow the registration address rules', () => {
   assert.ok(addressErrors({...good,zipCode:'12A0'}).zipCode);
   assert.ok(contactFieldErrors({email:'a@gmail.com',phone:'+639171234567',...good,city:''}).city);
 });
+
+import {summarize,categoryOf,categoryOptions} from '../src/reportSummary.js';
+test('report summaries and filters come from the saved records', () => {
+  const db={vets:[{id:'v1',name:'Dr. A'}],pets:[],vacc:[]};
+  const appts=[{id:1,status:'Completed',billingStatus:'Paid',amount:500.5},{id:2,status:'Completed',billingStatus:'Unpaid',amount:200},{id:3,status:'No-show'},{id:4,status:'Cancelled'}];
+  const rows=Object.fromEntries(summarize('appts',appts,db));
+  assert.equal(rows['Matching records'],'4');
+  assert.equal(rows['Paid amount'],'₱500.50');
+  assert.equal(rows['Completed, awaiting payment'],'1');
+  assert.equal(rows['Completion rate (of closed visits)'],'50%');
+  assert.equal(rows['No-show rate (of arrivals expected)'],'33%');
+  assert.deepEqual(categoryOptions('appts',appts,db),['Cancelled','Completed','No-show']);
+  assert.equal(categoryOf('pets',{species:'Dog'},db),'Canine');
+  const records=summarize('records',[{petId:'p',vetId:'v1',careStatus:'Follow-up required'},{petId:'p',vetId:'v1',careStatus:'Routine care'}],db);
+  assert.deepEqual(Object.fromEntries(records)['Seen by Dr. A'],'2');
+  assert.equal(Object.fromEntries(records)['With a follow-up requested'],'1');
+  assert.deepEqual(summarize('appts',[],db),[['Matching records','0']]);
+});
+
+import {salesCsv,csvCell} from '../src/salesCsv.js';
+import {dailyCollections} from '../src/assistantWorkflow.js';
+test('sales export lists settled payments with totals and defuses formulas', () => {
+  const paid={id:'a1',petId:'p',billingStatus:'Paid',amount:300,paymentMethod:'Cash',paymentReference:'CASH-1',paidAt:'2026-10-26T02:00:00.000Z',invoiceItems:[{name:'Consult, exam',price:300,qty:1}]};
+  const db={pets:[{id:'p',name:'=Rex',ownerId:'o'}],owners:[{id:'o',name:'Ana'}]};
+  const csv=salesCsv({visits:[paid],db,label:'2026-10-26',collections:dailyCollections([paid],'2026-10-26')});
+  assert.match(csv,/'=Rex/);assert.match(csv,/"1 x Consult, exam"/);assert.match(csv,/Total of listed payments,300\.00/);assert.match(csv,/Cash \(all payments that day\),300\.00/);
+  assert.equal(csvCell('a,b'),'"a,b"');
+});

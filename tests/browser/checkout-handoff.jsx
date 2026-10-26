@@ -58,11 +58,11 @@ async function run(){
  claims=[];await mount({...base,appts:[{...visit,service,reason}]},{screen:'sales'});
  await until(()=>claims.length===1 && !!document.querySelector('dialog[open]'));
  assert(document.querySelector('dialog').textContent.includes('Synthetic patient'),'Daily Sales must load patient automatically');
- assert(document.querySelector('dialog').textContent.includes(item.name),'Saved care charges must populate automatically');
+ assert([...document.querySelectorAll('dialog input')].some(input=>input.value.includes(item.name)),'Saved care charges must populate automatically');
  assert(document.querySelector('dialog').textContent.includes('250'),'Invoice must retain saved amount');
  }
  claims=[];await mount(base,{screen:'desk'});await until(()=>claims.length===1 && !!document.querySelector('dialog[open]'));
- assert(document.querySelector('dialog').textContent.includes(item.name),'Front Desk must load the saved invoice');
+ assert([...document.querySelectorAll('dialog input')].some(input=>input.value.includes(item.name)),'Front Desk must load the saved invoice');
  return {passed:true,checks:['initial prior-day checkout','no duplicate reopen','claimed visit excluded','state hydration retry','busy form deferred','paid/admitted excluded','native dialog respected','six visit types on Daily Sales','Front Desk saved invoice']};
  }finally{flushSync(()=>root.unmount());window.fetch=originalFetch;}
 }

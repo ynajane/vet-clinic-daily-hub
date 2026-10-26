@@ -7,19 +7,34 @@ import {useFormValidation} from '../components/useFormValidation.jsx';
 import {timelineFilterErrors} from '../clinicDocumentValidation.js';
 import {PaginatedList} from '../components/Pagination.jsx';
 import {filterCardEvents,cardCareDue} from '../vetCardTimeline.js';
+import {today} from '../booking.js';
 import './digital-vet-card.css';
+const daysUntil=date=>Math.round((Date.parse(date)-Date.parse(today()))/86400000);
+// One glance at where the pet stands: what has been given and what is coming next.
+const dueTone=days=>days<0?['overdue',`${-days} day${days===-1?'':'s'} overdue`]:days<=30?['soon',days===0?'Due today':`Due in ${days} day${days===1?'':'s'}`]:['ok',`In ${days} days`];
+export function CardSummary({history}){
+ const events=history.events,given=events.filter(e=>e.kind==='vaccination').length,worms=events.filter(e=>e.kind==='deworming').length,weight=events.find(e=>e.kind==='weight');
+ const next=cardCareDue(events)[0],tone=next?dueTone(daysUntil(next.nextDue)):null;
+ return <dl className="vc-summary" aria-label="Card summary">
+  <div className="is-vaccination"><dt>Vaccines given</dt><dd>{given}</dd></div>
+  <div className="is-deworming"><dt>Deworming</dt><dd>{worms}</dd></div>
+  <div className="is-weight"><dt>Latest weight</dt><dd>{weight?`${weight.value} kg`:'None yet'}</dd></div>
+  <div className={`is-next${tone?` is-${tone[0]}`:''}`}><dt>Next care due</dt><dd>{next?next.nextDue:'Nothing scheduled'}</dd>{next&&<small>{next.vaccine} · {tone[1]}</small>}</div>
+ </dl>;
+}
 export function VetCardTimeline({history,filters={}}){
  const events=filterCardEvents(history.events,filters);
  return <>
   {[["vaccination","Vaccinations"],["deworming","Deworming history"],["weight","Weight per visit"]].map(([kind,title])=>{
    const rows=events.filter(e=>e.kind===kind);
-   return <section key={kind}><h4>{title}</h4>
+   return <section key={kind} className={`vc-section is-${kind}`}><h4>{title} <span className="vc-count">{rows.length}</span></h4>
     <PaginatedList label={title} resetKey={JSON.stringify(filters)} className="vet-card-timeline">
-     {rows.map(event=><article key={event.id} className="vet-card-event">
+     {rows.map(event=><article key={event.id} className={`vet-card-event is-${kind}`}>
       <header><strong>{kind==='weight'?`${event.value} kg`:event.vaccine}</strong><time dateTime={event.date}>{event.date || 'Not recorded'}</time></header>
+      {kind!=='weight' && event.nextDue && (()=>{const [tone,label]=dueTone(daysUntil(event.nextDue));return <p className={`vc-due is-${tone}`}><b>Next due {event.nextDue}</b> · {label}</p>;})()}
       {kind!=='weight' && <><dl className="vet-card-patient-fields">
        {[[kind==='deworming'?'Medication / brand':'Vaccine brand',event.brand],['Next due',event.nextDue],...(kind==='vaccination'?[['Manufacturer',event.manufacturer],['Lot / batch number',event.batch],['Serial number',event.serialNumber]]:[]),['Veterinarian',event.vetName]].map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value || 'Not recorded'}</dd></div>)}
-      </dl><p className="vet-card-signature">Veterinarian signature: <span aria-label="Space for handwritten signature">________________________</span></p></>}
+      </dl><p className="vet-card-signature">Veterinarian signature: <span className="vc-sign-line" role="img" aria-label="Space for handwritten signature"/></p></>}
      </article>)}
     </PaginatedList>{!rows.length && <p>No {kind==='weight'?'visit weights':kind==='deworming'?'deworming administrations':'vaccinations'} recorded{Object.values(filters).some(Boolean)?' matching these filters':''}.</p>}
    </section>;
@@ -35,8 +50,9 @@ export function NextPreventiveCare({history,appointments,onBook}) {
    const recall={...event,petId:history.pet.id,done:true};
    const appointment=appointments && vaccinationAppointment(recall,appointments);
    const name=event.kind==='deworming'?'deworming':'vaccination';
-   return <article key={event.id}>
-    <h5>Next {name}: {event.vaccine}</h5>
+   const [tone,label]=dueTone(daysUntil(event.nextDue));
+   return <article key={event.id} className={`vc-care is-${tone}`}>
+    <h5>Next {name}: {event.vaccine} <span className={`vc-chip is-${tone}`}>{label}</span></h5>
     <p><b>Vet-approved due: <time dateTime={event.nextDue}>{event.nextDue}</time></b> · {vaccinationStatus(recall,[recall])}</p>
     {appointments && <p>{appointment ? <>Booked visit: {appointment.date}{appointment.time?` at ${fmt12(appointment.time)}`:''} · {appointment.status}</> : 'No appointment booked for this treatment.'}</p>}
     {onBook && !appointment && <button type="button" className="btn gold sm" onClick={()=>onBook(vaccinationBooking(recall))}>Book {name}</button>}
@@ -82,6 +98,7 @@ export default function DigitalVetCard({petId,refreshKey,portrait,appointments,o
   {loading && <p role="status">Loading vaccination card…</p>}
   {error && <p role="alert" className="err">{error}</p>}
   {history && <>
+   <CardSummary history={history}/>
    <NextPreventiveCare history={history} appointments={appointments} onBook={onBook}/>
    <div className="vet-card-face-controls"><span>Vaccination card</span><button type="button" className="btn gold sm" aria-pressed={flipped} onClick={()=>setFlipped(value=>!value)}>{flipped?'View pet profile':'Flip to vaccination records'} <span aria-hidden="true">↔</span></button></div>
    <div className="vc-flip-stage"><div className={`vc-flip-card${flipped?' is-flipped':''}`}>

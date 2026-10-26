@@ -3,6 +3,9 @@ import express from 'express';
 import { query, withTransaction } from '../db.js';
 import { ensureStaffAccessSchema } from '../staffAccess.js';
 import { ensureAdmissionsSchema } from '../admissions.js';
+import { refreshManagedCatalog } from '../clinicCatalog.js';
+import { priceCatalog } from '../priceCatalog.js';
+import { catalogErrors, idFor } from '../../src/catalogRules.js';
 export const adminRouter = express.Router();
 const problem = (message,status=400) => Object.assign(new Error(message),{status});
 adminRouter.use(async(req,res,next)=>{
@@ -83,4 +86,64 @@ adminRouter.get('/audit',async(req,res)=>{
   const page=rows.slice(0,50),last=page.at(-1);
   res.set('Cache-Control','no-store').json({entries:page.map(r=>({id:r.id,actor:r.user_name,role:r.user_role,action:r.action,at:r.created_at})),nextCursor:rows.length>50?Buffer.from(JSON.stringify({time:last.cursor_time,id:last.id})).toString('base64url'):null});
  }catch(error){res.status(error.status||500).json({error:error.status?error.message:'Unable to load the audit trail. Please retry.'});}
+});
+
+/* Services & products price list: add, edit and retire. Names are fixed once created so saved
+   invoices keep matching; a price change keeps the earlier price valid for visits already recorded. */
+const catalogView = item => ({id:item.id,name:item.name,category:item.category,price:item.price,unit:item.unit || 'item / package',description:item.desc || '',
+  active:item.active !== false,builtIn:!!item.builtIn,kind:item.id.startsWith('srv_') ? 'service' : 'product',requiresPrescription:!!item.requiresPrescription,
+  revision:item.revision ?? 0,updatedAt:item.updatedAt || null,updatedBy:item.updatedBy || ''});
+const reloadCatalog = async () => { await refreshManagedCatalog({force:true}); return priceCatalog({includeRetired:true}); };
+adminRouter.get('/catalog',async(req,res)=>{
+ try {
+  await refreshManagedCatalog({force:true});
+  res.set('Cache-Control','no-store').json({items:priceCatalog({includeRetired:true}).map(catalogView)});
+ } catch {res.status(500).json({error:'Unable to load the price list. Please retry.'});}
+});
+adminRouter.post('/catalog',async(req,res)=>{
+ try {
+  await refreshManagedCatalog({force:true});
+  const items=priceCatalog({includeRetired:true}), input=req.body || {};
+  const errors=catalogErrors(input,items);
+  if(Object.keys(errors).length)return res.status(400).json({error:'Check the highlighted fields.',errors});
+  const name=input.name.trim(), id=idFor(name,input.category,items.map(i=>i.id));
+  await withTransaction(async client=>{
+   await client.query('SELECT pg_advisory_xact_lock(726341903)');
+   await client.query('INSERT INTO clinic_catalog_items (id,name,category,price,unit,description,updated_by) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+    [id,name,input.category,Number(input.price),String(input.unit).trim(),String(input.description||'').trim(),req.user.name]);
+   await audit(client,req.user,`Added price list item ${id} "${name}" (${input.category}) at ₱${Number(input.price).toFixed(2)}`);
+  });
+  const saved=(await reloadCatalog()).find(i=>i.id===id);
+  res.status(201).json({success:true,item:catalogView(saved)});
+ } catch(error) {
+  if(error.code==='23505')return res.status(409).json({error:'An item with this name already exists in the price list.',errors:{name:'An item with this name already exists in the price list.'}});
+  res.status(error.status||500).json({error:error.status?error.message:'Unable to save this item. Please retry.'});
+ }
+});
+adminRouter.put('/catalog/:id',async(req,res)=>{
+ try {
+  await refreshManagedCatalog({force:true});
+  const items=priceCatalog({includeRetired:true}), item=items.find(i=>i.id===req.params.id), input=req.body || {};
+  if(!item)throw problem('This item is no longer in the price list. Refresh the list.',404);
+  if(!Number.isInteger(input.revision) || input.revision<0)throw problem('Refresh the price list before saving.',409);
+  if(typeof input.active!=='boolean')throw problem('Choose whether the item is active.');
+  const errors=catalogErrors(input,items,item);
+  if(Object.keys(errors).length)return res.status(400).json({error:'Check the highlighted fields.',errors});
+  // Built-in clinical services feed consultations and vaccine charges, so they can be repriced but not retired.
+  if(input.active===false && item.active!==false && item.id.startsWith('srv_'))throw problem('Clinical services cannot be retired because visits and vaccine charges rely on them. Change the price instead.');
+  const price=Number(input.price), unit=String(input.unit).trim(), description=String(input.description||'').trim();
+  await withTransaction(async client=>{
+   await client.query('SELECT pg_advisory_xact_lock(726341903)');
+   const current=(await client.query('SELECT * FROM clinic_catalog_items WHERE id=$1 FOR UPDATE',[item.id])).rows[0];
+   if((current?.revision ?? 0)!==input.revision)throw problem('Another administrator changed this item. Refresh the price list and review it.',409);
+   const earlier=current ? (current.previous_prices||[]).map(Number) : [];
+   const history=Number(current?.price ?? item.price)!==price ? [...earlier,Number(current?.price ?? item.price)].slice(-20) : earlier;
+   if(current)await client.query('UPDATE clinic_catalog_items SET price=$2,unit=$3,description=$4,active=$5,previous_prices=$6,revision=revision+1,updated_by=$7,updated_at=NOW() WHERE id=$1',[item.id,price,unit,description,input.active,history,req.user.name]);
+   else await client.query('INSERT INTO clinic_catalog_items (id,name,category,price,unit,description,active,built_in,previous_prices,revision,updated_by) VALUES ($1,$2,$3,$4,$5,$6,$7,TRUE,$8,1,$9)',[item.id,item.name,item.category,price,unit,description,input.active,history,req.user.name]);
+   const changes=[Number(item.price)!==price&&`price ₱${Number(item.price).toFixed(2)} to ₱${price.toFixed(2)}`,(item.active!==false)!==input.active&&(input.active?'restored':'retired')].filter(Boolean);
+   await audit(client,req.user,`Updated price list item ${item.id} "${item.name}"${changes.length?`: ${changes.join('; ')}`:' (details)'}`);
+  });
+  const saved=(await reloadCatalog()).find(i=>i.id===item.id);
+  res.json({success:true,item:catalogView(saved)});
+ } catch(error) {res.status(error.status||500).json({error:error.status?error.message:'Unable to save this item. Please retry.'});}
 });

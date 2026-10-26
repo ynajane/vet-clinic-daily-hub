@@ -24,6 +24,7 @@ import { ymd } from "../lib.jsx";
 import { today } from "../booking.js";
 import { dailyCollections, pendingCheckout, paymentMethod, paymentTime, money } from "../assistantWorkflow.js";
 import { ownerBill } from "../ownerBilling.js";
+import { salesCsv } from "../salesCsv.js";
 import BillingModal from "./BillingModal.jsx";
 
 export default function DailySalesPage({ db, setDb, me, go, say }) {
@@ -138,6 +139,20 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
             style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600, border: "1px solid #cbd5e1" }}
           >
             <Printer size={15} /> Print daily report
+          </button>
+          <button
+            className="btn sm ghost"
+            disabled={!filteredPaid.length}
+            title={filteredPaid.length ? "Download the listed payments and totals as a spreadsheet" : "No payments to export for these filters"}
+            onClick={() => {
+              const blob = new Blob([salesCsv({visits: filteredPaid, db, label: showUndated ? "Payment date not recorded" : selDate, collections})], {type: "text/csv;charset=utf-8;"});
+              const url = URL.createObjectURL(blob), link = document.createElement("a");
+              link.href = url; link.download = `pawcare-sales-${showUndated ? "undated" : selDate}.csv`;
+              document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
+            }}
+            style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600, border: "1px solid #cbd5e1" }}
+          >
+            Export CSV
           </button>
         </div>
       </div>

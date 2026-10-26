@@ -56,3 +56,56 @@
 .vet-card-next-care{margin:18px 0;padding:18px;border:1px solid #b8d4f5;border-radius:12px;background:#f0f7ff;color:#183153}
 .vet-card-next-care h4{margin:0 0 12px}.vet-card-next-care article+article{border-top:1px solid #cbdcf0;margin-top:14px;padding-top:14px}
 .vet-card-next-care h5{font-size:15px;margin:0 0 8px}.vet-card-next-care p{margin:6px 0;line-height:1.6}.vet-card-next-care small{display:block;margin-top:14px;line-height:1.6}
+
+/* Card summary, colour-coded records and a card that keeps its colours on paper. */
+.vc-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0 4px}
+.vc-summary>div{position:relative;border:1px solid #dbe4f0;border-radius:12px;padding:12px 14px 12px 18px;background:#fff;overflow:hidden}
+.vc-summary>div::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#2563eb}
+.vc-summary .is-deworming::before{background:#d97706}.vc-summary .is-weight::before{background:#059669}
+.vc-summary .is-next::before{background:#eeb94d}.vc-summary .is-next.is-overdue::before{background:#dc2626}.vc-summary .is-next.is-ok::before{background:#16a34a}
+.vc-summary dt{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#52647e}
+.vc-summary dd{margin:4px 0 0;font-size:20px;font-weight:800;color:#0f2a5c;overflow-wrap:anywhere}
+.vc-summary small{display:block;margin-top:2px;color:#52647e;font-size:11.5px}
+.vc-section{margin:20px 0}.vc-section>h4{display:flex;align-items:center;gap:8px;margin:0 0 10px;color:#0f2a5c;font-size:15px}
+.vc-section>h4::before{content:"";width:5px;height:18px;border-radius:3px;background:#2563eb}
+.vc-section.is-deworming>h4::before{background:#d97706}.vc-section.is-weight>h4::before{background:#059669}
+.vc-count{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:#e5edfb;color:#1e40af}
+.vet-card-event{background:#fff;box-shadow:0 1px 2px rgba(15,42,92,.05);break-inside:avoid}
+.vet-card-event.is-deworming{border-left-color:#d97706}.vet-card-event.is-weight{border-left-color:#059669}
+.vet-card-event header strong{color:#0f2a5c;font-size:15px}
+.vet-card-event time{background:#eef3fb;border-radius:99px;padding:3px 10px;font-weight:600;color:#1e3a8a}
+.vet-card-event .vet-card-patient-fields{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 18px;padding:12px 0;margin:10px 0}
+.vc-due{display:inline-block;margin:8px 0 0;padding:4px 11px;border-radius:99px;font-size:12px;border:1px solid transparent}
+.vc-due.is-ok{background:#dcfce7;color:#166534;border-color:#bbf7d0}.vc-due.is-soon{background:#fef3c7;color:#92400e;border-color:#fde68a}.vc-due.is-overdue{background:#fee2e2;color:#b91c1c;border-color:#fecaca}
+.vet-card-signature{display:flex;align-items:flex-end;gap:10px;margin:8px 0 0;font-size:12px;color:#52647e}
+.vc-sign-line{flex:1;max-width:260px;border-bottom:1px solid #64748b;height:1.4em}
+.vet-card-next-care article.vc-care{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;row-gap:2px;align-items:center;margin:0 0 10px;padding:12px 14px 12px 18px;border:1px solid #cfe0f5;border-left:5px solid #2563eb;border-radius:10px;background:#fff}
+.vet-card-next-care article.vc-care+article.vc-care{border-top:1px solid #cfe0f5;margin-top:0;padding-top:12px}
+.vet-card-next-care .vc-care.is-overdue{border-left-color:#dc2626}.vet-card-next-care .vc-care.is-soon{border-left-color:#d97706}.vet-card-next-care .vc-care.is-ok{border-left-color:#16a34a}
+.vet-card-next-care .vc-care>*{grid-column:1}.vet-card-next-care .vc-care>button{grid-column:2;grid-row:1/4;align-self:center;width:auto;white-space:nowrap}
+.vet-card-next-care .vc-care h5{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0}.vet-card-next-care .vc-care p{margin:2px 0}
+.vc-chip{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;border:1px solid transparent}
+.vc-chip.is-ok{background:#dcfce7;color:#166534;border-color:#bbf7d0}.vc-chip.is-soon{background:#fef3c7;color:#92400e;border-color:#fde68a}.vc-chip.is-overdue{background:#fee2e2;color:#b91c1c;border-color:#fecaca}
+@media(max-width:560px){.vet-card-next-care .vc-care{grid-template-columns:1fr}.vet-card-next-care .vc-care>button{grid-column:1;grid-row:auto;margin-top:8px;width:100%}}
+@media print{
+ @page{size:A4;margin:12mm}
+ /* Keep the booklet colours when someone prints the screen card with Ctrl+P. The server PDF is the official copy. */
+ body #root .digital-vet-card,body #root .digital-vet-card *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+ body #root .digital-vet-card .vc-passport-header{background:#0f2a5c!important;border-bottom:3px solid #eeb94d!important}
+ body #root .digital-vet-card .vc-passport-header,body #root .digital-vet-card .vc-passport-header *{color:#fff!important}
+ body #root .digital-vet-card .vc-passport-header small{color:#dbeafe!important}
+ body #root .digital-vet-card .vc-passport-stamp{border:1px dashed #eeb94d!important;color:#ffe4a2!important}
+ body #root .digital-vet-card .vc-summary>div{background:#f8fafc!important;border:1px solid #cbd5e1!important}
+ body #root .digital-vet-card .vc-summary>div::before{display:block!important;background:#2563eb!important}
+ body #root .digital-vet-card .vc-summary .is-deworming::before{background:#d97706!important}
+ body #root .digital-vet-card .vc-summary .is-weight::before{background:#059669!important}
+ body #root .digital-vet-card .vc-summary .is-next::before{background:#eeb94d!important}
+ body #root .digital-vet-card .vet-card-event{border:1px solid #cbd5e1!important;border-left:4px solid #2563eb!important;break-inside:avoid}
+ body #root .digital-vet-card .vet-card-event.is-deworming{border-left-color:#d97706!important}
+ body #root .digital-vet-card .vet-card-event.is-weight{border-left-color:#059669!important}
+ body #root .digital-vet-card .vc-due.is-ok{background:#dcfce7!important;color:#166534!important}
+ body #root .digital-vet-card .vc-due.is-soon{background:#fef3c7!important;color:#92400e!important}
+ body #root .digital-vet-card .vc-due.is-overdue{background:#fee2e2!important;color:#b91c1c!important}
+ body #root .digital-vet-card .vc-sign-line{border-bottom:1px solid #111!important}
+ body #root .digital-vet-card .vc-count{background:#e5edfb!important;color:#1e40af!important}
+}

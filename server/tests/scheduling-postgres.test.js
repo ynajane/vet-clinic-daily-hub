@@ -40,25 +40,26 @@ for(const role of ['owner','assistant','vet','admin']){
 await query("INSERT INTO owners(id,name,email,phone,address) VALUES('o1','Synthetic Owner','owner@example.invalid','+639000000000','Synthetic'),('o2','Other Owner','other@example.invalid','+639000000001','Synthetic')");
 for(let i=1;i<=8;i++)await query("INSERT INTO pets(id,owner_id,name,birth) VALUES($1,$2,$3,'2020-01-01')",[`p${i}`,i===8?'o2':'o1',`Synthetic ${i}`]);
 let date=shiftDate(clinicClock().date,1);while(holidayName(date))date=shiftDate(date,1);
-const booking=patch=>({petId:'p1',vetId:'v1',date,time:'10:00',service:'surgery',reason:'Procedure assessment',...patch});
+const booking=patch=>({petId:'p1',vetId:'v1',date,time:'10:00',service:'checkup',reason:'Annual check-up',...patch});
 
 test('PostgreSQL booking races, duration, editing, availability privacy and arrival exceptions',async()=>{
  const results=await Promise.all([req('owner','POST','/appointments',booking({petId:'p1'})),req('assistant','POST','/appointments',booking({petId:'p2'}))]);
  assert.deepEqual(results.map(r=>r.status).sort(),[200,409]);
  const saved=results.find(r=>r.status===200).data.appointment;
- assert.equal(saved.durationMinutes,120);
+ assert.equal(saved.durationMinutes,60);
  assert.equal((await query("SELECT n.nspname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.oid='vaccination_reminders'::regclass")).rows[0].nspname,schema);
  await query("UPDATE appointments SET status='Scheduled',amount=775 WHERE id=$1",[saved.id]);
  const note=await req('owner','PUT',`/appointments/${saved.id}`,{notes:'Synthetic unchanged slot',amount:-99});
  assert.equal(note.status,200);assert.equal(note.data.appointment.status,'Scheduled');assert.equal(note.data.appointment.amount,775);
- assert.equal((await req('assistant','POST','/appointments',booking({petId:'p3',time:'11:30',service:'vaccination'}))).status,409);
- const next=await req('assistant','POST','/appointments',booking({petId:'p3',time:'12:00',service:'vaccination'}));assert.equal(next.status,200);
+ assert.equal((await req('assistant','POST','/appointments',booking({petId:'p3',time:'10:30',service:'vaccination'}))).status,409);
+ const next=await req('assistant','POST','/appointments',booking({petId:'p3',time:'11:00',service:'vaccination'}));assert.equal(next.status,200);
  const edited=await req('assistant','PUT',`/appointments/${saved.id}`,booking({petId:saved.petId,time:'10:00'}));assert.equal(edited.status,200,JSON.stringify(edited));
  const available=await req('owner','GET',`/appointments/availability?date=${date}&vetId=v1&service=checkup`);
  assert.deepEqual(Object.keys(available.data),['slots']);assert.ok(!available.data.slots.includes('11:00'));assert.ok(available.data.slots.includes('12:30'));
  const walk=await req('assistant','POST','/appointments',booking({petId:'p4',bookingKind:'walk-in',date:'1900-01-01',time:'00:00'}));assert.equal(walk.status,200);assert.equal(walk.data.appointment.bookingKind,'walk-in');assert.equal(walk.data.appointment.date,clinicClock().date);
  const duplicate=await req('assistant','POST','/appointments',booking({petId:'p4',bookingKind:'walk-in'}));assert.equal(duplicate.status,409);
  assert.equal((await req('owner','POST','/appointments',booking({petId:'p8'}))).status,404);
+ assert.equal((await req('owner','POST','/appointments',booking({petId:'p5',service:'surgery',reason:'Surgery – Surgical assessment',time:'15:00'}))).status,400,'new surgery bookings are refused on the server');
 });
 
 const vaccine=async(id,due,extra={})=>{

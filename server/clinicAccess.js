@@ -40,6 +40,7 @@ export async function clinicAccess(req, res, next) {
     if (path === '/clinical/note-options') {
       return (req.method === 'GET' && allow('vet','admin') || req.method === 'PUT' && allow('admin')) ? next() : denied();
     }
+    if (/^\/admin\/catalog(?:\/[^/]+)?$/.test(path)) return ((req.method === 'GET' || req.method === 'POST' || req.method === 'PUT') && allow('admin')) ? next() : denied();
     if ((req.method === 'GET' && ['/admin/staff','/admin/staff/email-availability','/admin/audit'].includes(path)) || (req.method === 'POST' && /^\/admin\/(?:staff\/[^/]+\/access|invitations\/[^/]+\/revoke)$/.test(path))) return allow('admin') ? next() : denied();
     if (path === '/checkout-inbox' && req.method === 'GET' || /^\/checkout-inbox\/[^/]+\/(claim|renew|release)$/.test(path) && req.method === 'POST') return allow('assistant') ? next() : denied();
     if (key === 'GET /reminders/calls') return allow('assistant', 'admin') ? next() : denied();

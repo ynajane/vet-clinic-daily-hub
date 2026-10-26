@@ -2,6 +2,7 @@ import {useHistoryComplete} from '../ClinicHistory.jsx';
 import {today,plus} from '../booking.js';
 import {currentVaccinationDue,vaccinationStatus} from '../ownerVaccination.js';
 import { PaginatedTable } from "../components/Pagination.jsx";
+import { categoryOf, categoryOptions, summarize, CATEGORY_LABEL } from "../reportSummary.js";
 import { useState, useMemo } from "react";
 import { E, scope, Badge } from "../lib.jsx";
 import {
@@ -125,6 +126,7 @@ export default function ReportsPage({ db, me }) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
 
   const currentCfg = REPORT_CONFIG[reportType] || REPORT_CONFIG.appts;
   const isDateFiltered = reportType !== "pets";
@@ -144,6 +146,7 @@ export default function ReportsPage({ db, me }) {
       if (from) l = l.filter(x => (x.date || "") >= from);
       if (to) l = l.filter(x => (x.date || "") <= to);
     }
+    if (category) l = l.filter(x => categoryOf(reportType, x, db) === category);
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       l = l.filter(x => {
@@ -157,7 +160,9 @@ export default function ReportsPage({ db, me }) {
       });
     }
     return l;
-  }, [rawList, isDateFiltered, from, to, search, db]);
+  }, [rawList, isDateFiltered, from, to, search, category, reportType, db]);
+  const categories = useMemo(() => categoryOptions(reportType, rawList, db), [rawList, reportType, db]);
+  const summary = useMemo(() => summarize(reportType, filteredList, db), [reportType, filteredList, db]);
 
   const canExport = historyComplete && !isDateInvalid && filteredList.length > 0;
 
@@ -186,7 +191,11 @@ export default function ReportsPage({ db, me }) {
 
     const csvContent = [
       headers.map(escapeCsv).join(","),
-      ...rows.map(r => r.map(escapeCsv).join(","))
+      ...rows.map(r => r.map(escapeCsv).join(",")),
+      "",
+      ["Summary", "Value"].map(escapeCsv).join(","),
+      ...summary.map(r => r.map(escapeCsv).join(",")),
+      ["Filters", `${from || "Beginning"} to ${to || "Present"}${category ? `; ${CATEGORY_LABEL[reportType]}: ${category}` : ""}${search.trim() ? `; Search: ${search.trim()}` : ""}`].map(escapeCsv).join(",")
     ].join("\r\n");
 
     const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
@@ -271,7 +280,7 @@ export default function ReportsPage({ db, me }) {
               <button
                 key={key}
                 type="button"
-                onClick={() => { setReportType(key); setFrom(""); setTo(""); setSearch(""); }}
+                onClick={() => { setReportType(key); setFrom(""); setTo(""); setSearch(""); setCategory(""); }}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -355,6 +364,12 @@ export default function ReportsPage({ db, me }) {
             </div>
           )}
 
+          <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12.5px", fontWeight: 700, color: "#475569" }}>{CATEGORY_LABEL[reportType]}:
+            <select value={category} onChange={e => setCategory(e.target.value)} aria-label={`Filter by ${CATEGORY_LABEL[reportType].toLowerCase()}`} style={{ fontSize: "12.5px", padding: "6px 10px" }}>
+              <option value="">All</option>{categories.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </label>
+
           {/* Quick Search Within Report */}
           <div style={{ position: "relative", flex: "1 1 240px" }}>
             <Search size={14} color="#94a3b8" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)" }} />
@@ -423,6 +438,14 @@ export default function ReportsPage({ db, me }) {
           </div>
         </div>
 
+        {/* Summary calculated from the filtered records; also prints with the report */}
+        <dl className="rep-summary" aria-label="Report summary" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: "8px", margin: "0 0 16px" }}>
+          {summary.map(([label, value]) => <div key={label} style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "8px 12px", background: "#f8fafc" }}>
+            <dt style={{ fontSize: "11.5px", color: "#64748b", fontWeight: 700 }}>{label}</dt>
+            <dd style={{ margin: "2px 0 0", fontSize: "15px", fontWeight: 800, color: "#0f172a", overflowWrap: "anywhere" }}>{value}</dd>
+          </div>)}
+        </dl>
+
         {/* Data Table */}
         {filteredList.length === 0 ? (
           <div className="empty sm" style={{ padding: "40px 20px" }}>
@@ -432,7 +455,7 @@ export default function ReportsPage({ db, me }) {
           </div>
         ) : (
           <div style={{ overflowX: "auto" }}>
-            <PaginatedTable label="Report records" resetKey={[reportType,from,to,search]} className="tbl" style={{ width: "100%", margin: 0, fontSize: "12.5px" }}>
+            <PaginatedTable label="Report records" resetKey={[reportType,from,to,search,category]} className="tbl" style={{ width: "100%", margin: 0, fontSize: "12.5px" }}>
               <thead>
                 <tr style={{ background: "#f8fafc" }}>
                   {currentCfg.headers.map((h, i) => (

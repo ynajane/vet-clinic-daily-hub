@@ -1,6 +1,7 @@
 import ClinicDialog from '../components/ClinicDialog.jsx';
 import {useUnsavedChanges} from '../components/useUnsavedChanges.jsx';
 import NoteOptionsPage from "./NoteOptionsPage.jsx";
+import CatalogPage from "./CatalogPage.jsx";
 import AuditActivity from "../components/AuditActivity.jsx";
 import { auditActivity } from "../auditActivity.js";
 import { PaginatedList } from "../components/Pagination.jsx";
@@ -694,6 +695,7 @@ export const admin = {
     { k: "cal", l: "Master Calendar", i: "calendar", Page: ClinicCalendar, sub: "Clinic appointment calendar (read-only administrative oversight)." },
     { k: "clients-patients", l: "Clients & Patients Masterlist", i: "users", Page: ClientsAndPatientsPage, sub: "Unified masterlist of pet owners, animal patient profiles, and official vaccination cards." },
     { k: "records", l: "Consultations & EMR", i: "file", Page: ConsultationsPage, sub: "Certified veterinary consultation notes, EMR, and prescription handoff." },
+    { k:"catalog", l:"Services & Products", i:"receipt", Page:CatalogPage, sub:"Add, edit, search and retire the services and products the clinic sells and prescribes." },
     { k:"note-options", l:"Clinical Note Choices", i:"file", Page:NoteOptionsPage, sub:"Manage optional diagnosis and treatment entries for consultations." },
     { k:"audit", l:"System Audit Trail", i:"shield", Page:AdminAudit, sub:"Search saved activity and review older entries." },
     { k: "reports", l: "Reports & Audits", i: "chart", rep: 1, sub: "Filter, audit, and print clinic summaries." },

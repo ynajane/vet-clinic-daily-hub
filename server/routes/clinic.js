@@ -30,9 +30,11 @@ import { ensurePrescriptionSchema, normalizePrescription, prescriptionInvoice, v
 import { ensureCareSchema, validateCarePlan } from "../careWorkflow.js";
 import { priceCatalog, canonicalInvoice, validateCheckoutAddons } from "../priceCatalog.js";
 import { adminRouter } from "./admin.js";
+import { refreshManagedCatalog } from "../clinicCatalog.js";
+import { ADMINISTERED_VACCINES } from "../../src/vaccineSchedule.js";
 import {walkInReasonError} from '../../src/walkInRegistration.js';
 import { validateWalkInRegistration } from '../walkInRegistration.js';
-import { ensurePetRegistrationSchema, validatePetRegistration, validatePetPhoto, lockRegistrationOwner, checkRegistrationCapacity, checkRequestRevision, registrationAudit, registrationError } from '../petRegistration.js';
+import { ensurePetRegistrationSchema, validatePetRegistration, validatePetPlausibility, validatePetPhoto, lockRegistrationOwner, checkRegistrationCapacity, checkRequestRevision, registrationAudit, registrationError } from '../petRegistration.js';
 import { checkoutRouter } from "./checkout.js";
 import { ensureCheckoutInboxSchema, createCheckoutTask, authorizeCheckoutPayment, finishCheckoutTask } from "../checkout.js";
 import { validateBoosterDate } from "../reminders.js";
@@ -48,6 +50,8 @@ import { clinicAccess, assignedTo, validateStatusChange } from "../clinicAccess.
 
 export const clinicRouter = express.Router();
 clinicRouter.use(requireAuth, clinicAccess);
+// Keep administrator price changes current. If the table is unreachable the built-in list still works.
+clinicRouter.use(async (req, res, next) => { try { await refreshManagedCatalog(); } catch (error) { console.error('Catalog refresh failed:', error.message); } next(); });
 clinicRouter.use(digitalVetCardRouter);
 clinicRouter.use(ownerAccountLinkRouter);
 clinicRouter.use("/checkout-inbox", checkoutRouter);
@@ -1028,6 +1032,7 @@ clinicRouter.put('/pets/:id/reference-history', async (req,res) => {
 async function savePetRequest(req, res) {
   try {
     const data = validatePetRegistration(req.body);
+    validatePetPlausibility(data, req.body);
     if(req.body.requestId!==undefined && (typeof req.body.requestId!=='string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(req.body.requestId))) throw registrationError('Reopen the registration form before submitting.');
     const submissionId='req_'+(req.body.requestId || crypto.randomUUID()).toLowerCase();
     await ensurePetRegistrationSchema();
@@ -1166,6 +1171,8 @@ async function saveBooking(req, res, editing = false) {
       await lockRegistrationOwner(client,patient.owner_id);
       const registration=(await client.query('SELECT registration_status FROM pets WHERE id=$1',[v.petId])).rows[0];
       if(registration?.registration_status==='Declined') throw bookingError('Correct and resubmit this pet registration before requesting a visit.',409);
+      // Surgery and dental procedures are decided by the veterinarian during a check-up. Visits already booked as surgery can still be rescheduled.
+      if(v.service==='surgery' && previous?.service!=='surgery') throw bookingError('Book a check-up. The veterinarian will advise if surgery or a dental procedure is needed.');
       if(previous && req.user.role==='assistant') {
         // Reception reschedules an existing request; all clinical/request fields stay immutable.
         const fixed={id:previous.id,petId:previous.pet_id,vetId:previous.vet_id,service:previous.service,reason:previous.reason,notes:previous.notes || '',followUpId:previous.follow_up_id || null,amount:Number(previous.amount),durationMinutes:previous.duration_minutes,bookingKind:previous.booking_kind};
@@ -1401,7 +1408,7 @@ clinicRouter.post("/appointments/:id/billing", async (req, res) => {
       if (!consultation) throw Object.assign(new Error("A finalized consultation is required before payment."), { status: 409 });
       await assertAdmissionCheckout(client, apptId);
       const expectedAdmission = await admissionCharges(client, apptId);
-      const canonical = canonicalInvoice(invoiceItems, priceCatalog(), expectedAdmission);
+      const canonical = canonicalInvoice(invoiceItems, priceCatalog({includeRetired: true}), expectedAdmission);
       if (!canonical) throw Object.assign(new Error('Use the official clinic prices and recorded admission supplies.'), {status:400});
       const admissionError = validateAdmissionCharges(canonical, expectedAdmission);
       if (admissionError) throw Object.assign(new Error(admissionError), {status:400});
@@ -1844,6 +1851,7 @@ clinicRouter.post("/consultations", async (req, res) => {
     return res.status(400).json({ error: "Complete the SOAP fields and enter a valid consultation date." });
   }
   if (vaccination && [vaccination.vaccine, vaccination.brand,...(vaccination.vaccine==='Deworming'?[]:[vaccination.batch])].some(v => typeof v !== "string" || !v.trim())) return res.status(400).json({ error: "Vaccine, brand and lot/batch are required." });
+  if (vaccination && !ADMINISTERED_VACCINES.includes(vaccination.vaccine)) return res.status(400).json({ error: "Choose the administered vaccine from the clinic list." });
   if (vaccination?.nextDue && (!/^\d{4}-\d{2}-\d{2}$/.test(vaccination.nextDue) || vaccination.nextDue <= date)) return res.status(400).json({ error: "The booster date must follow the vaccination date." });
   if (weight !== undefined && (typeof weight !== "number" || !Number.isFinite(weight) || weight <= 0 || weight > 120)) return res.status(400).json({ error: "Enter a valid weight." });
   try {

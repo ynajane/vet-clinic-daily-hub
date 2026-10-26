@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { query } from './db.js';
 import {externalHistoryErrors} from '../src/externalHistory.js';
 import { clinicClock, validDate } from './scheduling.js';
+import { petPlausibility } from '../src/petLimits.js';
 
 let ready;
 export function ensurePetRegistrationSchema() {
@@ -39,6 +40,12 @@ const speciesNames = new Map([
   ['Avian','Avian'],['Bird','Avian'],['Avian (Bird)','Avian'],['Other','Other'],['Other / Exotic','Other']
 ]);
 const dentalStatuses = ['Normal / Aligned (Healthy Occlusion)','Incisor Overgrowth (Needs Trim)','Molar Spurs / Malocclusion (Needs Dental Burr)','Signs of Drooling / Wet Chin (Suspected Malocclusion)','Not Evaluated Yet'];
+// Extra species-aware sanity checks for new registrations and edits. Older saved requests are not re-judged at approval.
+export function validatePetPlausibility(data, body) {
+  const errors = petPlausibility({species: data.species, weight: Number(body.weight), birth: body.birth, today: clinicClock().date});
+  const message = errors.weight || errors.birth;
+  if (message) throw registrationError(message);
+}
 export function validatePetRegistration(body) {
   const text = (key, max, required = false) => {
     const value = body[key] ?? '';

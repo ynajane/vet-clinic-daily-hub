@@ -18,6 +18,7 @@ import {
   normalizeSpecies,
   formatSpeciesLabel
 } from "../../preventiveSchedule.js";
+import { petPlausibility } from "../../petLimits.js";
 import { currentVaccinationDue, vaccinationStatus } from "../../ownerVaccination.js";
 import { today as clinicToday } from "../../booking.js";
 import { api } from "../../api.js";
@@ -201,8 +202,6 @@ export const petText = s => s.replace(/[^A-Za-zÀ-ÿ0-9 .,'\-\/()]/g, "").replac
 
 const yearsBefore = (n) => { const d = new Date(TODAY + "T00:00:00"); d.setFullYear(d.getFullYear() - n); return d.toISOString().slice(0, 10); };
 export const OLDEST = yearsBefore(40);
-// Plausible ceilings by species so a typo (45 kg hamster, 1990 kitten) is caught while the owner is still typing.
-const LIMITS = {Canine:{kg:100,years:30}, Feline:{kg:15,years:30}, Lagomorph:{kg:10,years:15}, Rodent:{kg:3,years:10}, Avian:{kg:5,years:80}};
 
 /* v = form values, taken = lower-case names this owner already has (pets and requests). Returns { field: message }. */
 export function validatePet(v, taken = []) {
@@ -235,13 +234,11 @@ export function validatePet(v, taken = []) {
   else if (!/^\d{4}-\d{2}-\d{2}$/.test(v.birth) || isNaN(new Date(v.birth + "T00:00:00Z")) || new Date(v.birth + "T00:00:00Z").toISOString().slice(0,10) !== v.birth) e.birth = "Enter a valid date";
   else if (v.birth >= TODAY) e.birth = "Birth date cannot be today or in the future. Please select yesterday or earlier";
   else if (v.birth < OLDEST) e.birth = "That date is too far back. Check the year";
-  else if (LIMITS[normalizeSpecies(v.species)] && v.birth < yearsBefore(LIMITS[normalizeSpecies(v.species)].years)) e.birth = `A ${normalizeSpecies(v.species).toLowerCase()} older than ${LIMITS[normalizeSpecies(v.species)].years} years is unlikely. Check the year`;
 
   if (v.weight === "") e.weight = "Enter your pet’s weight in kg";
   else if (!DECIMAL.test(v.weight)) e.weight = "Use numbers only, for example 4.5";
   else if (+v.weight < 0.05) e.weight = "Weight must be at least 0.05 kg";
   else if (+v.weight > 120) e.weight = "Weight can’t be more than 120 kg";
-  else if (LIMITS[normalizeSpecies(v.species)] && +v.weight > LIMITS[normalizeSpecies(v.species)].kg) e.weight = `That is heavier than expected for a ${normalizeSpecies(v.species).toLowerCase()} (about ${LIMITS[normalizeSpecies(v.species)].kg} kg at most). Check that the weight is in kg`;
 
   if (!v.neutered) e.neutered = "Choose one";
   else if (!NEUTERED.includes(v.neutered)) e.neutered = "Pick one from the list";
@@ -255,6 +252,8 @@ export function validatePet(v, taken = []) {
     else if (!RODENT_DENTAL_STATUS.includes(v.dentalOcclusion)) e.dentalOcclusion = "Select an occlusion status";
   }
 
+  // The server applies the same species limits (src/petLimits.js).
+  if (v.species && v.birth && v.weight !== "") for (const [key, message] of Object.entries(petPlausibility({species: v.species, weight: v.weight, birth: v.birth, today: TODAY}))) e[key] ||= message;
   const n = v.notes.trim();
   if (n.length > MAX_NOTES) e.notes = `Keep notes under ${MAX_NOTES} characters`;
   else if (n && !LETTER.test(n)) e.notes = "Write a few words, not only numbers or symbols";

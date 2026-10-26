@@ -45,7 +45,10 @@ digitalVetCardRouter.get('/pets/:petId/vet-card{/:format}',async(req,res)=>{
   });
   if(req.params.format==='pdf'){
    if(!data.document)throw cardError(data.publicationStatus,409);
-   const bytes=await vetCardPdf(data.document);
+   // Access was already checked above. Verified clinic details and the pet photo only dress the printed card.
+   const profile=(await query('SELECT details,verified_at FROM clinic_document_profile WHERE id=true')).rows[0];
+   const photo=(await query('SELECT photo FROM pets WHERE id=$1',[req.params.petId])).rows[0]?.photo || '';
+   const bytes=await vetCardPdf(data.document,{clinic:profile?.verified_at ? profile.details : null,photo});
    res.set({'Content-Type':'application/pdf','Content-Disposition':`attachment; filename="${data.document.reference}-r${data.document.revision}.pdf"`,'X-Content-Type-Options':'nosniff'}).send(bytes);
   }else res.json(data);
  }catch(e){failure(res,e);}

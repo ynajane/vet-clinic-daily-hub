@@ -11,6 +11,8 @@ const SERIES = {
   'Feline Leukemia (FeLV)':{species:'Feline',doses:2},
 };
 const ANNUAL = ['Anti-rabies','Kennel cough'];
+// The only products a vaccination record can be certified for; the form offers these and the server checks them.
+export const ADMINISTERED_VACCINES = ['Anti-rabies', '5-in-1', '6-in-1', '8-in-1', 'Kennel cough', 'Feline 4-in-1', 'Feline Leukemia (FeLV)', 'Other', 'Deworming'];
 const SERIES_GAP_DAYS = 21, JUVENILE_WEEKS = 16, RABIES_MIN_WEEKS = 12;
 
 export const VACCINE_BRANDS = {

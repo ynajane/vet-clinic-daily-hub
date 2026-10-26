@@ -1,6 +1,6 @@
 import {walkInVisitErrors} from '../src/walkInRegistration.js';
 import {addressError} from '../src/externalHistory.js';
-import { validatePetRegistration, registrationError } from './petRegistration.js';
+import { validatePetRegistration, validatePetPlausibility, registrationError } from './petRegistration.js';
 
 export function validateWalkInRegistration(body) {
   const text = (key, max, required = false) => {
@@ -15,6 +15,7 @@ export function validateWalkInRegistration(body) {
   const email = text('email',255);
   if (!body.ownerId && email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) throw registrationError('Enter a valid email address or leave it blank.');
   const patient = validatePetRegistration({...body,name:body.petName});
+  validatePetPlausibility(patient, body);
   if (typeof body.addToQueue !== 'boolean') throw registrationError('Choose whether to add the patient to today’s arrivals.');
   const visitError=Object.values(walkInVisitErrors(body)).find(Boolean);
   if(visitError) throw registrationError(visitError);

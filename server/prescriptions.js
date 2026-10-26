@@ -36,7 +36,7 @@ export function prescriptionInvoice(items) {
 }
 // Staff may dispense less than prescribed, but cannot add unprescribed medicines
 // or prescription diets or increase their quantity by splitting invoice lines.
-export function validatePrescriptionSale(invoice, prescribed, catalog = priceCatalog()) {
+export function validatePrescriptionSale(invoice, prescribed, catalog = priceCatalog({includeRetired: true})) {
   const totals = new Map();
   for (const line of invoice) totals.set(line.catalogId, (totals.get(line.catalogId) || 0) + line.qty);
   for (const [id, quantity] of totals) {

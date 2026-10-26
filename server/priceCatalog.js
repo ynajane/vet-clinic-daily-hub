@@ -1,5 +1,6 @@
 import {isCheckoutAddon} from '../src/checkoutProducts.js';
 import { GUIDE_PRODUCTS } from "./productGuide.js";
+import { mergeManaged } from './clinicCatalog.js';
 export const SERVICE_PRICES = [
   { id: "srv_consult", category: "Consultation & Exam", name: "Routine General Consultation & Exam", price: 500, desc: "Standard physical evaluation of vitals & condition" },
   { id: "srv_senior", category: "Consultation & Exam", name: "Senior Comprehensive Wellness Exam", price: 750, desc: "In-depth geriatric health review (7+ yrs)" },
@@ -20,20 +21,28 @@ export const SERVICE_PRICES = [
 
 // Deployment-owned prices; never accept product prices from a checkout request.
 const productTypes = ['Pet shampoo', 'Pet vitamins', 'Pet medicine', 'Pet accessories', 'Prescription diet', 'Dental & ear care'];
-export function priceCatalog() {
+// Built-in items plus anything set in the deployment; administrator changes are layered on by priceCatalog().
+export function baseCatalog() {
   const products = JSON.parse(process.env.CLINIC_PRODUCTS_JSON || '[]');
   if (!Array.isArray(products) || products.some(p => !p || typeof p.id !== 'string' || !/^product_[a-z0-9_]+$/.test(p.id) || typeof p.name !== 'string' || !p.name.trim() || !productTypes.includes(p.category) || (typeof p.price !== "number" || !Number.isFinite(p.price) || Math.abs(p.price * 100 - Math.round(p.price * 100)) > 0.000001) || p.price <= 0 || p.price > 10000000) || new Set(products.map(p => p.id)).size !== products.length) throw new Error('Invalid clinic product catalog configuration');
   const catalog = [...SERVICE_PRICES, ...GUIDE_PRODUCTS, ...products.map(({id, name, category, price}) => ({id, name, category, price, unit: 'item / package', requiresPrescription: ['Pet medicine', 'Prescription diet'].includes(category)}))];
   if (new Set(catalog.map(p => p.id)).size !== catalog.length) throw new Error('Duplicate clinic product catalog ID');
   return catalog;
 }
-export function canonicalInvoice(items, catalog = priceCatalog(), admission = []) {
+// Retired items stay priceable so visits already carrying them can still be billed; new sales use active items only.
+export function priceCatalog({includeRetired = false} = {}) {
+  const merged = mergeManaged(baseCatalog());
+  return includeRetired ? merged : merged.filter(item => item.active !== false);
+}
+export function canonicalInvoice(items, catalog = priceCatalog({includeRetired: true}), admission = []) {
   if (!Array.isArray(items) || !items.length || items.length > 100) return null;
   const result = [];
   for (const item of items) {
     const official = item?.source === 'admission' ? admission.find(p => p.catalogId === item.catalogId && p.price === item.price && p.name === item.name) : catalog.find(p => p.id === item?.catalogId);
-    if (!official || item.price !== official.price || item.name !== official.name || !Number.isInteger(item.qty) || item.qty < 1 || item.qty > 1000) return null;
-    result.push({catalogId: official.id || official.catalogId, name: official.name, category: official.category, price: official.price, qty: item.qty,...(item.source === 'admission' ? {source:'admission'} : {})});
+    // A price changed after the care was recorded: the visit keeps the price it was recorded at.
+    const earlier = item?.source !== 'admission' && item.price !== official?.price && (official?.priorPrices || []).includes(item.price);
+    if (!official || (item.price !== official.price && !earlier) || item.name !== official.name || !Number.isInteger(item.qty) || item.qty < 1 || item.qty > 1000) return null;
+    result.push({catalogId: official.id || official.catalogId, name: official.name, category: official.category, price: earlier ? item.price : official.price, qty: item.qty,...(item.source === 'admission' ? {source:'admission'} : {})});
   }
   return result;
 }
