@@ -397,7 +397,7 @@ export default function ClientsAndPatientsPage({ db, setDb, me, go, say }) {
 
                         {/* Action link */}
                         <td data-label="Action" style={{ padding: "12px 14px", textAlign: "right" }}>
-                          <div style={{ display: "inline-flex", gap: "6px", alignItems: "center" }} onClick={e => e.stopPropagation()}>
+                          <div style={{ display: "inline-flex", flexWrap: "wrap", justifyContent: "flex-end", gap: "6px", alignItems: "center", minWidth: "140px" }} onClick={e => e.stopPropagation()}>
                             {canCheckIn && isArrivable(todayApptByPet[p.id]) && (
                               <button
                                 type="button"

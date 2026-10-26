@@ -223,8 +223,8 @@ export default function AdminStaff({ onInvite }) {
                   >
                     <div>
                       {/* Top Row: Avatar & Status */}
-                      <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", alignItems: "flex-start", marginBottom: "12px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "nowrap", gap: "10px", alignItems: "flex-start", marginBottom: "12px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0, flex: 1 }}>
                           <div style={{
                             width: "42px",
                             height: "42px",
@@ -244,7 +244,7 @@ export default function AdminStaff({ onInvite }) {
                             <h3 style={{ margin: 0, fontSize: "calc(15.5px * var(--fs, 1))", color: "var(--navy, #0f172a)", fontWeight: 700 }}>
                               <button type="button" className="staff-detail-link" aria-label={`View staff details for ${u.name}`} onClick={()=>openDetails(u,'staff')}>{u.name}</button>
                             </h3>
-                            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "2px" }}>
+                            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px", marginTop: "2px" }}>
                               <span style={{
                                 display: "inline-flex",
                                 alignItems: "center",
@@ -266,8 +266,8 @@ export default function AdminStaff({ onInvite }) {
                         </div>
 
                         {/* Status Pills */}
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
-                          <span style={{
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px", flex: "none" }}>
+                          <span style={{ whiteSpace: "nowrap",
                             fontSize: "calc(11px * var(--fs, 1))",
                             fontWeight: 700,
                             padding: "2px 8px",
