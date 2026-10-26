@@ -33,6 +33,7 @@ const REPORT_CONFIG = {
     icon: Calendar,
     color: "#2563eb",
     bg: "#eff6ff",
+    statusColumn: true,
     headers: ["Date", "Time", "Patient", "Species", "Owner", "Veterinarian", "Reason / Service", "Status"],
     toCsvRow: (x, db) => {
       const p = (db.pets || []).find(p => p.id === x.petId) || {};
@@ -56,6 +57,7 @@ const REPORT_CONFIG = {
     icon: Syringe,
     color: "#d97706",
     bg: "#fffbeb",
+    statusColumn: true,
     headers: ["Recorded / Planned Date", "Patient", "Species", "Owner", "Vaccine Name", "Brand", "Lot / Batch", "Next Booster Due", "Status"],
     toCsvRow: (x, db) => {
       const p = (db.pets || []).find(p => p.id === x.petId) || {};
@@ -472,7 +474,7 @@ export default function ReportsPage({ db, me }) {
                     <tr key={item.id || idx}>
                       {row.map((cell, cIdx) => (
                         <td key={cIdx} style={{ padding: "8px 12px" }}>
-                          {cIdx === row.length - 1 && ["Pending Approval", "Scheduled", "Completed", "Cancelled", "Overdue", "On Track"].includes(cell) ? (
+                          {currentCfg.statusColumn && cIdx === row.length - 1 && cell ? (
                             <Badge v={cell} />
                           ) : (
                             <span>{cell || "—"}</span>

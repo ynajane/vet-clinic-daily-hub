@@ -27,11 +27,11 @@ adminRouter.get('/staff/email-availability',async(req,res)=>{
 adminRouter.get('/staff',async(req,res)=>{
  try {
   const [staff,invitations,count]=await Promise.all([
-   query("SELECT id,first_name,last_name,email,role,vet_id,is_active,is_locked,lockout_until,mobile_verified,access_revision,access_reason FROM users WHERE role IN ('vet','assistant') ORDER BY last_name,first_name,id"),
+   query("SELECT id,first_name,last_name,email,role,vet_id,is_active,is_locked,lockout_until,mobile_verified,access_revision,access_reason FROM users WHERE role IN ('vet','assistant','admin') ORDER BY last_name,first_name,id"),
    query("SELECT id,email,name,role,expired_at,accepted_at FROM staff_invitations ORDER BY created_at DESC LIMIT 100"),
    query('SELECT COUNT(*)::int AS count FROM users')
   ]);
-  res.set('Cache-Control','no-store').json({staff:staff.rows.map(u=>({id:u.id,name:[u.first_name,u.last_name].filter(Boolean).join(' '),email:u.email,role:u.role,vetId:u.vet_id,active:u.is_active,locked:u.is_locked,lockedUntil:u.lockout_until,mobileVerified:u.mobile_verified,revision:u.access_revision,reason:u.access_reason})),invitations:invitations.rows.map(i=>({id:i.id,email:i.email,name:i.name,role:i.role,expiresAt:i.expired_at,status:i.accepted_at?'Accepted':new Date(i.expired_at)>new Date()?'Pending':'Expired or revoked'})),accountCount:count.rows[0].count});
+  res.set('Cache-Control','no-store').json({staff:staff.rows.map(u=>({id:u.id,name:[u.first_name,u.last_name].filter(Boolean).join(' '),email:u.email,role:u.role,self:u.id===req.user.id,vetId:u.vet_id,active:u.is_active,locked:u.is_locked,lockedUntil:u.lockout_until,mobileVerified:u.mobile_verified,revision:u.access_revision,reason:u.access_reason})),invitations:invitations.rows.map(i=>({id:i.id,email:i.email,name:i.name,role:i.role,expiresAt:i.expired_at,status:i.accepted_at?'Accepted':new Date(i.expired_at)>new Date()?'Pending':'Expired or revoked'})),accountCount:count.rows[0].count});
  } catch {res.status(500).json({error:'Unable to load staff accounts. Please retry.'});}
 });
 adminRouter.post('/staff/:id/access',async(req,res)=>{
@@ -44,7 +44,9 @@ adminRouter.post('/staff/:id/access',async(req,res)=>{
   await withTransaction(async client=>{
    await lockSchedule(client);
    const u=(await client.query('SELECT * FROM users WHERE id = $1 FOR UPDATE',[req.params.id])).rows[0];
-   if (!u || !['vet','assistant'].includes(u.role) || u.id===req.user.id) throw problem('Only veterinarian and assistant accounts can be managed here.',403);
+   if (!u || !['vet','assistant','admin'].includes(u.role)) throw problem('Only staff accounts can be managed here.',403);
+   if (u.id===req.user.id) throw problem('You cannot change your own access. Ask another administrator.',403);
+   if (action==='deactivate' && u.role==='admin' && !(await client.query("SELECT 1 FROM users WHERE role='admin' AND is_active AND id<>$1 LIMIT 1",[u.id])).rows.length) throw problem('At least one active administrator must remain.',409);
    if (u.access_revision!==revision) throw problem('This account changed. Refresh and review its current status.',409);
    if (action==='deactivate' && !u.is_active || action==='reactivate' && u.is_active || action==='unlock' && (!u.is_active || !u.is_locked)) throw problem('This action does not match the current account status. Refresh the list.',409);
    if(action==='deactivate' && u.role==='vet') {

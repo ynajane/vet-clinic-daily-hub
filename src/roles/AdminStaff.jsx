@@ -5,6 +5,7 @@ import { PaginatedList, PaginatedTable } from "../components/Pagination.jsx";
 import { useEffect, useRef, useState } from 'react';
 import { useClinicRead } from '../useClinicRead.js';
 import { api } from '../api.js';
+import { STAFF_ROLES, staffRoleLabel } from '../staffRoles.js';
 import {
   Shield,
   UserCheck,
@@ -18,6 +19,7 @@ import {
   Plus,
   Stethoscope,
   ConciergeBell,
+  ShieldCheck,
   Clock,
   AlertTriangle,
   CheckCircle2,
@@ -109,7 +111,7 @@ export default function AdminStaff({ onInvite }) {
                 Staff Access &amp; Role Management
               </h2>
               <p style={{ margin: "3px 0 0", fontSize: "13px", color: "#64748b" }}>
-                Authorize veterinarians and assistants, monitor 2-factor SMS status, and govern session security.
+                Authorize staff and administrators, monitor 2-factor SMS status, and govern session security.
               </p>
             </div>
           </div>
@@ -153,7 +155,7 @@ export default function AdminStaff({ onInvite }) {
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
             <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 600 }}>Role:</span>
-            {['all', 'vet', 'assistant'].map(r => (
+            {['all', 'vet', 'assistant', 'admin'].map(r => (
               <button
                 key={r}
                 type="button"
@@ -161,7 +163,7 @@ export default function AdminStaff({ onInvite }) {
                 onClick={() => setRoleFilter(r)}
                 style={{ fontSize: "11.5px", padding: "4px 10px", borderRadius: "99px" }}
               >
-                {r === 'all' ? 'All Staff' : r === 'vet' ? 'Veterinarians' : 'Assistants'}
+                {r === 'all' ? 'All Staff' : STAFF_ROLES[r].plural}
               </button>
             ))}
           </div>
@@ -249,10 +251,10 @@ export default function AdminStaff({ onInvite }) {
                                 gap: "3px",
                                 fontSize: "11px",
                                 fontWeight: 700,
-                                color: isVet ? "#1d4ed8" : "#b45309"
+                                color: u.role === 'admin' ? "#6d28d9" : isVet ? "#1d4ed8" : "#b45309"
                               }}>
-                                {isVet ? <Stethoscope size={11} /> : <ConciergeBell size={11} />}
-                                <span>{isVet ? 'Veterinarian' : 'Vet Assistant'}</span>
+                                {u.role === 'admin' ? <ShieldCheck size={11} /> : isVet ? <Stethoscope size={11} /> : <ConciergeBell size={11} />}
+                                <span>{staffRoleLabel(u.role)}</span>{u.self && <span style={{ marginLeft: 6, background: "#ede9fe", color: "#5b21b6", borderRadius: 99, padding: "0 7px" }}>You</span>}
                               </span>
                               {u.vetId && (
                                 <span style={{ fontSize: "10.5px", background: "#f1f5f9", color: "#475569", padding: "1px 5px", borderRadius: "4px", fontFamily: "monospace" }}>
@@ -301,7 +303,7 @@ export default function AdminStaff({ onInvite }) {
                     </div>
 
                     {/* Actions Row */}
-                    <div style={{ display: "flex", gap: "8px", paddingTop: "12px", borderTop: "1px solid #f1f5f9", flexWrap: "wrap" }}>
+                    {u.self ? <div style={{ paddingTop: "12px", borderTop: "1px solid #f1f5f9", fontSize: "12px", color: "#64748b" }}>This is your account. Another administrator manages your access.</div> : <div style={{ display: "flex", gap: "8px", paddingTop: "12px", borderTop: "1px solid #f1f5f9", flexWrap: "wrap" }}>
                       <button
                         type="button"
                         className={`btn sm ${u.active ? 'ghost' : 'gold'}`}
@@ -323,7 +325,7 @@ export default function AdminStaff({ onInvite }) {
                           <span>Unlock Account</span>
                         </button>
                       )}
-                    </div>
+                    </div>}
                   </article>
                 );
               })}
@@ -383,15 +385,15 @@ export default function AdminStaff({ onInvite }) {
                           display: "inline-flex",
                           alignItems: "center",
                           gap: "4px",
-                          background: i.role === 'vet' ? "#eff6ff" : "#fffbeb",
-                          color: i.role === 'vet' ? "#1d4ed8" : "#b45309",
-                          border: `1px solid ${i.role === 'vet' ? "#bfdbfe" : "#fde68a"}`,
+                          background: i.role === 'admin' ? "#f5f3ff" : i.role === 'vet' ? "#eff6ff" : "#fffbeb",
+                          color: i.role === 'admin' ? "#6d28d9" : i.role === 'vet' ? "#1d4ed8" : "#b45309",
+                          border: `1px solid ${i.role === 'admin' ? "#ddd6fe" : i.role === 'vet' ? "#bfdbfe" : "#fde68a"}`,
                           padding: "2px 8px",
                           borderRadius: "6px",
                           fontSize: "11px",
                           fontWeight: 700
                         }}>
-                          {i.role === 'vet' ? 'Veterinarian' : 'Vet Assistant'}
+                          {staffRoleLabel(i.role)}
                         </span>
                       </td>
                       <td data-label="Status" style={{ padding: "10px 14px" }}>
@@ -518,7 +520,7 @@ function StaffDetails({person,kind,onClose,onAction}) {
     <header><span className="admin-eyebrow">{invitation?'Staff invitation':'Staff account'}</span><h2 id="staff-details-title">{person.name || person.email}</h2><p>Review {invitation?'invitation status and activation expiry':'account access and verification'}.</p></header>
     <dl className="staff-detail-fields">
       <div><dt>Email address</dt><dd>{person.email}</dd></div>
-      <div><dt>Role</dt><dd>{person.role==='vet'?'Veterinarian':'Vet assistant'}</dd></div>
+      <div><dt>Role</dt><dd>{staffRoleLabel(person.role)}</dd></div>
       <div><dt>Status</dt><dd><span className={`staff-status-chip ${status==='Active'||status==='Accepted'?'is-active':status==='Locked'?'is-locked':'is-pending'}`}>{status}</span></dd></div>
       {invitation?<div><dt>Activation link expires</dt><dd>{new Date(person.expiresAt).toLocaleString('en-PH',{timeZone:'Asia/Manila',dateStyle:'medium',timeStyle:'short'})} · Manila</dd></div>:<>
         {person.vetId&&<div><dt>Doctor ID</dt><dd>{person.vetId}</dd></div>}

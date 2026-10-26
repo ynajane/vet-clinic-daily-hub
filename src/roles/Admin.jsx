@@ -36,6 +36,7 @@ import ClinicCalendar from "./ClinicCalendar.jsx";
 import DailySalesPage from "./DailySalesPage.jsx";
 import ClientsAndPatientsPage from "./ClientsAndPatientsPage.jsx";
 import ConsultationsPage from "./ConsultationsPage.jsx";
+import { staffRoleLabel } from "../staffRoles.js";
 
 function Bars({ title, data }) {
   const max = Math.max(1, ...Object.values(data));
@@ -120,13 +121,14 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
     const emErr = validateEmail(f.email);
     if (emErr) return setErr(emErr);
     if (!emailReady) return setErr("Check email availability before reviewing the invitation.");
+    if (f.role === "admin" && !f.confirmAdmin) return setErr("Tick the box to confirm this person should have full administrator access.");
 
     const formattedName = tc(f.name.trim());
 
     if (!await review.ask({title:"Review staff invitation",confirmLabel:"Send invitation",description:"Check the email and role. This sends an invitation allowing the recipient to create a staff account with the selected access.",fields:[
         ["Staff name",formattedName],
         ["Email",f.email.trim().toLowerCase()],
-        ["Role",f.role === "vet" ? "Veterinarian" : "Vet assistant"]]}))return;
+        ["Role",staffRoleLabel(f.role)],...(f.role === "admin" ? [["Access","Full administrator access: staff accounts, prices, reports and the audit trail"]] : [])]}))return;
     inviting.current = true;
     setLoading(true);
     try {
@@ -141,7 +143,8 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
       const res = await auth.inviteStaff({
         email: f.email.trim().toLowerCase(),
         name: formattedName,
-        role: f.role
+        role: f.role,
+        ...(f.role === "admin" ? { confirmAdmin: true } : {})
       });
 
       if (res.status === "ok") {
@@ -170,7 +173,7 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const roleName = f.role === "vet" ? "Veterinarian" : "Vet Assistant";
+  const roleName = staffRoleLabel(f.role);
 
   return (
     <ClinicDialog label="Staff invitation" onClose={unsaved.close}>
@@ -247,7 +250,12 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
               <select id="staff-invite-role" value={f.role} onChange={e => setF({ ...f, role: e.target.value })}>
                 <option value="assistant">Vet Assistant (Front Desk &amp; Operations)</option>
                 <option value="vet">Veterinarian (Clinical Queue &amp; EMR)</option>
+                <option value="admin">Clinic Administrator (Full access)</option>
               </select>
+              {f.role === "admin" && <div role="note" style={{ marginTop: 8, background: "#f5f3ff", border: "1px solid #ddd6fe", color: "#4c1d95", borderRadius: 10, padding: "10px 12px", fontSize: 12.5, lineHeight: 1.6 }}>
+                <b>Full administrator access.</b> An administrator can invite and deactivate staff, change prices, and see every record and the audit trail. Invite only a person you trust. The invitation expires in 7 days and every step is logged.
+                <label style={{ display: "flex", gap: 8, alignItems: "flex-start", marginTop: 8, fontWeight: 600 }}><input type="checkbox" name="confirmAdmin" checked={!!f.confirmAdmin} onChange={e => setF({ ...f, confirmAdmin: e.target.checked })} style={{ width: "auto", marginTop: 3 }} />I confirm this person should have full administrator access.</label>
+              </div>}
             </div>
 
             <div className="fld">
@@ -255,7 +263,7 @@ export function StaffModal({ db, setDb, me, onClose, onCreated }) {
               <input
                 id="staff-invite-name"
                 type="text"
-                placeholder={f.role === "vet" ? "e.g. Roberto Santos" : "e.g. Liza Ramos"}
+                placeholder={f.role === "vet" ? "e.g. Roberto Santos" : f.role === "admin" ? "e.g. Maria Dela Cruz" : "e.g. Liza Ramos"}
                 value={f.name}
                 className={nameError || numWarn ? "bad" : touched.name && !validateName(f.name) ? "ok" : ""}
                 onChange={e => {
@@ -362,7 +370,7 @@ function Dash({ db, setDb, me, go, say }) {
       >
         <div className="row" style={{ flexWrap: "wrap", gap: "10px" }}>
           <button className="btn gold" onClick={() => setShowStaffModal(true)}>
-            + Invite Staff (Vet / Assistant)
+            + Invite Staff
           </button>
           <button className="btn" onClick={() => go("users")}>
             Manage Staff Access
@@ -632,7 +640,7 @@ function Dash({ db, setDb, me, go, say }) {
       <div className="two admin-breakdowns" style={{ marginTop: "16px" }}>
         <Bars title="Appointments by Status" data={db.totals?.appointment_status || by(db.appts, "status")} />
         {staff.data ? (
-          <Bars title="Staff accounts by role" data={by(staff.data.staff, "role")} />
+          <Bars title="Staff accounts by role" data={Object.fromEntries(Object.entries(by(staff.data.staff, "role")).map(([role, n]) => [staffRoleLabel(role), n]))} />
         ) : (
           <section className="card" style={{ padding: "20px", minHeight: "180px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", color: "#94a3b8" }}>
             <span style={{ fontSize: "13px", fontWeight: 600 }}>Staff accounts by role</span>
@@ -690,7 +698,7 @@ export const admin = {
   Dash,
   menu: [
     { k: "home", l: "Clinic Overview", i: "hospital", dash: 1, sub: "Clinic-wide analytics, audit trail, and staff provisioning." },
-    { k:"users", l:"Staff Access & Invitations", i:"shield", Page:StaffPage, sub:"Invite veterinarians and assistants, review access, and resolve locked accounts." },
+    { k:"users", l:"Staff Access & Invitations", i:"shield", Page:StaffPage, sub:"Invite veterinarians, assistants and administrators, review access, and resolve locked accounts." },
     { k: "sales", l: "Sales & Financial Audit", i: "receipt", Page: DailySalesPage, sub: "Review settled payments and receipts; reception collects payments." },
     { k: "cal", l: "Master Calendar", i: "calendar", Page: ClinicCalendar, sub: "Clinic appointment calendar (read-only administrative oversight)." },
     { k: "clients-patients", l: "Clients & Patients Masterlist", i: "users", Page: ClientsAndPatientsPage, sub: "Unified masterlist of pet owners, animal patient profiles, and official vaccination cards." },

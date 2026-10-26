@@ -17,6 +17,7 @@ import {
 import { sendMail, sendSms } from '../services.js';
 import { validateOwnerRegistration } from '../registrationValidation.js';
 import { validateStaffSetupField } from '../../src/staffSetupValidation.js';
+import { ensureStaffAccessSchema } from '../staffAccess.js';
 
 export const getAppUrl = () => appUrl();
 
@@ -535,14 +536,17 @@ router.post('/staff/invite', requireAuth, async (req, res) => {
 
   const { email, name, role } = req.body;
   const em = String(email || '').trim().toLowerCase();
-  if (!['assistant','vet'].includes(role)) return res.status(400).json({error:'Choose Veterinarian or Vet Assistant.'});
+  if (!['assistant','vet','admin'].includes(role)) return res.status(400).json({error:'Choose Veterinarian, Vet Assistant or Clinic Administrator.'});
+  // Administrator access is the highest level, so it needs an explicit confirmation on top of the form.
+  if (role === 'admin' && req.body.confirmAdmin !== true) return res.status(400).json({error:'Confirm that this person should receive full administrator access.'});
   const staffRole = role;
-  const roleName = staffRole === 'vet' ? 'Veterinarian' : 'Vet Assistant';
+  const roleName = staffRole === 'vet' ? 'Veterinarian' : staffRole === 'admin' ? 'Clinic Administrator' : 'Vet Assistant';
 
   if (em.length>255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) return res.status(400).json({ error: 'Enter a valid staff email address.' });
   if (typeof name !== 'string' || !name.trim() || /\d/.test(name) || !/^(?=.*\p{L})[\p{L}\p{M}'’ -]{2,50}$/u.test(name.trim())) return res.status(400).json({ error: 'Staff full name must be 2 to 50 characters and contain letters only (no numbers).' });
 
   try {
+    if (staffRole === 'admin') await ensureStaffAccessSchema();
     const existingUser = await query('SELECT id FROM users WHERE LOWER(email) = $1', [em]);
     if (existingUser.rows.length) {
       return res.status(400).json({ error: 'A user account with this email already exists.' });
@@ -563,7 +567,7 @@ router.post('/staff/invite', requireAuth, async (req, res) => {
       [em, name.trim(), staffRole, sha256(rawToken), req.user.id]
     );
 
-    await client.query('INSERT INTO audit_logs (user_name,user_role,action) VALUES ($1,$2,$3)',[req.user.name,req.user.role,`Created staff invitation for ${em} (${staffRole})`]);
+    await client.query('INSERT INTO audit_logs (user_name,user_role,action) VALUES ($1,$2,$3)',[req.user.name,req.user.role,`Created staff invitation for ${em} (${staffRole})${staffRole === 'admin' ? ' with FULL ADMINISTRATOR access, confirmed by the inviting administrator' : ''}`]);
     });
 
     const siteUrl = getAppUrl(req);
@@ -655,7 +659,7 @@ router.post('/staff/accept-invite', async (req,res) => {
       // Check the database clock after acquiring the lock: revocation may have committed while we waited.
       const usable=inv&&!inv.accepted_at&&(await client.query('SELECT expired_at > clock_timestamp() AS valid FROM staff_invitations WHERE id=$1',[inv.id])).rows[0]?.valid;
       if(!usable)throw Object.assign(new Error('This invitation is expired, revoked or already used. Contact the administrator.'),{status:409});
-      if(!['vet','assistant'].includes(inv.role))throw Object.assign(new Error('Invalid staff invitation role.'),{status:400});
+      if(!['vet','assistant','admin'].includes(inv.role))throw Object.assign(new Error('Invalid staff invitation role.'),{status:400});
       const vetId=inv.role==='vet'?'v_'+randomHex(8):null;
       await client.query(`INSERT INTO users(id,first_name,last_name,middle_initial,birthday,password_hash,email,role,vet_id,mobile_number,email_verified_at,mobile_verified)
         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NOW(),false)`,[userId,firstName.trim(),lastName.trim(),(middleInitial||'').trim()||null,birthday,pwHash,inv.email,inv.role,vetId,phone.number]);

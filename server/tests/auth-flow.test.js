@@ -208,6 +208,24 @@ test('invitation response preserves the admin login token and reports provider s
   assert.equal(result.res.status,200);assert.equal(result.data.token,undefined);assert.match(result.data.inviteLink,/\?invite=/);assert.equal(result.data.delivery,'accepted');
 });
 
+test('a second clinic administrator can be invited, but only with explicit confirmation', async () => {
+  const admin = session({...user,role:'admin',mobile_verified:true});
+  const body = {name:'Maria Dela Cruz',email:'second.admin@example.test',role:'admin'};
+  steps=[admin];
+  const unconfirmed = await request('/staff/invite',{session:true,body});
+  assert.equal(unconfirmed.res.status,400);assert.match(unconfirmed.data.error,/Confirm/);assert.equal(steps.length,0,'nothing is written before the confirmation');
+  steps=[admin,{sql:/to_regclass/,rows:[{migrations:'pawcare_schema_migrations'}]},{sql:/staff-access-v1|SELECT version/,rows:[{version:'x'}]},{sql:/SELECT version/,rows:[{version:'x'}]},
+    {sql:/SELECT id FROM users/,rows:[]},{sql:/INSERT INTO staff_invitations/,check:params=>assert.equal(params[2],'admin')},{sql:/INSERT INTO audit_logs/,check:params=>assert.match(params[2],/FULL ADMINISTRATOR access/)}];
+  const confirmed = await request('/staff/invite',{session:true,body:{...body,confirmAdmin:true}});
+  assert.equal(confirmed.res.status,200);assert.match(sentMail.at(-1)[1],/Clinic Administrator/);
+});
+test('only an administrator can invite staff, and unknown roles are refused', async () => {
+  steps=[session({...user,role:'assistant',mobile_verified:true})];
+  assert.equal((await request('/staff/invite',{session:true,body:{name:'Someone Else',email:'x@example.test',role:'admin',confirmAdmin:true}})).res.status,403);
+  steps=[session({...user,role:'admin',mobile_verified:true})];
+  assert.equal((await request('/staff/invite',{session:true,body:{name:'Someone Else',email:'x@example.test',role:'owner'}})).res.status,400);
+});
+
 test('a login using a credential snapshot from before reset cannot create a new session',async()=>{
  const password='Synthetic123!',snapshot={...user,mobile_verified:true,password_hash:await hashPassword(password)};
  steps=[{sql:/SELECT \* FROM users/,rows:[snapshot]},{sql:/UPDATE users SET failed_login_attempts = 0/},{sql:/SELECT \* FROM users WHERE id=\$1 FOR SHARE/,rows:[{...snapshot,password_hash:'changed-after-recovery'}]}];

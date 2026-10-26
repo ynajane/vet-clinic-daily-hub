@@ -101,9 +101,9 @@ export default function CatalogPage() {
   };
   return <div className="staff-catalog">
     <section className="card" style={{marginBottom: 16}}>
-      <div className="sf-section-hd"><div><h3>Services &amp; products price list</h3>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 14}}><div style={{flex: '1 1 360px', minWidth: 0}}><h3 style={{margin: 0}}>Services &amp; products price list</h3>
         <p className="sf-sub">Reception, veterinarians and owners all see these prices. Retired items stay on visits already recorded but cannot be sold or prescribed again.</p></div>
-        <div className="row" style={{gap: 8, flexWrap: 'wrap'}}>
+        <div className="row" style={{gap: 8, flexWrap: 'nowrap', flex: 'none'}}>
           <button className="btn ghost sm" disabled={!shown.length} onClick={exportCsv}>Export CSV</button>
           <button className="btn gold" onClick={() => { setMessage(''); setForm({}); }}>Add item</button></div></div>
       <dl className="rep-summary" aria-label="Price list summary" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 8, margin: 0}}>
@@ -113,8 +113,8 @@ export default function CatalogPage() {
       </dl>
     </section>
     <section className="card">
-      <div className="row" style={{gap: 10, flexWrap: 'wrap', marginBottom: 12}}>
-        <input type="search" aria-label="Search the price list" placeholder="Search name, category or description" value={q} onChange={e => setQ(e.target.value)} style={{flex: '1 1 240px'}} />
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10, marginBottom: 14}}>
+        <input type="search" aria-label="Search the price list" placeholder="Search name or category" value={q} onChange={e => setQ(e.target.value)} style={{gridColumn: 'span 2', minWidth: 0}} />
         <select aria-label="Filter by category" value={category} onChange={e => setCategory(e.target.value)}><option value="">All categories</option>{categories.map(c => <option key={c}>{c}</option>)}</select>
         <select aria-label="Filter by type" value={kind} onChange={e => setKind(e.target.value)}><option value="">Services and products</option><option value="service">Services</option><option value="product">Products</option></select>
         <select aria-label="Filter by status" value={status} onChange={e => setStatus(e.target.value)}><option value="active">Active</option><option value="retired">Retired</option><option value="all">All</option></select>

@@ -313,6 +313,15 @@ export default function OwnerAppts({ db, setDb, me, say }) {
 .ap-status .badge{display:inline-block;white-space:nowrap;margin-bottom:4px}
 .ap-actions{display:flex;flex-wrap:nowrap;gap:6px;justify-content:flex-end}td.act{white-space:nowrap;vertical-align:middle}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media(max-width:640px){
+.ap-split .tw{background:none;border:0;box-shadow:none;overflow:visible}
+.ap-rt thead{display:none}.ap-rt,.ap-rt tbody,.ap-rt tr,.ap-rt td{display:block;width:100%;min-width:0}
+.ap-rt tr{margin:0 0 12px;padding:8px 0;background:#fff;border:1px solid #e3e9f7;border-radius:18px}
+.ap-rt td{padding:7px 16px;border:0;text-align:left;max-width:none}
+.ap-rt td::before{content:attr(data-label);display:block;margin-bottom:3px;color:#64748b;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.ap-rt td.act{padding-top:4px}.ap-rt td.act::before{content:none}.ap-actions{justify-content:flex-start}
+.ap-rt td.ap-status,.ap-rt td.ap-visit{max-width:none}
+}
 .ap-split .ow-cal{padding:12px}.ap-split .ow-day{min-height:50px;align-items:center;padding:4px}
 .ap-split .ow-day .ow-hol,.ap-split .ow-ev span,.ap-split .ow-more{display:none}
 .ap-split .ow-evs{display:flex;flex-wrap:wrap;gap:2px;justify-content:center}`}</style>
@@ -390,7 +399,7 @@ export default function OwnerAppts({ db, setDb, me, say }) {
         {/* 2. Appointments on this day or Empty State (Displayed after vaccines) */}
         {(list.length ? (
           <div className="tw">
-            <PaginatedTable label="My appointments" resetKey={[q,view,pet,svc,day]}>
+            <PaginatedTable label="My appointments" className="ap-rt" resetKey={[q,view,pet,svc,day]}>
               <thead>
                 <tr><th>When</th><th>Pet</th><th>Visit</th><th>Status</th><th><span className="sr-only">Actions</span></th></tr>
               </thead>

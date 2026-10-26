@@ -21,6 +21,7 @@ import AuthShell, { AuthBrand } from "./AuthShell.jsx";
 import "./auth.css";
 import "./brand.css";
 import "./auth-flow.css";
+import {staffRoleLabel} from '../staffRoles.js';
 
 export default function StaffSetup({ token, onDone, onCancel }) {
   const [loading, setLoading] = useState(true);
@@ -138,7 +139,7 @@ export default function StaffSetup({ token, onDone, onCancel }) {
   };
 
   const isVet = invInfo?.role === "vet";
-  const roleName = isVet ? "Veterinarian" : "Vet Assistant";
+  const roleName = staffRoleLabel(invInfo?.role);
 
   return (
     <AuthShell title={<>Welcome to your <em>clinic workspace.</em></>} description="Complete your invited account and verify your mobile number to connect with your clinic team.">

@@ -131,3 +131,7 @@
  .shell.th-assistant[data-page] :is(.staff-clients,.staff-records,.staff-sales) td[data-label]{display:table-cell;width:auto;padding:8px!important}
  .shell.th-assistant[data-page] :is(.staff-clients,.staff-records,.staff-sales) td[data-label]:before{display:none}
 }
+
+/* Stat tiles: numbers start at the same height whatever the label length. */
+.shell:is(.th-vet,.th-admin,.th-assistant)[data-page] .stat{align-content:start;align-items:start}
+.shell:is(.th-vet,.th-admin,.th-assistant)[data-page] .stat .si{align-self:start}

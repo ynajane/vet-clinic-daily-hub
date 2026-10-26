@@ -251,7 +251,7 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
               value={methodFilter}
               aria-label="Payment method filter"
               onChange={e => setMethodFilter(e.target.value)}
-              style={{ padding: "5px 10px", fontSize: "12px", borderRadius: "6px", border: "1px solid #cbd5e1" }}
+              style={{ width: "auto", minWidth: "200px", padding: "5px 10px", fontSize: "12px", borderRadius: "6px", border: "1px solid #cbd5e1" }}
             >
               <option value="all">All Payment Methods</option>
               <option value="cash">Cash</option>
@@ -263,11 +263,11 @@ export default function DailySalesPage({ db, setDb, me, go, say }) {
             </select>
           </div>
 
-          <div className="no-print" style={{ position: "relative", width: "240px" }}>
+          <div className="no-print" style={{ position: "relative", width: "min(100%, 300px)" }}>
             <Search size={15} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
             <input
               type="search" aria-label="Search payments"
-              placeholder="Filter by owner, pet, visit reference..."
+              placeholder="Search owner, pet or reference"
               value={search}
               onChange={e => setSearch(e.target.value)}
               style={{ width: "100%", padding: "6px 10px 6px 32px", fontSize: "12.5px", borderRadius: "6px", border: "1px solid #cbd5e1" }}
