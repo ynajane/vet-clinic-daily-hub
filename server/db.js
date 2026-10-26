@@ -1,6 +1,6 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({quiet:true});
 
 // Ensure DATE (OID 1082) is returned as raw 'YYYY-MM-DD' string without timezone shifting
 pg.types.setTypeParser(1082, (val) => val);
@@ -9,9 +9,11 @@ const { Pool } = pg;
 
 const connectionString = process.env.DATABASE_URL;
 const isLocal = !connectionString || /localhost|127\.0\.0\.1/.test(connectionString);
+// pg already treats these modes as verify-full. Saying so keeps that behaviour and ends the deprecation warning.
+const poolUrl = connectionString && !isLocal ? connectionString.replace(/([?&])sslmode=(?:require|prefer|verify-ca)(?=&|$)/, '$1sslmode=verify-full') : connectionString;
 
 export const pool = new Pool({
-  connectionString: connectionString || 'postgres://postgres:postgres@localhost:5432/pawcare',
+  connectionString: poolUrl || 'postgres://postgres:postgres@localhost:5432/pawcare',
   ssl: isLocal ? false : { rejectUnauthorized: false },
   max: 20,
   idleTimeoutMillis: 30000,

@@ -1,4 +1,5 @@
 import {parsePhoneNumberFromString} from 'libphonenumber-js/max';
+import {addressErrors} from './addressRules.js';
 
 export const formatAccountAddress = address => [address.houseStreet, address.city,
   [address.state, address.zipCode].filter(Boolean).join(' '), address.country].filter(Boolean).join(', ');
@@ -30,6 +31,8 @@ export function contactFieldErrors(input) {
     const value=input[key] ?? '';
     if(typeof value!=='string' || value.length>limit || /[\u0000-\u001f\u007f]/.test(value)) errors[key]=`Check this field (up to ${limit} characters).`;
   }
+  // Same address rules as registration, so a profile edit cannot leave the clinic without a usable address.
+  for(const [key,message] of Object.entries(addressErrors(input))) errors[key] ||= message;
   return errors;
 }
 export function contactCodeErrors(pending,{emailCode,phoneCode}) {

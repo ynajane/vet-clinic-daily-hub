@@ -44,7 +44,8 @@ function Dash({ db, setDb, me, go, say, navigation, onNavigationHandled }) {
     starting.current = true;
     setStartingId(a.id);
     try {
-      if (!a.intakeVitals) say("No intake vitals on file for this patient. Record them in the visit notes.");
+      // The visit notes build on measured vitals, so the system asks for them first.
+      if (!a.intakeVitals) { setIntake(a); say("Record measured vitals first, then start the consultation."); return; }
       if (!await moveAppt(setDb, a.id, "In consultation", me, setActionError, a)) return;
       setStage("active");
       setActiveSoap({ appt: { ...a, status: "In consultation" }, pet });

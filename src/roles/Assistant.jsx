@@ -142,6 +142,10 @@ function Dash({ db, setDb, me, go, say, navigation, onNavigationHandled }) {
         <button className="btn ghost sm" onClick={() => go("sales")}>Open daily sales<ArrowRight size={15} aria-hidden="true" /></button>
       </div>
 
+      {queue.overdue.length > 0 && queueStage !== "overdue" && <section className="sf-note" role="alert" style={{marginTop:16}}>
+        <b>{queue.overdue.length} visit{queue.overdue.length > 1 ? "s" : ""} from earlier days {queue.overdue.length > 1 ? "were" : "was"} never checked in.</b> Close each one so the calendar and owners see the right status.{" "}
+        <button type="button" className="btn sm gold" onClick={() => setQueueStage("overdue")}>Review past-due visits</button>
+      </section>}
       <div className="two" style={{ marginTop: 16 }}>
         <section className="card">
           <div className="sf-section-hd">
@@ -150,7 +154,7 @@ function Dash({ db, setDb, me, go, say, navigation, onNavigationHandled }) {
           </div>
 
           <div className="row" style={{flexWrap:"wrap",gap:6,marginBottom:12}} aria-label="Patient flow stages">
-            {[["arrivals","Expected arrivals"],["waiting","Waiting for vet"],["consultation","In consultation"],["completed","Completed"],["missed","Missed"]].map(([key,label]) => <button key={key} className={`btn sm ${queueStage === key ? "gold" : "ghost"}`} aria-pressed={queueStage === key} onClick={() => setQueueStage(key)}>{label} ({queue[key].length})</button>)}
+            {[["arrivals","Expected arrivals"],["waiting","Waiting for vet"],["consultation","In consultation"],["completed","Completed"],["missed","Missed"],...(queue.overdue.length ? [["overdue","Past due"]] : [])].map(([key,label]) => <button key={key} className={`btn sm ${queueStage === key ? "gold" : "ghost"}`} aria-pressed={queueStage === key} onClick={() => setQueueStage(key)}>{label} ({queue[key].length})</button>)}
           </div>
           {queueStage === "waiting" && <p className="sf-sub">Emergency and priority patients appear first. The veterinarian decides the clinical response.</p>}
           {q.length ? (
@@ -191,10 +195,15 @@ function Dash({ db, setDb, me, go, say, navigation, onNavigationHandled }) {
                     <div className="sf-row-act">
                       <Badge v={a.status} />
                       <button className="btn sm ghost" onClick={() => openCard(pet.id || a.petId, a)}>Digital card</button>
-                      {a.status === "Pending Approval" && (
+                      {a.date < TODAY && a.status === "Pending Approval" && <button className="btn sm danger" onClick={() => {setActionError("");setRejecting(a);}}>Decline request</button>}
+                      {a.date < TODAY && a.status === "Scheduled" && <>
+                        <button className="btn sm danger" disabled={!!confirming[a.id]} onClick={async () => {if(confirmingRef.current.has(a.id))return;confirmingRef.current.add(a.id);setConfirming(p=>({...p,[a.id]:true}));try{if(await moveAppt(setDb,a.id,"No-show",me,setActionError,a))say("Marked as a missed visit.");}finally{confirmingRef.current.delete(a.id);setConfirming(p=>({...p,[a.id]:false}));}}}>{confirming[a.id] ? "Saving…" : "Mark no-show"}</button>
+                        <button className="btn sm ghost" onClick={() => go("cal")} title="Open the calendar to book a new date">Rebook</button>
+                      </>}
+                      {a.date >= TODAY && a.status === "Pending Approval" && (
                         <button className="btn sm" disabled={!!confirming[a.id]} onClick={() => confirmVisit(a)}>{confirming[a.id] ? "Approving…" : "Approve"}</button>
                       )}
-                      {a.status === "Scheduled" && (
+                      {a.date >= TODAY && a.status === "Scheduled" && (
                         <button className="btn sm gold" title="Arrival check-in and vitals intake" onClick={() => setCheckInAppt(a)}>Check in</button>
                       )}
                       {a.status === "Checked-in" && (
@@ -211,7 +220,7 @@ function Dash({ db, setDb, me, go, say, navigation, onNavigationHandled }) {
               })}
             </PaginatedList>
           ) : (
-            <div className="empty sm">No patients in this stage today.</div>
+            <div className="empty sm">{queueStage === "overdue" ? "No past-due visits. Everything from earlier days is closed." : "No patients in this stage today."}</div>
           )}
         </section>
 

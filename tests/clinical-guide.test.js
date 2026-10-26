@@ -39,3 +39,10 @@ test('surgery / dental can no longer be booked but old visits keep it', () => {
   const base = {service:'surgery',petId:'p1',vetId:'v1',date:'2099-01-01',time:'09:00'};
   assert.ok(validateBooking({appts:[],busy:[]}, [{id:'p1'}], base).service);
 });
+
+import {assistantQueue,overdueVisits} from '../src/assistantWorkflow.js';
+test('earlier-day visits that were never checked in surface for the assistant', () => {
+  const visits=[{id:'a',date:'2026-10-20',time:'09:00',status:'Scheduled'},{id:'b',date:'2026-10-21',time:'09:00',status:'Pending Approval'},{id:'c',date:'2026-10-20',time:'10:00',status:'Completed'},{id:'d',date:'2026-10-26',time:'09:00',status:'Scheduled'}];
+  assert.deepEqual(overdueVisits(visits,'2026-10-26').map(v=>v.id),['b','a']);
+  assert.equal(assistantQueue(visits,'2026-10-26').overdue.length,2);
+});

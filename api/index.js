@@ -10,7 +10,7 @@ import { clinicRouter } from "../server/routes/clinic.js";
 import { geo as geoRouter, check as checkRouter, checkEmail } from "../server/geo.js";
 import { query } from "../server/db.js";
 
-dotenv.config();
+dotenv.config({quiet:true});
 
 const app = express();
 

@@ -4,6 +4,8 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { query, withTransaction } from './db.js';
 import { sha256 } from './security.js';
 import { sendMail, sendSms } from './services.js';
+import { addressErrors } from '../src/addressRules.js';
+import { PUBLIC } from './domains.js';
 
 let ready;
 const ensureSchema = () => ready ||= query(readFileSync(new URL('./database/contact-changes.sql',import.meta.url),'utf8')).catch(error=>{ready=undefined;throw error;});
@@ -25,6 +27,8 @@ function contactInput(input) {
     if(typeof value!=='string' || value.length>limit || /[\u0000-\u001f\u007f]/.test(value))errors[key]=`Check this field (up to ${limit} characters).`;
     address[key]=typeof value==='string'?value.trim():'';
   }
+  if(!errors.email && !PUBLIC.has(email.split('@')[1]))errors.email='Only public email providers (Gmail, Outlook, Yahoo, iCloud...) are allowed.';
+  for(const [key,message] of Object.entries(addressErrors(address)))errors[key] ||= message;
   if(Object.keys(errors).length)throw problem('Check your contact details.',400,errors);
   return {email,phone:parsed.number,address};
 }

@@ -47,6 +47,9 @@ export function pendingCheckout(appointments, date = today()) {
   const visits = appointments.filter(a => a.date === date && a.status === 'Completed' && a.billingStatus !== 'Paid' && a.admissionStatus !== 'Admitted');
   return {visits, draftTotal:sumAmounts(visits), awaitingInvoice:visits.filter(a => ownerBill(a).amount === null).length};
 }
+export const overdueVisits = (appointments, date = today()) => appointments
+  .filter(a => a.date < date && ['Scheduled','Pending Approval'].includes(a.status))
+  .sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
 const priority = a => ({Emergency:0,Priority:1,Routine:2}[a.intakeVitals?.triageLevel] ?? 2);
 export function assistantQueue(appointments, date = today()) {
   const visits = appointments.filter(a => a.date === date && a.status !== 'Cancelled');
@@ -60,7 +63,9 @@ export function assistantQueue(appointments, date = today()) {
     waiting:byStatus(['Checked-in']).sort((a,b) => priority(a)-priority(b) || chronological(a,b)),
     consultation:byStatus(['In consultation']),
     completed:byStatus(['Completed']),
-    missed:byStatus(['No-show'])
+    missed:byStatus(['No-show']),
+    // Earlier-day visits that were never checked in would otherwise sit unseen on the calendar.
+    overdue:overdueVisits(appointments,date)
   };
 }
 
