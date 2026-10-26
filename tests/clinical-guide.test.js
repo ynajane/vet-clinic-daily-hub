@@ -46,3 +46,13 @@ test('earlier-day visits that were never checked in surface for the assistant', 
   assert.deepEqual(overdueVisits(visits,'2026-10-26').map(v=>v.id),['b','a']);
   assert.equal(assistantQueue(visits,'2026-10-26').overdue.length,2);
 });
+
+import {addressErrors} from '../src/addressRules.js';
+import {contactFieldErrors} from '../src/accountProfile.js';
+test('profile edits follow the registration address rules', () => {
+  const good={houseStreet:'12 Rizal St',city:'Makati',state:'Metro Manila',country:'Philippines',zipCode:'1200'};
+  assert.deepEqual(addressErrors(good),{});
+  for(const key of ['houseStreet','city','state','country','zipCode']) assert.ok(addressErrors({...good,[key]:''})[key],key);
+  assert.ok(addressErrors({...good,zipCode:'12A0'}).zipCode);
+  assert.ok(contactFieldErrors({email:'a@gmail.com',phone:'+639171234567',...good,city:''}).city);
+});

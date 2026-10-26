@@ -92,7 +92,7 @@ for (const role of ['owner', 'assistant', 'vet', 'admin']) {
 test('invalid contact fields and duplicate email report field errors',async()=>{
  steps=[session()];assert.equal((await request('/profile/contact',{email:'bad',phone:'abc'})).status,400);
  steps=[session(),{sql:/SELECT \* FROM users WHERE id=.*FOR UPDATE/,rows:[user('vet')]},{sql:/SELECT id FROM users WHERE LOWER\(email\)=/,rows:[{id:'other'}]}];
- const duplicate=await request('/profile/contact',{email:'duplicate@example.test',phone:'+639170000002'});
+ const duplicate=await request('/profile/contact',{email:'duplicate@example.test',phone:'+639170000002',houseStreet:'12 Test Street',city:'Test City',state:'Test State',country:'Philippines',zipCode:'1000'});
  assert.equal(duplicate.status,409);assert.ok(duplicate.data.errors.email);
 });
 test('weak, unchanged and mismatched passwords are rejected', async () => {

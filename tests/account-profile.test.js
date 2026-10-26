@@ -27,7 +27,8 @@ test('owner synchronization preserves owner ID and normalizes address and birthd
 
 import {contactFieldErrors,contactCodeErrors} from '../src/accountProfile.js';
 test('profile inline feedback matches server phone, address and code constraints',()=>{
- assert.deepEqual(contactFieldErrors({email:'owner@example.com',phone:'09171234567'}),{});
+ assert.deepEqual(contactFieldErrors({email:'owner@example.com',phone:'09171234567',houseStreet:'12 Rizal St',city:'Makati',state:'Metro Manila',country:'Philippines',zipCode:'1200'}),{});
+ assert.ok(contactFieldErrors({email:'owner@example.com',phone:'09171234567'}).houseStreet,'An address is now required, like at registration');
  assert.ok(contactFieldErrors({email:'invalid',phone:'1234567890',city:'x\nInjected'}).email);
  assert.ok(contactFieldErrors({email:'owner@example.com',phone:'1234567890'}).phone);
  assert.ok(contactFieldErrors({email:'owner@example.com',phone:'09171234567',city:'x\nInjected'}).city);
