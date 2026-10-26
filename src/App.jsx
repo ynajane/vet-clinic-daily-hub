@@ -1,6 +1,7 @@
 import {readLoginCooldown} from './loginCooldown.js';
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { startClinicSync } from "./clinicSync.js";
+import { readStateCache, writeStateCache, clearStateCache } from "./stateCache.js";
 import { createClinicStateLoader } from "./clinicStateLoader.js";
 import { emptyClinicState, applyClinicState } from "./clinicState.js";
 import { bindStore, setSessionUser } from "./api.js";
@@ -127,6 +128,11 @@ export default function App() {
     if (!me || restoring) return;
     const identity = `${me.id}:${me.role}`;
     let showProgress = true, hasData = false;
+    // Show the last records from this tab immediately; the refresh below replaces them quietly.
+    const cached = readStateCache(identity);
+    if (cached) {
+      try { setDb(previous => applyClinicState(previous, cached)); setLoadedFor(identity); showProgress = false; } catch (_) { clearStateCache(); }
+    }
     const sync = startClinicSync({
       load: createClinicStateLoader(),
       getBaseline: () => dbRef.current,
@@ -137,6 +143,7 @@ export default function App() {
         const expectedBaseline = hasData ? baseline : undefined;
         hasData = true;
         setDb(previous => applyClinicState(previous, remote, expectedBaseline));
+        writeStateCache(identity, remote);
         setLoadedFor(identity);
         showProgress = false;
         setRefreshing(false);
@@ -145,7 +152,7 @@ export default function App() {
       onError: error => {
         showProgress = true;
         if (error.status === 401 || error.status === 403) {
-          sync.stop();
+          sync.stop(); clearStateCache();
           setDb(emptyClinicState()); setLoadedFor(""); setMe(null); saveCachedUser(null); setSessionUser(null);
           setNotice("Your session has ended. Please log in again."); setBad(true); setView("login");
         } else setClinicError(error.message || "Clinic connection unavailable. Please retry.");
@@ -157,7 +164,7 @@ export default function App() {
     return () => { window.removeEventListener('pawcare:refresh',refresh);sync.stop(); retrySync.current = () => {}; };
   }, [me?.id, me?.role, restoring]);
   /* Log out here and on the server. A message (e.g. idle timeout) sends the person to Log in with that notice. */
-  const logout = async msg => { try { await auth.logout(); } catch { /* signed out here either way */ } try { localStorage.removeItem("pawcare_token"); sessionStorage.removeItem("pawcare_token"); } catch (_) {} setDb(emptyClinicState()); setLoadedFor(""); setClinicError(""); setMe(null); saveCachedUser(null); setSessionUser(null); window.history.replaceState(null, "", window.location.pathname); setNotice(msg || ""); setBad(false); setView(msg ? "login" : "landing"); };
+  const logout = async msg => { clearStateCache(); try { await auth.logout(); } catch { /* signed out here either way */ } try { localStorage.removeItem("pawcare_token"); sessionStorage.removeItem("pawcare_token"); } catch (_) {} setDb(emptyClinicState()); setLoadedFor(""); setClinicError(""); setMe(null); saveCachedUser(null); setSessionUser(null); window.history.replaceState(null, "", window.location.pathname); setNotice(msg || ""); setBad(false); setView(msg ? "login" : "landing"); };
   /* Work Shift Session Timeout: 8 hours (standard full clinic shift) */
   useEffect(() => {
     if (!me) return;
