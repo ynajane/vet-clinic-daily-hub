@@ -109,7 +109,8 @@ clinicRouter.get(["/state","/state/summary","/state/history"], async (req, res) 
       consultsRes,
       requestsRes,
       logsRes,
-      vetsRes
+      vetsRes,
+      countsRes
     ] = await Promise.all([
       plan.history ? Promise.resolve({rows:[]}) : query(`
         SELECT o.*, u.birthday, u.first_name, u.last_name, u.middle_initial, u.role as user_role,
@@ -127,7 +128,9 @@ clinicRouter.get(["/state","/state/summary","/state/history"], async (req, res) 
       read("consults"),
       vet || plan.history ? Promise.resolve({ rows: [] }) : query(`SELECT * FROM pet_requests${owner ? " WHERE owner_id = $1" : ""} ORDER BY created_at DESC`, owner ? scopeParams : []),
       req.user.role === "admin" && !plan.history ? query("SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 100") : Promise.resolve({ rows: [] }),
-      plan.history ? Promise.resolve({rows:[]}) : query("SELECT id, vet_id, first_name, last_name, role FROM users WHERE role = 'vet' AND COALESCE(to_jsonb(users)->>'is_active', 'true') <> 'false' ORDER BY first_name ASC")
+      plan.history ? Promise.resolve({rows:[]}) : query("SELECT id, vet_id, first_name, last_name, role FROM users WHERE role = 'vet' AND COALESCE(to_jsonb(users)->>'is_active', 'true') <> 'false' ORDER BY first_name ASC"),
+      // Independent of the reads above, so it runs with them instead of after them.
+      plan.summary ? query(`SELECT (SELECT count(*)::int FROM consultations WHERE ${plan.filters.consults}) AS consultations, (SELECT jsonb_object_agg(status,n) FROM (SELECT status,count(*)::int n FROM appointments WHERE ${plan.filters.appts} GROUP BY status) s) AS appointment_status`,scopeParams) : Promise.resolve({rows:[]})
     ]);
 
     const page=plan.history?historyPage(plan,{appts:apptsRes,vaccs:vaccsRes,consults:consultsRes,weights:weightsRes}):null;
@@ -138,7 +141,7 @@ clinicRouter.get(["/state","/state/summary","/state/history"], async (req, res) 
     }
     let totals;
     if(plan.summary) {
-      const counts=await query(`SELECT (SELECT count(*)::int FROM consultations WHERE ${plan.filters.consults}) AS consultations, (SELECT jsonb_object_agg(status,n) FROM (SELECT status,count(*)::int n FROM appointments WHERE ${plan.filters.appts} GROUP BY status) s) AS appointment_status`,scopeParams);
+      const counts=countsRes;
       totals=counts.rows[0];
     }
 

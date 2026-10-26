@@ -20,7 +20,7 @@ export function confirmedPayment(response, visit, submitted) {
       || payment?.status !== 'Completed' || payment?.billingStatus !== 'Paid'
       || !payment.paidAt || !Number.isFinite(Date.parse(payment.paidAt))
       || !bill?.items.length || bill.mismatch || !sameAmount(bill.amount, submitted.amount)
-      || !sameAmount(payment.discount, submitted.discount) || !sameAmount(payment.cashTendered, submitted.cashTendered)
+      || !sameAmount(payment.discount ?? 0, submitted.discount ?? 0) || !sameAmount(payment.cashTendered, submitted.cashTendered)
       || !sameAmount(payment.changeAmount, submitted.changeAmount)
       || payment.paymentMethod !== submitted.paymentMethod || payment.paymentReference !== submitted.paymentReference) {
     throw Error('The server did not confirm this payment. Refresh the visit to check whether payment was saved before retrying.');

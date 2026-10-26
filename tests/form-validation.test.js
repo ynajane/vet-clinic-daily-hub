@@ -27,7 +27,7 @@ test('medicine feedback follows actual result, authorization and shared correcti
   const errors=medicineErrors({...medicine,medicine:'  ',dose:'',route:'',frequency:'',catalogId:'medicine',supplyLimit:'0'},{...context,action:'order'});
   for(const key of ['medicine','dose','route','frequency','supplyLimit'])assert.ok(errors[key],key);
 });
-const payment={items:[{catalogId:'home',price:100,qty:2}],discount:'0',method:'Cash',cashTendered:'200',refNo:'',prescribed:[{catalogId:'home',quantity:2}]};
+const payment={items:[{catalogId:'home',price:100,qty:2}],method:'Cash',cashTendered:'200',refNo:'',prescribed:[{catalogId:'home',quantity:2}]};
 test('billing rejects fractional and unauthorized quantities without changing typed values',()=>{
   for(const qty of ['', '0','1.5','3','1001']) {
     const data={...payment,items:[{...payment.items[0],qty}]};
@@ -35,14 +35,12 @@ test('billing rejects fractional and unauthorized quantities without changing ty
   }
   assert.equal(paymentErrors(payment)['qty-0'],'');
 });
-test('billing immediately revalidates cash and discount when invoice changes',()=>{
+test('billing immediately revalidates cash when invoice changes',()=>{
   assert.ok(Object.values(paymentErrors(payment)).every(v=>!v));
   assert.ok(paymentErrors({...payment,cashTendered:'199.99'}).cashTendered);
   assert.ok(paymentErrors({...payment,cashTendered:'200.001'}).cashTendered);
   assert.ok(paymentErrors({...payment,method:'Unknown'}).method);
-  assert.ok(paymentErrors({...payment,discount:'201'}).discount);
-  assert.ok(paymentErrors({...payment,discount:'-1'}).discount);
-  assert.ok(paymentErrors({...payment,discount:'200'}).invoice);
+  assert.equal(paymentErrors(payment).discount,undefined);
   assert.ok(paymentErrors({...payment,items:[{catalogId:'other',qty:1000,price:10001}]}).invoice);
   assert.ok(paymentErrors({...payment,method:'GCash',refNo:' a '}).refNo);
   assert.equal(paymentErrors({...payment,method:'GCash',refNo:'abcd'}).cashTendered,undefined);

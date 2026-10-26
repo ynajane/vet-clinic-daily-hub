@@ -35,7 +35,6 @@ export default function BillingModal({ appt, db, setDb, me, onClose, onPaid }) {
   });
 
   const [method, setMethod] = useState(appt.paymentMethod?.trim() || (appt.billingStatus === "Paid" ? "Not recorded" : "Cash"));
-  const discount = 0;
   const [cashTendered, setCashTendered] = useState("");
   const [refNo, setRefNo] = useState(appt.paymentReference || "");
   const [formErr, setFormErr] = useState("");
@@ -82,9 +81,9 @@ export default function BillingModal({ appt, db, setDb, me, onClose, onPaid }) {
   };
 
   const subtotal = items.reduce((sum, item) => sum + Math.round(item.price * 100) * Number(item.qty), 0) / 100;
-  const total = Math.max(0, (Math.round(subtotal * 100) - Math.round(Number(discount) * 100)) / 100);
-  const unsaved=useUnsavedChanges({value:{items,method,discount,cashTendered,refNo},saving:loading,active:!paid,onClose});
-  const errors = paymentErrors({items,discount,cashTendered,refNo,method,prescribed});
+  const total = Math.max(0, Math.round(subtotal * 100) / 100);
+  const unsaved=useUnsavedChanges({value:{items,method,cashTendered,refNo},saving:loading,active:!paid,onClose});
+  const errors = paymentErrors({items,cashTendered,refNo,method,prescribed});
   const validation = useFormValidation(errors);
   const change = method === "Cash" ? Math.max(0, Math.round(((+cashTendered || 0) - total) * 100) / 100) : 0;
 
@@ -93,7 +92,7 @@ export default function BillingModal({ appt, db, setDb, me, onClose, onPaid }) {
     ? addons.filter(c => c.name.toLowerCase().includes(search.trim().toLowerCase()) || c.category.toLowerCase().includes(search.trim().toLowerCase()))
     : addons;
 
-  const review = useSubmissionReview([items,method,discount,cashTendered,refNo,claim.ready,claim.claimToken,db.appts.find(a=>a.id===appt.id),pet,owner]);
+  const review = useSubmissionReview([items,method,cashTendered,refNo,claim.ready,claim.claimToken,db.appts.find(a=>a.id===appt.id),pet,owner]);
 
   const handlePay = async (ev) => {
     ev.preventDefault();
@@ -136,7 +135,6 @@ export default function BillingModal({ appt, db, setDb, me, onClose, onPaid }) {
     const payload = {
       claimToken: claim.claimToken,
       amount: total,
-      discount: +discount,
       billingStatus: "Paid",
       paymentMethod: method,
       paymentReference: method !== "Cash" ? refNo.trim() : `CASH-${Date.now().toString().slice(-6)}`,
@@ -224,7 +222,7 @@ export default function BillingModal({ appt, db, setDb, me, onClose, onPaid }) {
               </div>
               {savedBill.discount > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", color: "#b91c1c", marginTop: "6px" }}>
-                  <span>Discount / Senior:</span>
+                  <span>Discount (recorded before discounts were removed):</span>
                   <b>-{money(savedBill.discount)}</b>
                 </div>
               )}
