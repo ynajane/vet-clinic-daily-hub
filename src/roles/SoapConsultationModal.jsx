@@ -1,6 +1,8 @@
 import {DEFAULT_DEWORMING_PRODUCTS,dewormingProductChoices} from '../dewormingProducts.js';
 import {careForProfile,elapsedDays,calculatedFollowUp} from '../visitCare.js';
 import {dewormingSchedule,availableDewormingLots,DEWORMING_REFERENCE} from '../dewormingSchedule.js';
+import {vaccineSchedule,VACCINE_BRANDS} from '../vaccineSchedule.js';
+import {PROCEDURE_TYPES,PROCEDURE_DECISIONS,PRE_OP_TEMPLATE,procedureNote} from '../procedureDecision.js';
 import {visitProfile,visitFormType,initialVaccineForVisit,serviceMatchesVisit,intakeSummary,visitClinicalFields} from '../visitForm.js';
 import {ExternalHistorySummary} from '../components/ExternalHistory.jsx';
 import {useFormValidation} from '../components/useFormValidation.jsx';
@@ -17,7 +19,7 @@ import PrescriptionBuilder from "./PrescriptionBuilder.jsx";
 import { editablePrescription } from "../prescription.js";
 import { boosterDate, VACCINE_SERVICE } from "../clinicalWorkflow.js";
 import { useEffect, useRef, useState } from "react";
-import { Stethoscope, Activity, AlertTriangle, X, Calendar, Pill } from "lucide-react";
+import { Stethoscope, Activity, AlertTriangle, X, Calendar, Pill, Syringe } from "lucide-react";
 import { uid, addLog, ICON, I } from "../lib.jsx";
 import { api } from "../api.js";
 import { today, plus } from "../booking.js";
@@ -83,7 +85,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
     vaccine: initialVaccineForVisit(appt),
     doseNo: formType==='deworming' ? "1" : "",
     doseOf: formType==='deworming' ? "1" : "",
-    intervalDays: "",dewormingManual:false,dewormingWeaned:false,dewormingMonthlyRisk:false,dewormingProductId:"",
+    intervalDays: "",dewormingManual:false,dewormingWeaned:false,dewormingMonthlyRisk:false,dewormingProductId:"",vaccineManual:false,procedureType:"",procedureDecision:"",procedureNotes:"",vaccineManual:false,
     scheduleApproved: false,
     brand: "",
     batch: "",
@@ -100,11 +102,13 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
     consultationId:consultationId.current, vaccinationId:vaccinationId.current, expectedVisit:intakeVisitSnapshot(appt)});
   const {form:storedForm, prescriptionItems, performedServices, expectedVisit} = draftState.draft;
   const suggestion=dewormingSchedule({date:storedForm.date,birth:pet.birth,species:pet.species,weaned:storedForm.dewormingWeaned,monthlyRisk:storedForm.dewormingMonthlyRisk});
+  const vaccSuggestion=formType==='vaccination' ? vaccineSchedule({vaccine:storedForm.vaccine,date:storedForm.date,birth:pet.birth,species:pet.species,prior:prevVaccs}) : null;
+  const automaticVaccine=!!vaccSuggestion && !storedForm.vaccineManual;
   const [dewormingProducts,setDewormingProducts]=useState(DEFAULT_DEWORMING_PRODUCTS);
   const selectedProduct=dewormingProducts.find(p=>p.id===storedForm.dewormingProductId);
   const availableLots=availableDewormingLots(selectedProduct,storedForm.date);
   const automaticSchedule=formType==='deworming' && !storedForm.dewormingManual && suggestion;
-  const f={...storedForm,...(automaticSchedule ? {intervalDays:suggestion.intervalDays} : {}),
+  const f={...storedForm,...(automaticSchedule ? {intervalDays:suggestion.intervalDays} : {}),...(automaticVaccine ? {intervalDays:vaccSuggestion.intervalDays,doseNo:vaccSuggestion.doseNo,doseOf:vaccSuggestion.doseOf} : {}),
     ...(formType==='deworming' && selectedProduct ? {brand:selectedProduct.name,batch:availableLots.length ? (availableLots.some(l=>l.batch===storedForm.batch)?storedForm.batch:availableLots[0].batch) : selectedProduct.lots.some(l=>l.batch===storedForm.batch) ? '' : storedForm.batch} : {}),...(formType==='deworming' ? {doseNo:storedForm.doseNo || '1',doseOf:storedForm.doseOf || storedForm.doseNo || '1'} : {}),giveVaccine:preventive && storedForm.giveVaccine,scheduleFollowUp:consultation && storedForm.scheduleFollowUp,
     vaccine:formType==='deworming' ? 'Deworming' : storedForm.vaccine==='Deworming' ? '' : storedForm.vaccine};
   if(formType==='deworming' && (f.batch!==storedForm.batch || f.brand!==storedForm.brand)) f.scheduleApproved=false;
@@ -156,8 +160,8 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
     validation.changed(k);
     if(k==='giveVaccine' && !v) for(const field of ['vaccine','doseNo','doseOf','intervalDays','scheduleApproved','brand','batch']) validation.changed(field);
     if(k==='scheduleFollowUp' && !v) for(const field of ['careStatus','followUpDate','followUpReason']) validation.changed(field);
-    setF({...f,[k]:v,...(["date","vaccine","intervalDays","brand","batch","doseNo","doseOf","dewormingWeaned","dewormingMonthlyRisk","dewormingManual"].includes(k) ? {scheduleApproved:false} : {})});
-    if(['date','vaccine','intervalDays','brand','batch','doseNo','doseOf','dewormingWeaned','dewormingMonthlyRisk','dewormingManual'].includes(k) && f.giveVaccine) validation.changed('scheduleApproved');
+    setF({...f,[k]:v,...(["date","vaccine","intervalDays","brand","batch","doseNo","doseOf","dewormingWeaned","dewormingMonthlyRisk","dewormingManual","vaccineManual"].includes(k) ? {scheduleApproved:false} : {})});
+    if(['date','vaccine','intervalDays','brand','batch','doseNo','doseOf','dewormingWeaned','dewormingMonthlyRisk','dewormingManual','vaccineManual'].includes(k) && f.giveVaccine) validation.changed('scheduleApproved');
     if(k==='scheduleFollowUp' && v && f.followUpDays) {validation.changed('followUpDate');setF(previous=>({...previous,followUpDate:calculatedFollowUp(previous.date,previous.followUpDays)}));}
     if(k==='date' && f.scheduleFollowUp && f.followUpDays) {validation.changed('followUpDate');validation.changed('symptomStart');setF(previous=>({...previous,followUpDate:calculatedFollowUp(v,previous.followUpDays)}));}
     if(k==='microchipDate') validation.changed('microchipNumber');
@@ -170,6 +174,23 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
     setF(previous=>({...previous,followUpDays:String(days),followUpDate:calculatedFollowUp(f.date,days)}));
   };
 
+  // Choosing a decision that needs another visit sets up the follow-up request automatically.
+  const chooseProcedure = (decision, type = f.procedureType) => {
+    const rule = PROCEDURE_DECISIONS[decision];
+    validation.changed('procedureDecision');validation.changed('procedureType');
+    setF(previous => {
+      const next = {...previous, procedureDecision:decision, procedureType:decision==='Not needed' ? '' : type};
+      if (rule?.followUp && next.procedureType) {
+        const days = String(rule.days);
+        Object.assign(next, {scheduleFollowUp:true, careStatus:rule.followUp, followUpDays:days, followUpDate:calculatedFollowUp(previous.date, days),
+          followUpReason:`${rule.label}: ${next.procedureType} for ${pet.name}`,
+          procedureNotes:previous.procedureNotes || (decision.startsWith('Suitable') ? PRE_OP_TEMPLATE : '')});
+      }
+      return next;
+    });
+  };
+
+  const procedureRequiredHere = clinicalForm.procedureRequired;
   const [loading, setLoading] = useState(false);
 
   const review = useSubmissionReview([f,prescriptionItems,performedServices,current,pet,stale,serviceCatalog,catalogError,admissionStatus]);
@@ -241,7 +262,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
     // Finalize the linked clinical data together, or leave the form open on failure.
     const followUpNote = f.scheduleFollowUp
       ? `\nFollow-up requested for ${f.followUpDate}: ${f.followUpReason.trim()}. Reception to confirm scheduling.` : "";
-    newRecord.treatment += followUpNote;
+    newRecord.treatment += followUpNote + (consultation ? procedureNote(f) : '');
     const request={...newRecord,...(f.weight?{weight:Number(f.weight)}:{}),vaccination:newVacc,...(preventive && (f.microchipNumber || f.microchipDate)?{microchip:{number:f.microchipNumber.trim(),date:f.microchipDate || null}}:{}),expectedVisit};
     if (!await review.ask({title:`Review and finalize ${formTitle.toLowerCase()}`,confirmLabel:"Finalize visit",
       description:admissionStatus === 'Admitted' ? "This saves the SOAP consultation. The pet remains admitted for ongoing care. Approve discharge in Admitted Pets before reception can finalize payment and release." : "This saves the clinical record for the owner and completes this visit. Reception handles checkout; any admitted stay still requires veterinarian discharge approval.",
@@ -254,6 +275,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
         ["Objective",newRecord.objective],
         [consultation ? "Assessment" : "Suitability assessment",newRecord.diagnosis],
         [consultation ? "Plan" : "Care / after-care instructions",newRecord.treatment],
+        ...(consultation && f.procedureDecision ? [["Procedure decision",`${f.procedureType ? f.procedureType + " - " : ""}${f.procedureDecision}`]] : []),
         ...(consultation ? [["Admission",admissionStatus || "No admission recorded for this visit"]] : []),
         ["New measured weight",f.weight ? `${f.weight} kg` : "No new measurement; saved intake retained"],
         ...(consultation ? [["Prescription notes",newRecord.prescription],
@@ -289,7 +311,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
         {review.card}<ExternalHistorySummary patient={pet} />
         {admissionOpen && <AdmissionForm mode="create" me={me}
           visits={[{...expectedVisit,petName:pet.name,ownerName:owner.name}]}
-          consultationContext={{petName:pet.name,ownerName:owner.name,diagnosis:f.diagnosis,treatment:f.treatment}}
+          consultationContext={{petName:pet.name,ownerName:owner.name,diagnosis:f.diagnosis,treatment:f.treatment,procedure:f.procedureDecision.startsWith('Suitable') ? f.procedureType : ''}}
           onClose={()=>setAdmissionOpen(false)} onSaved={admissionSaved} />}
         {closing && <ClinicDialog labelledBy="soap-close-title" onClose={() => setClosing(false)}>
           <div className="modal" style={{width:'min(540px,100%)'}}>
@@ -502,6 +524,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                   onChange={e => set("weight", e.target.value)}
                   placeholder="Leave blank to keep saved intake"
                 />
+                {formType==='deworming' && <p className="ow-hint">Deworming products are dosed by weight. Re-weigh the patient if the saved intake weight is old.</p>}
                 {errs.weight && <span id="soap-weight-error" className="err" role="alert">{errs.weight}</span>}
               </div>
 
@@ -522,7 +545,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                 {f.date<TODAY && <label>Reason for historical consultation date *<input {...validation.field("backdateReason")} maxLength={500} value={f.backdateReason || ""} onChange={e=>set("backdateReason",e.target.value)} />{validation.feedback("backdateReason")}</label>}
               </div>
 
-              {preventive && <div style={{gridColumn:'1/-1'}}><label style={{ display: "flex", gap: "10px", alignItems: "center", cursor: "pointer", fontWeight: "700", color: "#166534" }}>
+              {preventive && <div style={{gridColumn:'1/-1'}}><label style={{ display: "flex", gap: "10px", alignItems: "center", cursor: "pointer", fontWeight: "700", color: formType==='deworming' ? "#92400e" : "#1e3a8a" }}>
                   <input
                     type="checkbox"
                     name="giveVaccine" checked={f.giveVaccine}
@@ -580,6 +603,25 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                 {errs.treatment && <span id="soap-treatment-error" className="err" role="alert">{errs.treatment}</span>}
               </div>
               </details>
+              {consultation && <fieldset className="procedure-decision" style={{gridColumn:'1/-1',borderLeft:'5px solid #7c3aed',background:'#faf5ff'}}>
+                <legend>Surgery / dental decision (veterinarian){procedureRequiredHere && <i> *</i>}</legend>
+                <p>{procedureRequiredHere ? 'This visit was booked as a surgery / dental assessment. Record whether the patient should proceed.' : 'Only if you recommend surgery or a dental procedure for this patient. Leave blank otherwise.'} Booking a visit never decides this for you.</p>
+                <div className="fld"><label htmlFor="procedure-decision">Decision</label>
+                  <select id="procedure-decision" name="procedureDecision" value={f.procedureDecision} aria-invalid={!!errs.procedureDecision} aria-describedby="procedure-decision-error" onChange={e=>chooseProcedure(e.target.value, f.procedureType || (appt?.reason && /dental/i.test(appt.reason) ? 'Dental procedure' : appt?.service==='surgery' ? 'Surgery' : ''))}>
+                    <option value="">{procedureRequiredHere ? 'Choose a decision' : 'No procedure recommended'}</option>
+                    {Object.keys(PROCEDURE_DECISIONS).map(v=><option key={v}>{v}</option>)}
+                  </select><span id="procedure-decision-error" className="err" aria-live="polite">{errs.procedureDecision}</span></div>
+                {f.procedureDecision && f.procedureDecision!=='Not needed' && <>
+                  <div className="fld"><label htmlFor="procedure-type">Procedure</label>
+                    <select id="procedure-type" name="procedureType" value={f.procedureType} aria-invalid={!!errs.procedureType} aria-describedby="procedure-type-error" onChange={e=>chooseProcedure(f.procedureDecision,e.target.value)}>
+                      <option value="">Choose surgery or dental</option>{PROCEDURE_TYPES.map(v=><option key={v}>{v}</option>)}
+                    </select><span id="procedure-type-error" className="err" aria-live="polite">{errs.procedureType}</span></div>
+                  <div className="fld"><label htmlFor="procedure-notes">Pre-procedure instructions / reason (added to the plan)</label>
+                    <textarea id="procedure-notes" name="procedureNotes" rows={2} maxLength={1000} value={f.procedureNotes} aria-invalid={!!errs.procedureNotes} onChange={e=>set('procedureNotes',e.target.value)} />
+                    <span className="err" aria-live="polite">{errs.procedureNotes}</span></div>
+                  {PROCEDURE_DECISIONS[f.procedureDecision]?.followUp && f.procedureType && <p role="status">A follow-up request was prepared below for reception to book. Edit it if needed. If {pet.name} must stay at the clinic for the procedure, use Admit below.</p>}
+                </>}
+              </fieldset>}
               {consultation && <section className="consultation-admission" aria-labelledby="soap-admission-title" style={{gridColumn:'1/-1'}}>
                 <div className="consultation-admission-heading"><div><h4 id="soap-admission-title">Admission · care at the clinic</h4>
                   <p>Admit {pet.name} only if your assessment shows a need for clinic treatment or monitoring. A diagnosis or vaccination visit does not automatically require admission.</p></div>
@@ -612,9 +654,9 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
 
               {formType==='grooming' && <p style={{gridColumn:'1/-1'}}>{careConfirmed ? `Grooming confirmed · ${relevantServices.find(p=>p.id==='srv_groom') ? `₱${relevantServices.find(p=>p.id==='srv_groom').price.toLocaleString()} added to billing once on finalization.` : 'Loading service price…'}` : 'No grooming charge is added until care is confirmed.'}</p>}
               {/* Administration is shown only for preventive visits. */}
-              {preventive && <div style={{ gridColumn: "1/-1", background: "#f0fdf4", border: "1px solid #bbf7d0", padding: "14px", borderRadius: "12px", marginTop: "4px" }}>
-
-
+              {preventive && <div className={`care-block ${formType}`} style={{ gridColumn: "1/-1", background: formType==='deworming' ? "#fffbeb" : "#eff6ff", border: `1px solid ${formType==='deworming' ? "#fde68a" : "#bfdbfe"}`, borderLeft: `5px solid ${formType==='deworming' ? "#d97706" : "#2563eb"}`, padding: "14px", borderRadius: "12px", marginTop: "4px" }}>
+                <h4 style={{margin:"0 0 2px",display:"flex",alignItems:"center",gap:8,color:formType==='deworming' ? "#92400e" : "#1e3a8a"}}>{formType==='deworming' ? <Pill size={18}/> : <Syringe size={18}/>}{formType==='deworming' ? 'Deworming treatment' : 'Vaccine administration'}</h4>
+                <p style={{margin:0,fontSize:13,color:"#475569"}}>{formType==='deworming' ? 'Parasite prevention: choose the product, lot and repeat interval. The next date is worked out for you.' : 'Immunization: choose the vaccine. Dose number, booster interval and suggested brands fill in automatically.'}</p>
                 {f.giveVaccine && (
                   <div className="soap-fields" style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: "10px", marginTop: "12px" }}>
                     <div className="fld">
@@ -632,9 +674,14 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                       {suggestion && !suggestion.juvenile && <label><input type="checkbox" name="dewormingMonthlyRisk" checked={!!f.dewormingMonthlyRisk} onChange={e=>set('dewormingMonthlyRisk',e.target.checked)}/> Increased risk — use monthly prevention</label>}
                       <label><input type="checkbox" name="dewormingManual" checked={!!f.dewormingManual} onChange={e=>set('dewormingManual',e.target.checked)}/> Customize interval</label>
                     </div>}
+                    {formType==='vaccination' && vaccSuggestion && <div style={{gridColumn:'1/-1'}}>
+                      <p>{automaticVaccine ? vaccSuggestion.reason : 'Vet-selected schedule'}</p>
+                      {vaccSuggestion.warning && <p role="alert" className="err">{vaccSuggestion.warning}</p>}
+                      <label><input type="checkbox" name="vaccineManual" checked={!!f.vaccineManual} onChange={e=>set('vaccineManual',e.target.checked)}/> Customize interval and doses</label>
+                    </div>}
                     <div className="fld">
                       <label htmlFor="booster-interval">{formType==='deworming' ? 'Repeat after (days)' : 'Vet-selected interval (days)'}<i> *</i></label>
-                      <input id="booster-interval" readOnly={!!automaticSchedule} aria-invalid={!!errs.intervalDays} aria-describedby="soap-interval-error" type="number" min="1" max="3650" step="1" name="intervalDays" value={f.intervalDays} onChange={e => set("intervalDays", e.target.value)} />
+                      <input id="booster-interval" readOnly={!!automaticSchedule || automaticVaccine} aria-invalid={!!errs.intervalDays} aria-describedby="soap-interval-error" type="number" min="1" max="3650" step="1" name="intervalDays" value={f.intervalDays} onChange={e => set("intervalDays", e.target.value)} />
                       {errs.intervalDays && <span id="soap-interval-error" className="err" aria-live="polite">{errs.intervalDays}</span>}
                       <label htmlFor="booster-due">{formType==='deworming' ? 'Next treatment due date' : 'Calculated Booster Due Date'}</label>
                       <input
@@ -648,8 +695,8 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
 
                     {formType==='deworming' && <p style={{gridColumn:'1/-1'}}>One administration for {pet.name} is recorded for this visit. This is not a tablet quantity or medicine dosage. The next due date is calculated from the care date plus your selected interval.</p>}
                     <details style={{gridColumn:'1/-1'}} open={formType==='deworming' && !errs.doseNo && !errs.doseOf ? undefined : true}><summary>{formType==='deworming' ? `Treatment series (optional) · ${f.doseNo} of ${f.doseOf}` : 'Vaccination series'}</summary>
-                    <label>Dose number in current series<input type="number" min="1" max="20" step="1" aria-invalid={!!errs.doseNo} aria-describedby="soap-doseNo-error" name="doseNo" value={f.doseNo} onChange={e => set("doseNo", e.target.value)} />{errs.doseNo && <span id="soap-doseNo-error" className="err" aria-live="polite">{errs.doseNo}</span>}</label>
-                    <label>Total planned doses in series<input type="number" min="1" max="20" step="1" aria-invalid={!!errs.doseOf} aria-describedby="soap-doseOf-error" name="doseOf" value={f.doseOf} onChange={e => set("doseOf", e.target.value)} />{errs.doseOf && <span id="soap-doseOf-error" className="err" aria-live="polite">{errs.doseOf}</span>}</label>
+                    <label>Dose number in current series<input type="number" min="1" max="20" step="1" aria-invalid={!!errs.doseNo} aria-describedby="soap-doseNo-error" name="doseNo" readOnly={automaticVaccine} value={f.doseNo} onChange={e => set("doseNo", e.target.value)} />{errs.doseNo && <span id="soap-doseNo-error" className="err" aria-live="polite">{errs.doseNo}</span>}</label>
+                    <label>Total planned doses in series<input type="number" min="1" max="20" step="1" aria-invalid={!!errs.doseOf} aria-describedby="soap-doseOf-error" name="doseOf" readOnly={automaticVaccine} value={f.doseOf} onChange={e => set("doseOf", e.target.value)} />{errs.doseOf && <span id="soap-doseOf-error" className="err" aria-live="polite">{errs.doseOf}</span>}</label>
                     </details>
                     <div style={{gridColumn:"1/-1"}}>
                       <p>Care date: {f.date} · Birth date: {pet.birth || 'Not recorded'}</p>
@@ -669,8 +716,8 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                           {dewormingProducts.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
                         {!selectedProduct && (f.dewormingProductId==='other' || f.brand) && <input aria-label="Other product name" name="otherBrand" value={f.brand} maxLength={60} onChange={e=>set('brand',e.target.value)} aria-invalid={!!errs.brand} aria-describedby="soap-brand-error"/>}
-                      </> : <input type="text" placeholder="e.g. Defensor 3, Vanguard" id="soap-brand" aria-invalid={!!errs.brand} aria-describedby="soap-brand-error" name="brand" value={f.brand} onChange={e=>set('brand',e.target.value)}/>}
-
+                      </> : <input type="text" list="soap-brand-options" placeholder="Pick a suggestion or type the brand" id="soap-brand" aria-invalid={!!errs.brand} aria-describedby="soap-brand-error" name="brand" value={f.brand} onChange={e=>set('brand',e.target.value)}/>}
+                      {formType==='vaccination' && <datalist id="soap-brand-options">{(VACCINE_BRANDS[f.vaccine] || []).map(b=><option key={b} value={b}/>)}</datalist>}
                       {errs.brand && <span id="soap-brand-error" className="err" aria-live="polite">{errs.brand}</span>}
                     </div>
 
@@ -686,9 +733,9 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                     {formType==='vaccination' && [['manufacturer','Manufacturer (optional)'],['serialNumber','Serial number (optional)']].map(([key,label])=><div className="fld" key={key}><label htmlFor={`soap-${key}`}>{label}</label><input id={`soap-${key}`} name={key} value={f[key] || ''} onChange={e=>set(key,e.target.value)} maxLength={100} aria-invalid={!!errs[key]} aria-describedby={`soap-${key}-error`}/>{errs[key] && <span id={`soap-${key}-error`} className="err" aria-live="polite">{errs[key]}</span>}</div>)}
                   </div>
                 )}
-                <details style={{marginTop:12}}><summary>Microchip identification (if applicable)</summary><div className="two">
+                {formType==='vaccination' && <details style={{marginTop:12}}><summary>Microchip identification (if applicable)</summary><div className="two">
                   {[['microchipNumber','Microchip number','text'],['microchipDate','Implantation / scan date','date']].map(([key,label,type])=><div className="fld" key={key}><label htmlFor={`soap-${key}`}>{label}</label><input id={`soap-${key}`} name={key} type={type} max={type==='date'?TODAY:undefined} maxLength={type==='text'?50:undefined} value={f[key] || ''} onChange={e=>set(key,e.target.value)} aria-invalid={!!errs[key]} aria-describedby={`soap-${key}-error`}/>{errs[key] && <span id={`soap-${key}-error`} className="err" aria-live="polite">{errs[key]}</span>}</div>)}
-                </div></details>
+                </div></details>}
                 <p>{f.giveVaccine ? relevantServices.find(p=>p.id===VACCINE_SERVICE[f.vaccine]) ? `Service total: ₱${relevantServices.find(p=>p.id===VACCINE_SERVICE[f.vaccine]).price.toLocaleString()} · Added to billing once on finalization.` : 'No fixed catalog price is configured for this administration.' : 'No administration charge is recorded unless you confirm it was given.'}</p>
                 {catalogError && <p role="alert">{catalogError} <button type="button" onClick={()=>retryCatalog(n=>n+1)}>Retry prices</button></p>}
               </div>}

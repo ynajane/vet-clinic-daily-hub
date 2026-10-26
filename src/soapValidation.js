@@ -1,6 +1,7 @@
 import {elapsedDays} from './visitCare.js';
 import {vaccinationCardFieldErrors} from './vaccinationCardFields.js';
 import {boosterDate} from './clinicalWorkflow.js';
+import {procedureErrors,procedureNote} from './procedureDecision.js';
 // Match the consultation endpoint's SOAP, date and weight limits before sending.
 const validDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
   && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
@@ -33,6 +34,8 @@ export function validateSoapFields(form, today, birth, visitDate) {
     if (!String(form.brand || '').trim()) errors.brand=form.vaccine==='Deworming' ? 'Select a product brand.' : 'Vaccine manufacturer brand name is required.';
     if (form.vaccine!=='Deworming' && !String(form.batch || '').trim()) errors.batch='Lot / Batch number is required for official certification.';
   }
+  Object.assign(errors,procedureErrors(form));
+  if (String(form.treatment || '').trim().length + procedureNote(form).length > 10000) errors.treatment = 'Plan and appended procedure decision cannot exceed 10,000 characters.';
   if (form.scheduleFollowUp) {
     if (!['Follow-up required','Recheck required'].includes(form.careStatus)) errors.careStatus = 'Choose a supported follow-up status.';
     if (!validDate(form.followUpDate) || form.followUpDate < today) errors.followUpDate = 'Follow-up date must be a real date, today or in the future.';

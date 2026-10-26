@@ -55,13 +55,12 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
   const inFlight = useRef(false);
   const [weight, setWeight] = useState(saved?.weight ?? "");
   const [temp, setTemp] = useState(saved?.temp ?? "");
-  const [triage, setTriage] = useState(saved?.triageLevel || "Routine");
+  const [triageChoice, setTriageChoice] = useState(saved?.triageLevel || null);
   const [serviceReason, setServiceReason] = useState(appt?.reason || "Routine Consultation & Exam");
   const [notes, setNotes] = useState(saved?.notes || "");
   const [fasted, setFasted] = useState(saved?.fasted ?? false);
   const [saving, setSaving] = useState(false);
   const [valErr, setValErr] = useState("");
-  const unsaved=useUnsavedChanges({value:{weight,temp,triage,serviceReason,notes,fasted},saving,onClose});
 
   const externalVaccs = (db.vacc || db.vaccs || []).filter(v => 
     v.petId === pet.id && (v.recorded_by?.includes("External") || v.brand?.includes("External") || v.protocol_type?.includes("External") || v.protocolType?.includes("External"))
@@ -69,6 +68,12 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
 
   const weightAnalysis = assessWeight(weight, species, pet.breed || "", lastWeight);
   const tempAnalysis = assessTemp(temp, species);
+  // Triage follows the measured temperature and an emergency reason until staff choose otherwise.
+  const suggestedTriage = /emergency|critical/i.test(serviceReason) || tempAnalysis?.status === "high_fever" ? "Emergency"
+    : ["mild_fever", "hypothermia"].includes(tempAnalysis?.status) ? "Priority" : "Routine";
+  const triage = triageChoice || suggestedTriage;
+  const setTriage = setTriageChoice;
+  const unsaved=useUnsavedChanges({value:{weight,temp,triage,serviceReason,notes,fasted},saving,onClose});
 
   const handleStepWeight = (delta) => {
     const cur = parseFloat(weight);
@@ -85,6 +90,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
   };
 
   const formType=visitFormType(appt);
+  const surgeryVisit=appt?.service==='surgery' || /surg|dental/i.test(serviceReason);
   const reasonPresets=appt?.service==='surgery'?['Surgical assessment','Dental assessment','Surgery – Follow-up']:formType==='consultation'?['Routine Consultation & Exam','Vomiting / Diarrhea','Skin / Allergy Concern','Emergency / Critical']:formType==='deworming'?['Routine Deworming','Deworming Follow-up']:['Grooming & Sanitary','Nail Trim / Ear Cleaning'];
 
   const review = useSubmissionReview([weight,temp,triage,serviceReason,notes,fasted,currentVisit,pet,owner,stale,TODAY]);
@@ -112,7 +118,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
       setValErr("Please enter a valid body temperature between 33°C and 45°C.");
       return;
     }
-    const fieldError = intakeFieldsError({weight:w,temp:t,triageLevel:triage,fasted,notes}, serviceReason.trim() || appt.reason);
+    const fieldError = intakeFieldsError({weight:w,temp:t,triageLevel:triage,fasted:surgeryVisit && fasted,notes}, serviceReason.trim() || appt.reason);
     if (fieldError) { setValErr(fieldError); return; }
     setValErr("");
 
@@ -126,7 +132,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
         ["Temperature",`${t}°C`],
         ["Triage",triage],
         ["Reason",serviceReason.trim() || appt.reason],
-        ["Fasted",fasted ? "Yes" : "No"],
+        ...(surgeryVisit ? [["Fasted",fasted ? "Yes" : "No"]] : []),
         ["Intake notes",notes.trim()]]
     })) return;
     const confirmedDateError = checkInDateError(appt, today());
@@ -139,7 +145,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
       tempAnalysis,
       triageLevel: triage,
       notes: (notes || "").trim(),
-      fasted,
+      fasted: surgeryVisit && fasted,
       checkedInAt: arrivalTime,
       checkedInBy: me?.name || "Assistant",
     };
@@ -351,15 +357,6 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
                     <span style={{ fontWeight: "700", color: "#475569" }}>°C</span>
                     <button type="button" className="btn ghost sm" disabled={!Number.isFinite(parseFloat(temp))} onClick={() => handleStepTemp(-0.2)}>-0.2</button>
                     <button type="button" className="btn ghost sm" disabled={!Number.isFinite(parseFloat(temp))} onClick={() => handleStepTemp(+0.2)}>+0.2</button>
-                    <button
-                      type="button"
-                      className="btn ghost sm"
-                      title="Set to standard normal baseline with lesser manual input"
-                      onClick={() => {validation.changed('temp');setTemp(String(speciesConfig.normalTempPreset));}}
-                      style={{ background: "#e0f2fe", color: "#0369a1", borderColor: "#bae6fd" }}
-                    >
-                      Use measured normal ({speciesConfig.normalTempPreset}°C)
-                    </button>
                   </div>
                   {validation.feedback('temp')}
                 </div>
@@ -433,7 +430,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
                     type="button"
                     onClick={() => {
                       validation.changed('reason');setServiceReason(preset);
-                      if (preset.includes("Emergency")) setTriage("Emergency");
+                      if (preset.includes("Emergency")) setTriageChoice(null);
                     }}
                     style={{
                       fontSize: "11.5px",
@@ -465,7 +462,7 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
             {/* 3. Triage Level & Quick Intake Notes */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
               <div className="fld">
-                <label>Triage Priority Level</label>
+                <label>Triage Priority Level{!triageChoice && suggestedTriage !== "Routine" ? " (suggested from the findings)" : ""}</label>
                 <select value={triage} onChange={e => setTriage(e.target.value)}>
                   <option value="Routine">Routine / Standard (Normal Queue)</option>
                   <option value="Priority">Priority / Unwell (Visible Alert)</option>
@@ -473,13 +470,13 @@ export default function CheckInModal({ appt, db, setDb, me, onClose, onCheckedIn
                 </select>
               </div>
 
-              <div className="fld">
-                <label>Fasting Status (If for procedure/surgery)</label>
+              {surgeryVisit && <div className="fld">
+                <label>Fasting status (surgery / dental assessment)</label>
                 <select value={fasted ? "yes" : "no"} onChange={e => setFasted(e.target.value === "yes")}>
                   <option value="no">No / Fed normally today</option>
                   <option value="yes">Yes / Fasted (NPO &gt; 8 hours)</option>
                 </select>
-              </div>
+              </div>}
 
               <div className="fld" style={{ gridColumn: "1/-1" }}>
                 <label>Front Desk Intake Observations / Owner Notes</label>

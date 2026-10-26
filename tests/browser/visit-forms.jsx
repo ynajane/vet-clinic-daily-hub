@@ -63,7 +63,8 @@ async function run(){
   await edit('diagnosis','');await edit('treatment','');
   assert(field('diagnosis').getAttribute('aria-invalid')==='false','Confirmed vaccination supplies assessment statement');
   assert(field('treatment').getAttribute('aria-invalid')==='false','Confirmed vaccination supplies care details');
-  await edit('intervalDays','14');
+  assert(field('intervalDays').readOnly && field('intervalDays').value==='365','Vaccine interval must populate automatically');
+  await toggle('vaccineManual');await edit('intervalDays','14');
   assert(document.getElementById('booster-due').value>today(),'Due date must calculate immediately');
   await toggle('scheduleApproved');assert(field('scheduleApproved').checked,'Approval must be selectable');
   await edit('intervalDays','30');assert(!field('scheduleApproved').checked,'Changed interval must reset approval');

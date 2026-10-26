@@ -10,7 +10,7 @@ import './admissions.css';
 export default function AdmissionForm({mode,admission,visits = [],consultationContext,me,onClose,onSaved}) {
   const context = useRef(consultationContext).current;
   const sources = useRef(visits).current, revision = useRef(admission?.revision).current;
-  const [form,setForm] = useState({reasonChoice:'',planTemplate:'',observationTemplate:'',planConfirmed:false,apptId:consultationContext ? visits[0]?.id || '' : '',clinicalNote:'',carePlan:'',ownerUpdate:'',temp:'',weight:'',dischargeInstructions:'',nextObservationAt:'',observationInstructions:'',completeObservation:false,consentConfirmed:false,consentName:'',consentMethod:'',emergencyName:'',emergencyPhone:'',emergencyRelationship:''});
+  const [form,setForm] = useState({reasonChoice:consultationContext?.procedure ? 'Pre-procedure preparation' : '',planTemplate:'',observationTemplate:'',planConfirmed:false,apptId:consultationContext ? visits[0]?.id || '' : '',clinicalNote:consultationContext?.procedure ? 'Pre-procedure preparation' : '',carePlan:'',ownerUpdate:'',temp:'',weight:'',dischargeInstructions:'',nextObservationAt:'',observationInstructions:'',completeObservation:false,consentConfirmed:false,consentName:'',consentMethod:'',emergencyName:'',emergencyPhone:'',emergencyRelationship:''});
   const [alternateContact,setAlternateContact] = useState(false);
   const [error,setError] = useState(''), [saving,setSaving] = useState(false), [discard,setDiscard] = useState(false);
   const pending = useRef(false), request = useRef(null);

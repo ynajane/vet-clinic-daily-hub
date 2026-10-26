@@ -3,6 +3,7 @@ import {profileForVisit} from './visitProfiles.js';
 import {VACCINE_CHOICES,vaccineIdFromReason} from './vaccineBooking.js';
 import { serviceOf } from './booking.js';
 import { boosterDate, VACCINE_SERVICE } from './clinicalWorkflow.js';
+import { procedureRequired } from './procedureDecision.js';
 
 export function visitFormType(appointment) {
   const service = serviceOf(appointment);
@@ -52,6 +53,7 @@ export function visitClinicalFields(form, appointment, performedServices = []) {
     objective:notes.startsWith(summary) ? notes : [summary,notes].filter(Boolean).join('\n'),
     giveVaccine:['vaccination','deworming'].includes(type) && form.giveVaccine,
     scheduleFollowUp:consultation && form.scheduleFollowUp,
+    procedureRequired:procedureRequired(appointment,consultation),
     prescription:consultation ? form.prescription : '',
   };
 }

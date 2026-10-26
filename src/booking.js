@@ -18,9 +18,9 @@ export const OPEN = ["Pending Approval", "Scheduled"];
 const LEGACY_DUR = 30;   // visits booked without a service (e.g. by staff) count as 30 min
 
 export const SERVICES = {
-  vaccination: { label: "Vaccination", icon: "💉", dur: 30, blurb: "Shots and deworming", pick: "Which vaccine or treatment?", hint: "Not sure? Choose “Not sure” and the vet will advise", prefix: "Vaccination – ",
-    options: ["Anti-rabies", "5-in-1", "6-in-1", "8-in-1", "Kennel cough", "Feline 4-in-1", "Deworming", "Not sure, ask the vet", "Other"] },
-  deworming: { label: "Deworming", icon: "💊", dur: 30, blurb: "Parasite prevention", pick: "Reason for visit", hint: "Treatment is decided by your veterinarian", prefix: "Deworming – ", options: ["Routine deworming", "Follow-up", "Other"] },
+  vaccination: { label: "Vaccination", icon: "💉", dur: 30, blurb: "Vaccines and boosters", pick: "Which vaccine?", hint: "Not sure? Choose “Not sure” and the vet will advise", prefix: "Vaccination – ",
+    options: ["Anti-rabies", "5-in-1", "6-in-1", "8-in-1", "Kennel cough", "Feline 4-in-1", "Not sure, ask the vet", "Other"] },
+  deworming: { label: "Deworming", icon: "💊", dur: 30, blurb: "Worm and parasite prevention", pick: "Reason for visit", hint: "Treatment is decided by your veterinarian", prefix: "Deworming – ", options: ["Routine deworming", "Follow-up", "Other"] },
   surgery: { label: "Surgery / Dental", icon: "🩺", dur: 120, blurb: "Assessment and procedure slot", pick: "Reason for visit", hint: "The clinic confirms preparation and suitability", prefix: "Surgery – ", options: ["Surgical assessment", "Dental assessment", "Follow-up", "Other"] },
   grooming: { label: "Grooming", icon: "✂️", dur: 60, blurb: "Grooming and sanitary care", pick: "Reason for visit", hint: "The clinic confirms the service", prefix: "Grooming – ", options: ["Routine grooming", "Sanitary care", "Other"] },
   checkup: { label: "Check-up", icon: "🩺", dur: 60, blurb: "Exam and consultation", pick: "Reason for the check-up", hint: "Choose the closest match", prefix: "",
