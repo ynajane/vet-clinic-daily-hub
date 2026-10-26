@@ -2,7 +2,6 @@ import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
 
 const SALT_ROUNDS = 10;
-const CSRF_KEY = process.env.CSRF_SECRET || 'pawcare-super-secret-csrf-key-change-in-production-12345';
 
 export async function hashPassword(plain) {
   return await bcrypt.hash(plain, SALT_ROUNDS);
@@ -24,7 +23,8 @@ export function randomHex(bytes = 32) {
   return crypto.randomBytes(bytes).toString('hex');
 }
 
-export function hmacHex(data, secret = CSRF_KEY) {
+export function hmacHex(data, secret) {
+  if (!secret) throw new Error('hmacHex needs a secret from the environment.');
   return crypto.createHmac('sha256', secret).update(String(data)).digest('hex');
 }
 
@@ -37,18 +37,3 @@ export function validatePasswordComplexity(pw) {
   if (!/[^A-Za-z0-9]/.test(pw)) return 'Password must contain at least one special character.';
   return '';
 }
-
-export function issueCsrfToken() {
-  const nonce = randomHex(16);
-  const sig = hmacHex(nonce);
-  return `${nonce}.${sig}`;
-}
-
-export function verifyCsrfToken(token) {
-  if (!token || typeof token !== 'string') return false;
-  const [nonce, sig] = token.split('.');
-  if (!nonce || !sig) return false;
-  const want = hmacHex(nonce);
-  return sig.length === want.length && crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(want));
-}
-

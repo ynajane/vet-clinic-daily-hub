@@ -62,6 +62,3 @@ export const api = Object.assign(apiCall, {
   delete: (p) => call("DELETE", p.startsWith("/") ? p : "/api/" + p),
 });
 
-export async function initCsrf() {
-  return "pc-csrf";
-}

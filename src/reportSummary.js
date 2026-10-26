@@ -19,9 +19,10 @@ export function categoryOf(type, item, db, due = currentVaccinationDue(db.vacc |
   if (type === 'vacc') return vaccinationStatus(item, due, today());
   if (type === 'records') return item.careStatus || 'Routine care';
   if (type === 'pets') return normalizeSpecies(item.species);
+  if (type === 'sales') return item.paymentMethod?.trim() || 'Not recorded';
   return '';
 }
-export const CATEGORY_LABEL = {appts: 'Status', vacc: 'Status', records: 'Care status', pets: 'Species'};
+export const CATEGORY_LABEL = {appts: 'Status', vacc: 'Status', records: 'Care status', pets: 'Species', sales: 'Payment method'};
 
 export function categoryOptions(type, list, db) {
   const due = currentVaccinationDue(db.vacc || []);
@@ -52,6 +53,13 @@ export function summarize(type, list, db) {
     rows.push(['Patients seen', String(new Set(list.map(item => item.petId)).size)]);
     rows.push(['With a follow-up requested', String(list.filter(item => item.careStatus && item.careStatus !== 'Routine care').length)]);
     for (const [name, n] of tally(list, item => vetName(db, item.vetId))) rows.push([`Seen by ${name}`, String(n)]);
+  } else if (type === 'sales') {
+    const total = list.reduce((sum, a) => sum + cents(a.amount), 0);
+    rows.push(['Total collected', money(total)], ['Average per paid visit', money(Math.round(total / list.length))]);
+    for (const [method, n] of tally(list, item => categoryOf(type, item, db, due))) {
+      rows.push([`${method} payments`, `${n} · ${money(list.filter(a => categoryOf(type, a, db, due) === method).reduce((sum, a) => sum + cents(a.amount), 0))}`]);
+    }
+    rows.push(['Items sold', String(list.reduce((sum, a) => sum + (Array.isArray(a.invoiceItems) ? a.invoiceItems.reduce((n, i) => n + (Number(i.qty) || 0), 0) : 0), 0))]);
   } else if (type === 'pets') {
     for (const [species, n] of tally(list, item => normalizeSpecies(item.species))) rows.push([species, String(n)]);
     const weights = list.map(item => Number(item.weight)).filter(w => Number.isFinite(w) && w > 0);

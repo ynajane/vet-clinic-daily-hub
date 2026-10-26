@@ -50,11 +50,6 @@ app.get("/verify-email", (req, res) => {
   res.redirect("/");
 });
 
-// CSRF Endpoint
-app.get("/api/csrf", (req, res) => {
-  res.json({ csrf: "pc-csrf-" + Math.random().toString(36).slice(2) });
-});
-
 // Check Email (public domain + MX check + database uniqueness)
 app.post("/api/check/email", async (req, res) => {
   const r = await checkEmail(req.body?.email);

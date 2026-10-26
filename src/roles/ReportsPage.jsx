@@ -17,6 +17,7 @@ import {
   Stethoscope,
   PawPrint,
   Clock,
+  Receipt,
   Sparkles,
   ChevronDown
 } from "lucide-react";
@@ -97,6 +98,28 @@ const REPORT_CONFIG = {
       ];
     }
   },
+  sales: {
+    title: "Sales & Payments Report",
+    sub: "Paid invoices with the services and products sold, payment method and amount collected.",
+    icon: Receipt,
+    color: "#0f766e",
+    bg: "#f0fdfa",
+    adminOnly: true,
+    headers: ["Visit Date", "Patient", "Owner", "Items Sold", "Payment Method", "Reference", "Amount Paid (PHP)"],
+    toCsvRow: (x, db) => {
+      const p = (db.pets || []).find(p => p.id === x.petId) || {};
+      const o = (db.owners || []).find(o => o.id === p.ownerId) || {};
+      return [
+        x.date || "",
+        p.name || x.petId || "",
+        o.name || "",
+        (Array.isArray(x.invoiceItems) ? x.invoiceItems : []).map(i => `${i.qty}x ${i.name}`).join("; "),
+        x.paymentMethod || "Not recorded",
+        x.paymentReference || "",
+        Number(x.amount || 0).toFixed(2)
+      ];
+    }
+  },
   pets: {
     title: "Registered Patients Masterlist",
     sub: "Animal patient demographics, breeds, birth dates, weights, and owner links.",
@@ -130,14 +153,17 @@ export default function ReportsPage({ db, me }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
 
-  const currentCfg = REPORT_CONFIG[reportType] || REPORT_CONFIG.appts;
+  const currentCfg = (REPORT_CONFIG[reportType]?.adminOnly && me.role !== "admin" ? null : REPORT_CONFIG[reportType]) || REPORT_CONFIG.appts;
   const isDateFiltered = reportType !== "pets";
   const isDateInvalid = from && to && from > to;
 
   // Retrieve base list
   const rawList = useMemo(() => {
-    const l = [...(scope(db, me, reportType) || [])];
-    if (E[reportType]?.sort) l.sort(E[reportType].sort);
+    const l = reportType === "sales"
+      ? (scope(db, me, "appts") || []).filter(a => a.billingStatus === "Paid")
+      : [...(scope(db, me, reportType) || [])];
+    if (reportType === "sales") l.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    else if (E[reportType]?.sort) l.sort(E[reportType].sort);
     return l;
   }, [db, me, reportType]);
 
@@ -274,10 +300,10 @@ export default function ReportsPage({ db, me }) {
 
         {/* Report Type Selector Pills */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "10px", marginBottom: "16px" }}>
-          {Object.entries(REPORT_CONFIG).map(([key, cfg]) => {
+          {Object.entries(REPORT_CONFIG).filter(([, cfg]) => !cfg.adminOnly || me.role === "admin").map(([key, cfg]) => {
             const isSel = reportType === key;
             const ItemIcon = cfg.icon;
-            const count = (scope(db, me, key) || []).length;
+            const count = key === "sales" ? (scope(db, me, "appts") || []).filter(a => a.billingStatus === "Paid").length : (scope(db, me, key) || []).length;
             return (
               <button
                 key={key}

@@ -3,11 +3,27 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { query, pool } from "../db.js";
-import { hashPassword } from "../security.js";
+import crypto from "node:crypto";
+import { hashPassword, validatePasswordComplexity } from "../security.js";
 
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// No password is written in the code. Use SEED_<ROLE>_PASSWORD from the environment, or a random
+// one is generated and shown once at the end of this run.
+const generated = [];
+function seedPassword(label) {
+  const given = process.env[`SEED_${label.toUpperCase()}_PASSWORD`];
+  if (given) {
+    const problem = validatePasswordComplexity(given);
+    if (problem) throw new Error(`SEED_${label.toUpperCase()}_PASSWORD: ${problem}`);
+    return given;
+  }
+  const password = `${crypto.randomBytes(9).toString("base64url")}aA1!${crypto.randomBytes(3).toString("hex")}`;
+  generated.push([label, password]);
+  return password;
+}
 
 async function main() {
   console.log("==========================================");
@@ -68,11 +84,11 @@ async function main() {
     await query(fs.readFileSync(path.join(__dirname, "../database/patient-reference-history.sql"), "utf8"));
     await query(fs.readFileSync(path.join(__dirname, "../database/vaccination-card-fields.sql"), "utf8"));
 
-    // 2. Default Seed Passwords (satisfies 12-128 chars, uppercase, lowercase, number, symbol)
-    const adminPassHash = await hashPassword("Admin1234567!");
-    const vetPassHash = await hashPassword("Vet123456789!");
-    const assistPassHash = await hashPassword("Assist123456!");
-    const ownerPassHash = await hashPassword("Owner1234567!");
+    // 2. Seed account passwords (never hardcoded; see seedPassword above)
+    const adminPassHash = await hashPassword(seedPassword("admin"));
+    const vetPassHash = await hashPassword(seedPassword("vet"));
+    const assistPassHash = await hashPassword(seedPassword("assistant"));
+    const ownerPassHash = await hashPassword(seedPassword("owner"));
 
     console.log("Seeding RBAC Users & Staff...");
 
@@ -193,11 +209,15 @@ async function main() {
     console.log("\n==========================================");
     console.log(" ✅ Neon DB Initialization Complete!");
     console.log("==========================================");
-    console.log("Demo Accounts Created:");
-    console.log(" • Clinic Admin:   admin@pawcare.com     / Admin1234567!");
-    console.log(" • Veterinarian:   vet@pawcare.com       / Vet123456789!");
-    console.log(" • Vet Assistant:  assistant@pawcare.com / Assist123456!");
-    console.log(" • Pet Owner:      maria@example.com     / Owner1234567!");
+    console.log("Demo accounts created (existing accounts are never changed):");
+    console.log(" • Clinic Admin:   admin@pawcare.com");
+    console.log(" • Veterinarian:   vet@pawcare.com");
+    console.log(" • Vet Assistant:  assistant@pawcare.com");
+    console.log(" • Pet Owner:      maria@example.com");
+    if (generated.length) {
+      console.log("\nGenerated passwords (shown only now; change them after the first login):");
+      for (const [label, password] of generated) console.log(` • ${label}: ${password}`);
+    } else console.log("\nPasswords were taken from the SEED_*_PASSWORD environment variables.");
     console.log("==========================================\n");
 
   } catch (err) {
