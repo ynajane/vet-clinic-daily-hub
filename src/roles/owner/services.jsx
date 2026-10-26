@@ -1,6 +1,6 @@
 import { Syringe, Pill, Stethoscope, Scissors, HeartPulse } from "lucide-react";
 import { fmt12 } from "./ui.jsx";
-import { SERVICES, STEP, durText, addMin, niceDay } from "../../booking.js";
+import { SERVICES, STEP, durText, addMin, niceDay, bookableServices } from "../../booking.js";
 export * from "../../booking.js";
 import { lastDay } from "../../booking.js";
 export const LAST = lastDay();
@@ -8,11 +8,12 @@ export const LAST = lastDay();
 const serviceIcons = {vaccination:Syringe, deworming:Pill, surgery:Stethoscope, grooming:Scissors, checkup:HeartPulse};
 
 export function ServicePicker({ value, onChange, error }) {
+  // A saved retired service stays selectable only while editing that visit.
   return (
     <div className="fld">
       <label id="svc-l">What is the visit for?<i> *</i></label>
       <div className="ow-svcs" role="radiogroup" aria-labelledby="svc-l">
-        {Object.entries(SERVICES).map(([k, s]) => { const ServiceIcon = serviceIcons[k] || Stethoscope; return <button type="button" key={k} role="radio" aria-checked={value === k} className={`ow-svc${value === k ? " on" : ""}`} onClick={() => onChange(k)}>
+        {bookableServices(value).map(([k, s]) => { const ServiceIcon = serviceIcons[k] || Stethoscope; return <button type="button" key={k} role="radio" aria-checked={value === k} className={`ow-svc${value === k ? " on" : ""}`} onClick={() => onChange(k)}>
           <span className="ic" aria-hidden="true"><ServiceIcon size={22} /></span><b>{s.label}</b><small>{s.blurb}</small><small>{durText(s.dur)}</small>
         </button>; })}
       </div>

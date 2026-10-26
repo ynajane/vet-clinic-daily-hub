@@ -21,11 +21,14 @@ export const SERVICES = {
   vaccination: { label: "Vaccination", icon: "💉", dur: 30, blurb: "Vaccines and boosters", pick: "Which vaccine?", hint: "Not sure? Choose “Not sure” and the vet will advise", prefix: "Vaccination – ",
     options: ["Anti-rabies", "5-in-1", "6-in-1", "8-in-1", "Kennel cough", "Feline 4-in-1", "Not sure, ask the vet", "Other"] },
   deworming: { label: "Deworming", icon: "💊", dur: 30, blurb: "Worm and parasite prevention", pick: "Reason for visit", hint: "Treatment is decided by your veterinarian", prefix: "Deworming – ", options: ["Routine deworming", "Follow-up", "Other"] },
-  surgery: { label: "Surgery / Dental", icon: "🩺", dur: 120, blurb: "Assessment and procedure slot", pick: "Reason for visit", hint: "The clinic confirms preparation and suitability", prefix: "Surgery – ", options: ["Surgical assessment", "Dental assessment", "Follow-up", "Other"] },
+  surgery: { retired: true, label: "Surgery / Dental", icon: "🩺", dur: 120, blurb: "Assessment and procedure slot", pick: "Reason for visit", hint: "The clinic confirms preparation and suitability", prefix: "Surgery – ", options: ["Surgical assessment", "Dental assessment", "Follow-up", "Other"] },
   grooming: { label: "Grooming", icon: "✂️", dur: 60, blurb: "Grooming and sanitary care", pick: "Reason for visit", hint: "The clinic confirms the service", prefix: "Grooming – ", options: ["Routine grooming", "Sanitary care", "Other"] },
   checkup: { label: "Check-up", icon: "🩺", dur: 60, blurb: "Exam and consultation", pick: "Reason for the check-up", hint: "Choose the closest match", prefix: "",
     options: ["Annual check-up", "Skin or ear problem", "Limping or injury", "Vomiting or diarrhea", "Not eating or drinking", "Dental check", "Follow-up visit", "Other"] },
 };
+/* Surgery and dental are no longer booked directly: the vet decides during a check-up.
+   The entry stays so older visits keep their length and label. */
+export const bookableServices = (keep) => Object.entries(SERVICES).filter(([k, s]) => !s.retired || k === keep);
 export const CANCEL_WHY = ["Schedule conflict", "My pet is feeling better", "Booked by mistake", "Need a different date", "Other"];
 
 /* Philippine holidays: the clinic is closed. Each year add that year's one-off dates to HOLIDAYS_BY_YEAR. */
@@ -119,7 +122,7 @@ export function nextOpenDay(db, v, editing) {
 /* The full booking check. `ownPets` are the pets this owner may book for. */
 export function validateBooking(db, ownPets, v, editing) {
   const e = {}, S = SERVICES[v.service], T = today(), LAST = lastDay();
-  if (!v.service) e.service = "Choose a service"; else if (!S) e.service = "Pick a service from the list";
+  if (!v.service) e.service = "Choose a service"; else if (!S) e.service = "Pick a service from the list"; else if (S.retired && !(editing && editing.service === v.service)) e.service = "Book a check-up. The veterinarian will advise if surgery or a dental procedure is needed";
   if (!v.petId) e.petId = "Choose which pet is visiting"; else if (!ownPets.some(p => p.id === v.petId)) e.petId = "Pick one of your own pets";
   if (!v.vetId) e.vetId = "Choose a veterinarian"; else if (!VETS.some(x => x[0] === v.vetId)) e.vetId = "Pick a veterinarian from the list";
   const sameDay = editing && editing.date === v.date;

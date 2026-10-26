@@ -22,7 +22,7 @@ import { canBookAppointments } from "../appointmentPermissions.js";
 import { prefill } from "./owner/ui.jsx";
 import { openFollowUps } from "../clinicalWorkflow.js";
 import { useAvailability } from "../useAvailability.js";
-import { lastDay, today as bookingToday, SERVICES, serviceOf, splitReason, openSlots, reservationCovers, addMin, durOf, fmt12 } from "../booking.js";
+import { lastDay, today as bookingToday, SERVICES, bookableServices, serviceOf, splitReason, openSlots, reservationCovers, addMin, durOf, fmt12 } from "../booking.js";
 import { useRef, useState } from "react";
 import {
   Calendar,
@@ -1101,7 +1101,7 @@ export function QuickBookModal({ slot, db, doctors, onClose, onBook }) {
         </>:<div className="cc-book-fields">
           <label>Patient *<select {...validation.field('petId')} value={petId} onChange={e=>{edit(setPetId,e.target.value);setVaccineId('');setFollowUpId('');}}><option value="">Choose a patient</option>{db.pets.filter(p=>p.registrationStatus!=='Declined').map(p=><option key={p.id} value={p.id}>{p.name} · {db.owners.find(o=>o.id===p.ownerId)?.name || 'Owner on file'}</option>)}</select>{validation.feedback('petId')}</label>
           <label>Veterinarian *<select {...validation.field('vetId')} value={vetId} onChange={e=>{edit(setVetId,e.target.value);setTime('');}}><option value="">Choose a current veterinarian</option>{doctors.map(([id,name])=><option key={id} value={id}>{name}</option>)}</select>{validation.feedback('vetId')}</label>
-          <label>Service *<select {...validation.field('service')} value={service} onChange={e=>{edit(setService,e.target.value);setTime('');setReasonChoice('');setOtherReason('');setVaccineId('');}}>{Object.entries(SERVICES).map(([key,s])=><option key={key} value={key}>{s.label} · {s.dur} min</option>)}</select>{validation.feedback('service')}</label>
+          <label>Service *<select {...validation.field('service')} value={service} onChange={e=>{edit(setService,e.target.value);setTime('');setReasonChoice('');setOtherReason('');setVaccineId('');}}>{bookableServices(service).map(([key,s])=><option key={key} value={key}>{s.label} · {s.dur} min</option>)}</select>{validation.feedback('service')}</label>
           <BookingReason service={service} choice={reasonChoice} other={otherReason} onChoice={x=>edit(setReasonChoice,x)} onOther={x=>edit(setOtherReason,x)} errors={validation.errors}/>
           {service==='vaccination' && <VaccinePicker value={vaccineId} onChange={x=>{edit(setVaccineId,x);validation.changed('vaccineId');}} species={selectedPet.species} petSelected={!!petId} error={validation.errors.vaccineId}/>}
           <label>Follow-up request (optional)<select {...validation.field('followUpId')} value={followUpId} onChange={e=>edit(setFollowUpId,e.target.value)}><option value="">Regular visit</option>{openFollowUps(db,petId).map(r=><option key={r.id} value={r.id}>{r.followUpDate} · {r.followUpReason}</option>)}</select>{validation.feedback('followUpId')}</label>

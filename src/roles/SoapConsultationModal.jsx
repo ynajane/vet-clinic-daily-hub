@@ -16,7 +16,9 @@ import {HistoryControls} from "../ClinicHistory.jsx";
 import { useSubmissionReview } from "../components/SubmissionReview.jsx";
 import { validateSoapFields } from "../soapValidation.js";
 import PrescriptionBuilder from "./PrescriptionBuilder.jsx";
-import { editablePrescription } from "../prescription.js";
+import { CareGuidePanel, SnapshotPanel } from "./CareGuidePanel.jsx";
+import { courseEnd } from "../clinicalGuide.js";
+import { editablePrescription, rxLineErrors } from "../prescription.js";
 import { boosterDate, VACCINE_SERVICE } from "../clinicalWorkflow.js";
 import { useEffect, useRef, useState } from "react";
 import { Stethoscope, Activity, AlertTriangle, X, Calendar, Pill, Syringe } from "lucide-react";
@@ -25,6 +27,8 @@ import { api } from "../api.js";
 import { today, plus } from "../booking.js";
 import { intakeVisitSnapshot, sameIntakeVisit } from "../intakeVisit.js";
 import { confirmedConsultation, applyConsultationSave } from "../consultationSave.js";
+
+const NL = "\n";
 
 function NoteShortcuts({ field, label, options, value, onChange }) {
   const [search, setSearch] = useState("");
@@ -143,11 +147,13 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
     return () => { active = false; };
   }, [optionsAttempt]);
   const [serviceCatalog, setServiceCatalog] = useState([]);
+  const [fullCatalog, setFullCatalog] = useState([]);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [catalogError, setCatalogError] = useState('');
   const [catalogAttempt, retryCatalog] = useState(0);
   useEffect(() => {
     let active = true;
-    api.get('/api/services/prices').then(r => { if (active) { setServiceCatalog(r.catalog.filter(p => p.id.startsWith('srv_') && !p.requiresPrescription)); setDewormingProducts(dewormingProductChoices(r)); setCatalogError(''); } }).catch(e => { if (active) setCatalogError(e.message); });
+    api.get('/api/services/prices').then(r => { if (active) { setServiceCatalog(r.catalog.filter(p => p.id.startsWith('srv_') && !p.requiresPrescription)); setFullCatalog(r.catalog); setDewormingProducts(dewormingProductChoices(r)); setCatalogError(''); } }).catch(e => { if (active) setCatalogError(e.message); });
     return () => { active = false; };
   }, [catalogAttempt]);
   const relevantServices=serviceCatalog.filter(p=>serviceMatchesVisit(p,formType));
@@ -190,6 +196,19 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
     });
   };
 
+  // Suggested care is merged in without overwriting what the veterinarian already wrote.
+  const applyGuide = ({plan, lines, followUpDays, reason}) => {
+    setPrescriptionItems([...prescriptionItems, ...lines].slice(0, 30));
+    ['treatment','followUpDate','followUpReason','careStatus','followUpDays'].forEach(field => validation.changed(field));
+    setF(previous => {
+      let treatment = previous.treatment;
+      for (const line of plan) if (!treatment.includes(line) && (treatment + line).length < 9500) treatment += (treatment && !treatment.endsWith(NL) ? NL : '') + line;
+      const next = {...previous, treatment};
+      if (followUpDays && !previous.scheduleFollowUp) Object.assign(next, {scheduleFollowUp:true, careStatus:'Follow-up required', followUpDays:String(followUpDays), followUpDate:calculatedFollowUp(previous.date, followUpDays), followUpReason:reason});
+      return next;
+    });
+  };
+  const addLines = (field, lines) => { validation.changed(field); setF(previous => ({...previous, [field]: [previous[field], ...lines.filter(l => !previous[field].includes(l))].filter(Boolean).join(NL)})); };
   const procedureRequiredHere = clinicalForm.procedureRequired;
   const [loading, setLoading] = useState(false);
 
@@ -198,6 +217,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
   const handleSubmit = async (ev) => {
     ev.preventDefault();
     if (inFlight.current) return;
+    setSubmitAttempted(true);
     if (stale) {setActionErrors(p=>({...p,save:"This visit has changed or is not in consultation. Refresh clinic records and reopen it. Your notes remain here for reference."}));return;}
     if (!validation.validate(ev)) return;
     const e = {};
@@ -206,7 +226,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
     try {
       selectedItems = (consultation ? prescriptionItems : []).map(item => {
         const p=editablePrescription(item);
-        if (!Number.isInteger(p.quantity) || p.quantity < 1 || p.quantity > 1000 || !p.instructions.trim() || p.instructions.length>1000) throw new Error('Complete the directions and quantity for each selected product.');
+        if (Object.keys(rxLineErrors(item)).length) throw new Error('Complete the highlighted prescription fields (dose, course length, package contents, directions) for each selected product.');
         return p;
       });
     } catch (err) { e.prescription = err.message; }
@@ -510,6 +530,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                 </label>
                 {errs.objective && <span id="soap-objective-error" className="err" role="alert">{errs.objective}</span>}
               </div>
+              {consultation && <SnapshotPanel pet={pet} vitals={iv} vaccs={prevVaccs} today={TODAY} objective={f.objective} treatment={f.treatment} onAddFindings={lines=>addLines('objective',lines)} onAddPlan={lines=>addLines('treatment',lines)} />}
 
               <div className="fld">
                 <label htmlFor="soap-weight">New measured weight (kg, optional)</label>
@@ -577,6 +598,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                   />
                 {errs.diagnosis && <span id="soap-diagnosis-error" className="err" role="alert">{errs.diagnosis}</span>}
               </div>
+              {consultation && <CareGuidePanel diagnosis={f.diagnosis} catalog={fullCatalog} selectedIds={new Set(prescriptionItems.map(p=>p.catalogId))} petName={pet.name} onApply={applyGuide} />}
 
               <div className="fld full" style={{ gridColumn: "1/-1" }}>
                 {consultation && <div className="fld"><label htmlFor="care-plan-choice">Care plan for {profile.title} (optional)</label>
@@ -650,7 +672,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                 </>}
                 <p>Selected service total: ₱{relevantServices.filter(p=>selectedServices.includes(p.id)).reduce((total,p)=>total+p.price,0).toLocaleString()}</p>
               </fieldset>}
-              {consultation && <div style={{gridColumn: "1/-1"}}><PrescriptionBuilder items={prescriptionItems} onChange={items=>{setPrescriptionItems(items);setActionErrors(previous=>({...previous,prescription:''}));}} notes={f.prescription} onNotes={v => set("prescription", v)} error={errs.prescription} /></div>}
+              {consultation && <div style={{gridColumn: "1/-1"}}><PrescriptionBuilder items={prescriptionItems} onChange={items=>{setPrescriptionItems(items);setActionErrors(previous=>({...previous,prescription:''}));}} notes={f.prescription} onNotes={v => set("prescription", v)} error={errs.prescription} showAll={submitAttempted} /></div>}
 
               {formType==='grooming' && <p style={{gridColumn:'1/-1'}}>{careConfirmed ? `Grooming confirmed · ${relevantServices.find(p=>p.id==='srv_groom') ? `₱${relevantServices.find(p=>p.id==='srv_groom').price.toLocaleString()} added to billing once on finalization.` : 'Loading service price…'}` : 'No grooming charge is added until care is confirmed.'}</p>}
               {/* Administration is shown only for preventive visits. */}
@@ -760,6 +782,7 @@ export default function SoapConsultationModal({ appt, pet, db, setDb, me, onClos
                     <label>Recheck after (days)<input type="number" name="followUpDays" min="1" max="3650" step="1" value={f.followUpDays} onChange={e=>{validation.changed('followUpDays');handleFollowUpDaysChange(e.target.value);}} aria-invalid={!!errs.followUpDays} aria-describedby="followUpDays-error"/></label>
                     <span id="followUpDays-error" className="err" aria-live="polite">{errs.followUpDays}</span>
                     <p>Calculated from the care date: {f.date}.</p>
+                    {courseEnd(prescriptionItems)>0 && String(courseEnd(prescriptionItems))!==String(f.followUpDays) && <p><button type="button" className="btn sm ghost" onClick={()=>handleFollowUpDaysChange(courseEnd(prescriptionItems))}>Recheck when the medicine course ends ({courseEnd(prescriptionItems)} days)</button></p>}
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}>
                       {[
                         { label: "In 3 Days", days: 3 },
